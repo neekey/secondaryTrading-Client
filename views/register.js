@@ -1,16 +1,16 @@
 (function(){
 
-    var LoginCls = App.views.login = Ext.extend( Ext.form.FormPanel, {
+    var Request = App.mods.request;
 
-        title: '登陆',
+    var RegisterCls =  App.views.login = Ext.extend( Ext.form.FormPanel, {
+        title: '注册',
+        xtype: 'form',
         scroll: 'vertical',
-        id: 'welcome-login',
-        apiType: 'LOGIN',
+        iconCls: 'search',
+        id: 'welcome-register',
+        apiType: 'REGISTER',
 
-        /**
-         * 组件初始化
-         */
-        initComponent:  function (){
+        initComponent: function (){
 
             var that = this;
 
@@ -32,17 +32,17 @@
                                 }
                             },
                             {
-                                text: '登陆',
-                                id: 'btLogin',
+                                text: '注册',
+                                id: 'btRegister',
                                 ui: 'confirm',
                                 handler: function() {
 
                                     var values = that.getValues();
-                                    var model = Ext.ModelMgr.create( values, 'Login' );
+                                    var model = Ext.ModelMgr.create( values, 'Register' );
                                     var errors = model.validate();
                                     var message = "";
 
-                                    if( errors.isValid() ){
+                                    if( errors.isValid() && values.password === values[ 'password-confirm' ] ){
 
                                         Request.jsonp({
                                             type: that.apiType,
@@ -50,17 +50,16 @@
                                             callback: function( data ){
 
                                                 if( data.result ){
-                                                    Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
 
-//                                                        Ext.UIS.loginReg.instance.fireEvent( 'login' );
+                                                    Ext.Msg.alert( "注册成功！", '注册成功，请登陆！' );
 
-                                                        // 重置表单
-                                                        that.reset();
-                                                    });
+                                                    that.reset();
                                                 }
                                                 else {
-                                                    Ext.Msg.alert( "登陆失败！", data.error );
+
+                                                    Ext.Msg.alert( '注册失败！', data.error );
                                                 }
+
                                             }
                                         }, true );
 
@@ -71,6 +70,11 @@
                                             message += rec.message+"<br>";
                                         });
 
+                                        if( values.password !== values[ 'password-confirm' ] ){
+
+                                            message += "两次密码输入不一致<br>";
+                                        }
+
                                         Ext.Msg.alert( "表单有误：", message );
 
                                         return false;
@@ -80,16 +84,16 @@
                         ]
                     }
                 ]
-
             });
 
-            LoginCls.superclass.initComponent.call( this );
+            RegisterCls.superclass.initComponent.call( this );
         },
 
         items: [
             {
                 xtype: 'fieldset',
-                title: '用户登陆',
+                title: 'Personal Info',
+                instructions: 'Please enter the information above.',
                 defaults: {
                     required: true,
                     labelAlign: 'left',
@@ -101,8 +105,7 @@
                         name : 'email',
                         label: '邮箱',
                         useClearIcon: true,
-                        autoCapitalize : false,
-                        required: true
+                        autoCapitalize : false
                     },
                     {
                         xtype: 'passwordfield',
@@ -110,11 +113,17 @@
                         label: '密码',
                         useClearIcon: true,
                         autoCapitalize : false
+                    },
+                    {
+                        xtype: 'passwordfield',
+                        name : 'password-confirm',
+                        label: '密码确认',
+                        useClearIcon: true,
+                        autoCapitalize : false
                     }
                 ]
             }
         ],
-
         listeners : {
             submit : function(form, result){
                 console.log('success', Ext.toArray(arguments));
@@ -125,5 +134,5 @@
         }
     });
 
-    Ext.reg( 'welcome-login', LoginCls );
+    Ext.reg( 'welcome-register', RegisterCls );
 })();

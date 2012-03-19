@@ -1,12 +1,14 @@
 (function(){
 
-    var Session = Ext.STConfig.session;
+    var Config = App.config;
+    var Mods = App.mods;
+    var Session = Config.SESSION;
     var ID_NAME = Session.ID_NAME;
     var RES_NAME = Session.RES_SESSION_FIELD_NAME;
     var sessionStore;
     var session;
 
-    Ext.MODS.auth = {
+    Mods.auth = {
 
         /**
          * 为需要发送的数据添加上用于session的auth数据
@@ -72,6 +74,6 @@
         }
     };
 
-    Ext.MODS.auth.init();
+    Mods.auth.init();
     
 })();

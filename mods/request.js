@@ -1,11 +1,13 @@
 (function(){
 
-    var APIS = Ext.STConfig.APIS;
-    var JSONP_KEY = Ext.STConfig.API_JSONP_KEY;
+    var Config = App.config;
+    var Mods = App.mods;
+    var APIS = Config.APIS;
+    var JSONP_KEY = Config.API_JSONP_KEY;
     var JSONP = Ext.util.JSONP;
-    var Auth = Ext.MODS.auth;
+    var Auth = Mods.auth;
 
-    Ext.MODS.request = {
+    Mods.request = {
 
         /**
          * 进行jsonp请求

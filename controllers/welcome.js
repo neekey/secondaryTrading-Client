@@ -5,9 +5,21 @@
 
     Ext.regController( 'welcome', {
 
+
         index: function (){
 
-            this.login();
+            if( !this.VWelcome ){
+
+                this.VWelcome = this.render({
+                    xtype: 'welcome'
+                });
+
+                this.VLogin = this.VWelcome.query( '#welcome-login' )[ 0 ];
+                this.VRegister = this.VWelcome.query( '#welcome-register' )[ 0 ];
+            }
+
+            this.application.viewport.setActiveItem( this.VWelcome );
+//            this.login();
         },
 
         /**
@@ -15,6 +27,9 @@
          */
         login: function (){
 
+            this.index();
+
+            this.VWelcome.setActiveItem( this.VLogin );
 
         },
 
@@ -23,6 +38,9 @@
          */
         register: function (){
 
+            this.index();
+
+            this.VWelcome.setActiveItem( this.VRegister );
         }
     });
 })();
