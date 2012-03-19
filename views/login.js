@@ -1,5 +1,7 @@
 (function(){
 
+    var Request = App.mods.request;
+
     var LoginCls = App.views.login = Ext.extend( Ext.form.FormPanel, {
 
         title: '登陆',
