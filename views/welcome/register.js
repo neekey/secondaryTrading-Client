@@ -4,7 +4,6 @@
 
     var RegisterCls =  App.views.login = Ext.extend( Ext.form.FormPanel, {
         title: '注册',
-        xtype: 'form',
         scroll: 'vertical',
         iconCls: 'search',
         id: 'welcome-register',
@@ -134,5 +133,5 @@
         }
     });
 
-    Ext.reg( 'welcome-register', RegisterCls );
+    Ext.reg( 'register', RegisterCls );
 })();

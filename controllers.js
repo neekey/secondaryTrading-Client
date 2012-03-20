@@ -71,12 +71,11 @@
 
             if( !this.VWelcome ){
 
-                this.VWelcome = this.render({
-                    xtype: 'welcome'
-                });
+                this.viewport = this.application.viewport;
+                this.VWelcome = this.viewport.query( 'welcome' )[0];
 
-                this.VLogin = this.VWelcome.query( '#welcome-login' )[ 0 ];
-                this.VRegister = this.VWelcome.query( '#welcome-register' )[ 0 ];
+                this.VLogin = this.VWelcome.query( 'login' )[ 0 ];
+                this.VRegister = this.VWelcome.query( 'register' )[ 0 ];
             }
 
             this.application.viewport.setActiveItem( this.VWelcome );

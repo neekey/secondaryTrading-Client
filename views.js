@@ -189,11 +189,41 @@
     Ext.reg( 'imageCapture', ImageCaptureCls );
 })();(function(){
 
+    var Request = App.mods.request;
+
     var ProfileMainCls = App.views.profileMain = Ext.extend( Ext.Panel, {
         title: '设置',
         iconCls: 'organize',
         cls: 'card2',
-        badgeText: '4'
+        badgeText: '4',
+        defaults: {
+            xtype: 'button'
+        },
+        items: [
+            {
+                text: '注销',
+                handler: function(){
+
+                    Request.jsonp({
+                        type: 'LOGOUT',
+                        callback: function( data ){
+
+                            if( data.result ){
+
+                                Ext.Msg.alert( '注销成功', '成功注销!', function(){
+
+                                    Ext.redirect( 'welcome/login' );
+                                });
+                            }
+                            else {
+
+                                Ext.Msg.alert( '注销失败', data.error );
+                            }
+                        }
+                    }, true );
+                }
+            }
+        ]
     });
 
     Ext.reg( 'profile', ProfileMainCls );
@@ -518,14 +548,13 @@
         }
     });
 
-    Ext.reg( 'welcome-login', LoginCls );
+    Ext.reg( 'login', LoginCls );
 })();(function(){
 
     var Request = App.mods.request;
 
     var RegisterCls =  App.views.login = Ext.extend( Ext.form.FormPanel, {
         title: '注册',
-        xtype: 'form',
         scroll: 'vertical',
         iconCls: 'search',
         id: 'welcome-register',
@@ -655,7 +684,7 @@
         }
     });
 
-    Ext.reg( 'welcome-register', RegisterCls );
+    Ext.reg( 'register', RegisterCls );
 })();
 (function(){
 
@@ -672,8 +701,8 @@
             type: 'fade'
         },
         items: [
-            { xtype: 'welcome-login' },
-            { xtype: 'welcome-register' }
+            { xtype: 'login' },
+            { xtype: 'register' }
         ],
         listeners: {
             beforecardswitch: function ( that, newTab, oldTab, index ){

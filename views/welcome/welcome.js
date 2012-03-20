@@ -13,8 +13,8 @@
             type: 'fade'
         },
         items: [
-            { xtype: 'welcome-login' },
-            { xtype: 'welcome-register' }
+            { xtype: 'login' },
+            { xtype: 'register' }
         ],
         listeners: {
             beforecardswitch: function ( that, newTab, oldTab, index ){

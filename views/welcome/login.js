@@ -60,6 +60,7 @@
                                                     });
                                                 }
                                                 else {
+                                                    //todo 若发现已经登陆，返回的数据应该包含了是否已经登陆的信息
                                                     Ext.Msg.alert( "登陆失败！", data.error );
                                                 }
                                             }
@@ -126,5 +127,5 @@
         }
     });
 
-    Ext.reg( 'welcome-login', LoginCls );
+    Ext.reg( 'login', LoginCls );
 })();

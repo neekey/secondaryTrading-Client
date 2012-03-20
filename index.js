@@ -3,7 +3,7 @@
     Ext.regApplication({
 
         name: 'App',
-        defaultUrl: 'main/sell',
+        defaultUrl: 'welcome',
         mods: {},
         config: {},
         launch: function (){
