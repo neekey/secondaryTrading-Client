@@ -1,6 +1,7 @@
 (function(){
 
-    var Session = Ext.STConfig.session;
+    var Config = App.config;
+    var Session = Config.SESSION;
     var ID_NAME = Session.ID_NAME;
 
     // Set up a model to use in our Store

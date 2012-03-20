@@ -7,11 +7,21 @@
         fullscreen: true,
         layout: 'card',
         cardSwitchAnimation: 'fade',
-        dockedItems: [
+        items: [
             {
-                xtype: 'toolbar',
-                title: 'MvcTouch'
+                xtype: 'welcome'
+            },
+            {
+                xtype: 'main'
             }
         ]
+//        dockedItems: [
+//            {
+//                xtype: 'toolbar',
+//                title: 'MvcTouch'
+//            }
+//        ]
     });
+
+    Ext.reg( 'viewport', App.views.Viewport );
 })();

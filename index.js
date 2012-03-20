@@ -3,17 +3,17 @@
     Ext.regApplication({
 
         name: 'App',
-        defaultUrl: 'welcome/login',
+        defaultUrl: 'main/sell',
         mods: {},
         config: {},
         launch: function (){
 
 //            Ext.ControllerManager.get( 'welcome' ); 可以利用此方法获得controller实例对象
-            this.viewport = new App.views.Viewport();
+            this.viewport = Ext.ComponentMgr.create({
+                xtype: 'viewport'
+            });
         }
     });
-
-    Ext.ns( 'App.mods', 'App.config' );
 
 //Ext.setup({
 //    icon: 'icon.png',

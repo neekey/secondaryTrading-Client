@@ -54,8 +54,7 @@
                                                 if( data.result ){
                                                     Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
 
-//                                                        Ext.UIS.loginReg.instance.fireEvent( 'login' );
-
+                                                       Ext.redirect( 'main' );
                                                         // 重置表单
                                                         that.reset();
                                                     });

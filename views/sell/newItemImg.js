@@ -1,0 +1,29 @@
+(function(){
+
+    var NewItemImgCls = Ext.extend( Ext.Panel, {
+        xtype: 'panel',
+        layout: 'hbox',
+        cls: 'new-item-imgs',
+        height: 150,
+        defaults: {
+            xtype: 'imageCapture',
+            height: 100,
+            width: '30%',
+            margin: '0 5.2% 0 5.2%',
+            style: {
+                background: 'red'
+            },
+            ifData: true
+        },
+        items: [
+            {},{},{}
+        ],
+        listeners: {
+            afterRender: function (){
+//                picInstance = this;
+            }
+        }
+    });
+
+    Ext.reg( 'newItemImg', NewItemImgCls );
+})();
