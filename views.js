@@ -1,3 +1,6 @@
+/**
+ * 主界面视图
+ */
 (function(){
 
     var MainCls = App.views.main = Ext.extend( Ext.TabPanel, {
@@ -18,7 +21,6 @@
         },
         listeners: {
             afterrender: function(){
-//                mainStructModule.instance = this;
             }
         },
         items: [
@@ -29,8 +31,7 @@
     });
 
     Ext.reg( 'main', MainCls );
-})();
-/**
+})();/**
  * 整个界面的主视图
  */
 (function(){
@@ -482,6 +483,7 @@
                                                     });
                                                 }
                                                 else {
+                                                    //todo 若发现已经登陆，返回的数据应该包含了是否已经登陆的信息
                                                     Ext.Msg.alert( "登陆失败！", data.error );
                                                 }
                                             }

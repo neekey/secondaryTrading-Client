@@ -1,3 +1,6 @@
+/**
+ * 主界面视图
+ */
 (function(){
 
     var MainCls = App.views.main = Ext.extend( Ext.TabPanel, {
@@ -18,7 +21,6 @@
         },
         listeners: {
             afterrender: function(){
-//                mainStructModule.instance = this;
             }
         },
         items: [
