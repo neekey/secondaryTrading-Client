@@ -1,5 +1,8 @@
 (function(){
 
+    var Mods = App.mods;
+    var Auth = Mods.auth;
+
     Ext.regController( 'main', {
 
         index: function (){
@@ -16,10 +19,14 @@
         sell: function (){
 
             Ext.ControllerManager.get( 'sell' ).menu();
+
         },
 
         buy: function (){
+
             alert( 'test' );
+            Ext.ControllerManager.get( 'sell' ).menu();
+
         }
     });
 })();

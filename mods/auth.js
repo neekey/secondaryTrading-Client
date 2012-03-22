@@ -8,7 +8,88 @@
     var sessionStore;
     var session;
 
+    var ifAuthCheck = false;
+    var ifLogin = false;
+
     Mods.auth = {
+
+        /**
+         * 检查当前用户是否登陆
+         * @param next
+         */
+        checkAuth: function ( next ){
+
+            if( !ifAuthCheck ){
+
+                Mods.request.jsonp({
+
+                    type: 'CHECKAUTH',
+                    callback: function ( data ){
+
+                        ifAuthCheck = true;
+
+                        if( data.result && data.data ){
+
+                            ifLogin = true;
+
+                            next( true );
+                        }
+                        else {
+
+                            ifLogin = false;
+
+                            next( false );
+                        }
+                    }
+                });
+            }
+            else {
+
+                next( ifLogin );
+            }
+        },
+
+        login: function( email, password, next ){
+
+            var values = {
+                email: email,
+                password: password
+            };
+
+            Mods.request.jsonp({
+                type: 'LOGIN',
+                data: values,
+                callback: function( data ){
+
+                    if( data.result ){
+
+                        ifLogin = true;
+
+                        Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
+
+                            next( true );
+                        });
+                    }
+                    else {
+                        if( data.login ){
+
+                            ifLogin = true;
+
+                            next( true );
+                        }
+                        else {
+
+                            ifLogin = false;
+
+                            Ext.Msg.alert( "登陆失败！", data.error, function (){
+
+                                next( false );
+                            } );
+                        }
+                    }
+                }
+            }, true );
+        },
 
         /**
          * 为需要发送的数据添加上用于session的auth数据

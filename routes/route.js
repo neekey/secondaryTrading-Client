@@ -5,8 +5,8 @@
         map.connect( ':controller/:action' );
 
         map.connect( '', { controller: 'welcome', action: 'index' } );
-        map.connect( 'index', { controller: 'welcome', action: 'index' } );
-        map.connect( 'welcome', { controller: 'welcome', action: 'index' } );
+        map.connect( 'index', { controller: 'welcome', action: 'login' } );
+        map.connect( 'welcome', { controller: 'welcome', action: 'login' } );
         map.connect( 'main', { controller: 'main', action: 'sell' } );
     });
 })();

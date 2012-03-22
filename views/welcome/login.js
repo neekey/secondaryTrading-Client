@@ -1,6 +1,7 @@
 (function(){
 
     var Request = App.mods.request;
+    var Auth = App.mods.auth;
 
     var LoginCls = App.views.login = Ext.extend( Ext.form.FormPanel, {
 
@@ -46,31 +47,15 @@
 
                                     if( errors.isValid() ){
 
-                                        Request.jsonp({
-                                            type: that.apiType,
-                                            data: values,
-                                            callback: function( data ){
+                                        Auth.login( values.email, values.password, function( ifLogin ){
 
-                                                if( data.result ){
-                                                    Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
+                                            if( ifLogin ){
 
-                                                       Ext.redirect( 'main' );
-                                                        // 重置表单
-                                                        that.reset();
-                                                    });
-                                                }
-                                                else {
-                                                    if( data.login ){
-
-                                                        Ext.redirect( 'main' );
-                                                    }
-                                                    else {
-
-                                                        Ext.Msg.alert( "登陆失败！", data.error );
-                                                    }
-                                                }
+                                                Ext.redirect( 'main' );
+                                                // 重置表单
+                                                that.reset();
                                             }
-                                        }, true );
+                                        });
 
                                     } else {
 
