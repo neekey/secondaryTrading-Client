@@ -12,15 +12,9 @@
         getCurrentLocation: function ( next ){
             var that = this;
 
-            alert( 'getCurrentLocation' );
-
             this.getCurrentLatLng( function ( err, latlng ){
 
                 alert( 'getCurrentLatLng callback' );
-                latlng = {
-                    lat: 30.2305832,
-                    lng: 120.040726
-                };
 
                 that.getRAR(latlng.lat, latlng.lng, function ( result ){
 
@@ -59,20 +53,15 @@
             var that = this;
             var url = APIS[ 'GEO' ];
 
-            Request.jsonp({
+            Request.send({
                 url: url + '?latlng=' + lat + ',' + lng + '&sensor=true&t=' + Date.now(),
-                method: 'GET',
+                method: 'POST',
                 type: 'GEO',
-//                data: {
-//                    latlng: lat + ',' + lng,
-//                    sensor: true
-//                },
                 callback: function( res ){
 
 //                    res = res.data;
                     alert( 'getRAR callback' );
-                    alert( JSON.stringify( res ) );
-                    next( that.resultHandle( res ) );
+                    next( that.resultHandle( res.data ) );
                 }
             });
         },
@@ -86,25 +75,26 @@
 
             var Request = Mods.request;
             var that = this;
+            var url = APIS[ 'GEO' ];
 
             alert( 'getAR' );
             Request.send({
+                url: url + '?address=' + encodeURIComponent( address ) + '&sensor=true&t=' + Date.now(),
                 method: 'POST',
                 type: 'GEO',
-                data: {
-                    address: encodeURIComponent( address ),
-                    sensor: true
-                },
                 callback: function( res ){
 
                     alert( 'getAR cb' );
-
-                    alert( res );
-                    next( that.resultHandle( JSON.parse( res ) ) );
+                    next( that.resultHandle( res.data ) );
                 }
             });
         },
 
+        /**
+         * 对数据进行预处理
+         * @param data
+         * @return {Object}
+         */
         resultHandle: function ( data ){
 
             var result = {
