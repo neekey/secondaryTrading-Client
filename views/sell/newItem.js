@@ -50,6 +50,8 @@
             afterRender:function (){
 
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
+                this.newItemForm = this.query( 'newItemFrorm' )[ 0 ];
+                this.newItemLocation = this.query( 'newItemLocation' )[ 0 ];
             }
         }
     });
