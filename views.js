@@ -75,6 +75,8 @@
 
 (function(){
 
+    var Mods = App.mods;
+
     var ImageCaptureCls = Ext.extend( Ext.Component, {
         style: {
             overflow: 'hidden'
@@ -87,17 +89,15 @@
 
             this.addListener( 'click', function(){
 
-                var that = this;
-
                 that.imgInitialized = false;
 
                 Ext.Msg.confirm( "选择图片", "是否拍照上传?", function( result ){
 
-                    var ifCamera = result === 'yes' ? true : false;
+                    var ifCamera = !!(result === 'yes');
 
-                    alert( that.ifData );
+//                    alert( that.ifData );
 
-                    Ext.MODS.getPicture({
+                    Mods.getPicture({
                         ifCamera: ifCamera,
                         ifData: that.ifData,
                         quality: 50,
@@ -183,7 +183,7 @@
          */
         getImage: function(){
 
-            return this.imageUrl;
+            return this.imageUrl || '';
         }
     });
 
@@ -253,6 +253,43 @@
 
     var NewItemCls = Ext.extend( Ext.Panel, {
 
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '新商品',
+                        items: [
+                            {
+                                text: '返回',
+                                ui: 'back',
+                                handler: function() {
+                                    Ext.redirect( 'main/sell' );
+                                }
+                            },
+                            { xtype: 'spacer' },
+                            {
+                                text: '发布',
+                                ui: 'confirm',
+                                align: 'end',
+                                handler: function (){
+
+//                                     Ext.Msg.alert( JSON.stringify( that.newItemImg.getImageUrl() ) );
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            NewItemCls.superclass.initComponent.call( this );
+        },
+
 //        layout: 'fit',
         items: [
             { xtype: 'newItemForm' },
@@ -261,33 +298,11 @@
 //            submitSellConfig
         ],
         listeners: {
+            afterRender:function (){
 
-        },
-        dockedItems: [
-            {
-                xtype: 'toolbar',
-                dock: 'top',
-                title: '新商品',
-                items: [
-                    {
-                        text: '返回',
-                        ui: 'back',
-                        handler: function() {
-                            Ext.redirect( 'main/sell' );
-                        }
-                    },
-                    { xtype: 'spacer' },
-                    {
-                        text: '发布',
-                        ui: 'confirm',
-                        align: 'end',
-                        handler: function (){
-
-                        }
-                    }
-                ]
+                this.newItemImg = this.query( 'newItemImg' )[ 0 ];
             }
-        ]
+        }
     });
 
     Ext.reg( 'newItem', NewItemCls );
@@ -361,7 +376,26 @@
         listeners: {
             afterRender: function (){
 //                picInstance = this;
+                this.imageCaptures = this.query( 'imageCapture' );
             }
+        },
+
+        /**
+         * 获取图像的base64 uri
+         * @return {Array}
+         */
+        getImageUrl: function (){
+
+            var urls = [];
+            var index;
+            var image;
+
+            for( index = 0; image = this.imageCaptures[ index ]; index++ ){
+
+                urls.push( image.getImage() );
+            }
+
+            return urls;
         }
     });
 

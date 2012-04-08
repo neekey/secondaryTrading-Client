@@ -21,7 +21,26 @@
         listeners: {
             afterRender: function (){
 //                picInstance = this;
+                this.imageCaptures = this.query( 'imageCapture' );
             }
+        },
+
+        /**
+         * 获取图像的base64 uri
+         * @return {Array}
+         */
+        getImageUrl: function (){
+
+            var urls = [];
+            var index;
+            var image;
+
+            for( index = 0; image = this.imageCaptures[ index ]; index++ ){
+
+                urls.push( image.getImage() );
+            }
+
+            return urls;
         }
     });
 

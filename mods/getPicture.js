@@ -3,6 +3,7 @@
  */
 (function(){
 
+    var Mods = App.mods;
     /**
      *
      * @param config
@@ -12,7 +13,7 @@
      *      success: 图片获取成功回调
      *      error: 图片获取失败回调
      */
-    Ext.MODS.getPicture = function( config ){
+    Mods.getPicture = function( config ){
 
         var Camera = navigator.camera;
         var ifCamera = config.ifCamera || false;

@@ -4,6 +4,8 @@
 
 (function(){
 
+    var Mods = App.mods;
+
     var ImageCaptureCls = Ext.extend( Ext.Component, {
         style: {
             overflow: 'hidden'
@@ -16,17 +18,15 @@
 
             this.addListener( 'click', function(){
 
-                var that = this;
-
                 that.imgInitialized = false;
 
                 Ext.Msg.confirm( "选择图片", "是否拍照上传?", function( result ){
 
-                    var ifCamera = result === 'yes' ? true : false;
+                    var ifCamera = !!(result === 'yes');
 
-                    alert( that.ifData );
+//                    alert( that.ifData );
 
-                    Ext.MODS.getPicture({
+                    Mods.getPicture({
                         ifCamera: ifCamera,
                         ifData: that.ifData,
                         quality: 50,
@@ -112,7 +112,7 @@
          */
         getImage: function(){
 
-            return this.imageUrl;
+            return this.imageUrl || '';
         }
     });
 
