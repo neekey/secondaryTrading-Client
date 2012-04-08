@@ -49,6 +49,12 @@
             }
         },
 
+        /**
+         * 登陆
+         * @param email
+         * @param password
+         * @param next ( ifLogin )
+         */
         login: function( email, password, next ){
 
             var values = {
@@ -86,6 +92,33 @@
                                 next( false );
                             } );
                         }
+                    }
+                }
+            }, true );
+        },
+
+        /**
+         * 注销
+         * @param next （ ifLogout )
+         */
+        logout: function ( next ){
+
+            Mods.request.jsonp({
+                type: 'LOGOUT',
+                callback: function( data ){
+
+                    if( data.result ){
+
+                        Ext.Msg.alert( '注销成功', '成功注销!', function(){
+
+                            ifLogin = false;
+
+                            next( true );
+                        });
+                    }
+                    else {
+
+                        Ext.Msg.alert( '注销失败', data.error );
                     }
                 }
             }, true );

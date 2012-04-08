@@ -190,7 +190,7 @@
     Ext.reg( 'imageCapture', ImageCaptureCls );
 })();(function(){
 
-    var Request = App.mods.request;
+    var Auth = App.mods.auth;
 
     var ProfileMainCls = App.views.profileMain = Ext.extend( Ext.Panel, {
         title: '设置',
@@ -205,27 +205,15 @@
                 text: '注销',
                 handler: function(){
 
-                    Request.jsonp({
-                        type: 'LOGOUT',
-                        callback: function( data ){
-
-                            if( data.result ){
-
-                                Ext.Msg.alert( '注销成功', '成功注销!', function(){
-
-                                    Ext.redirect( 'welcome/login' );
-                                });
-                            }
-                            else {
-
-                                Ext.Msg.alert( '注销失败', data.error );
-                            }
-                        }
-                    }, true );
+                    Auth.logout(function (){
+                        Ext.redirect( 'welcome/login' );
+                    });
                 }
             }
         ]
     });
+
+
 
     Ext.reg( 'profile', ProfileMainCls );
 })();
