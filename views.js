@@ -301,6 +301,8 @@
             afterRender:function (){
 
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
+                this.newItemForm = this.query( 'newItemFrorm' )[ 0 ];
+                this.newItemLocation = this.query( 'newItemLocation' )[ 0 ];
             }
         }
     });
@@ -402,6 +404,8 @@
     Ext.reg( 'newItemImg', NewItemImgCls );
 })();
 (function(){
+    var Mods = App.mods;
+
     var NewItemLocationCls = Ext.extend( Ext.Button, {
         cls  : 'demobtn',
         flex : 1,
@@ -410,6 +414,12 @@
         text: '为商品定位',
         margin: '0 15% 0 15%',
         handler: function(){
+
+            alert( 'test!@');
+            Mods.map.getCurrentLocation(function ( result ){
+
+                alert( JSON.stringify( result ) );
+            });
 //            Map.getCurrentLatLng(function( err, latLng ){
 //
 //                console.log( latLng );

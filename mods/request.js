@@ -30,11 +30,15 @@
             var ifTimeout = false;
             var timer;
 
-            var url = APIS[ type ];
+            var url = obj.url || APIS[ type ];
 
             if( url ){
 
-                Auth.attach( data );
+                if( type !== 'GEO' ){
+                    Auth.attach( data );
+
+                }
+
 
                 // 先请求是否已经登陆
                 JSONP.request({
@@ -73,7 +77,7 @@
             var type = obj.type;
             var callback = obj.callback;
             var data = obj.data || {};
-            var url = APIS[ type ];
+            var url = obj.url || APIS[ type ];
             var method = obj.method;
 
             Ext.Ajax.request({
@@ -89,7 +93,10 @@
                         data: JSON.parse( response.responseText || '{}' )
                     };
 
-                    ifAuthAttach && Auth.parse( resObj.data );
+                    if( type !== 'GEO' ){
+                        ifAuthAttach && Auth.parse( resObj.data );
+
+                    }
 
                     if( typeof callback === 'function' ){
 
