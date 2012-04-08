@@ -15,6 +15,7 @@
          *      type: url类型（指定在config.js中定义的url)
          *      data: 附加的请求参数
          *      callback: 回调
+         *      timeout: 超时的毫秒数
          * @param {Boolean} ifAuthAttach 是否附带上认证参数
          */
         jsonp: function( obj, ifAuthAttach ){
@@ -24,6 +25,10 @@
             var type = obj.type;
             var callback = obj.callback;
             var data = obj.data || {};
+
+            var timeout = obj.timeout || 5000;
+            var ifTimeout = false;
+            var timer;
 
             var url = APIS[ type ];
 
@@ -38,14 +43,26 @@
                     params: data,
                     callback: function( data ){
 
-                        ifAuthAttach && Auth.parse( data );
+                        if( !ifTimeout ){
 
-                        if( typeof callback === 'function' ){
+                            clearTimeout( timer );
 
-                            callback( data );
+                            ifAuthAttach && Auth.parse( data );
+
+                            if( typeof callback === 'function' ){
+
+                                callback( data );
+                            }
                         }
                     }
                 });
+
+                // 用于超时检测
+                timer = setTimeout(function (){
+
+                    ifTimeout = true;
+                    callback( { result: false } );
+                }, timeout );
             }
         },
 
