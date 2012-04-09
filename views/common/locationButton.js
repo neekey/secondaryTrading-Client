@@ -1,7 +1,10 @@
 (function(){
 
-    var Mods = App.mods;
 
+    // 1. list 部分的点击响应时间
+    // 2. 默认自动查找地理位置
+    // 3. 搜索功能
+    // 4. 结果保存
     var locationButtonCls = Ext.extend( Ext.Button, {
         cls  : 'demobtn',
         flex : 1,
