@@ -42,7 +42,8 @@
 //        layout: 'fit',
         items: [
             { xtype: 'newItemForm' },
-            { xtype: 'newItemLocation' },
+//            { xtype: 'newItemLocation' },
+            { xtype: 'locationButton' },
             { xtype: 'newItemImg' }
 //            submitSellConfig
         ],
@@ -51,7 +52,7 @@
 
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
                 this.newItemForm = this.query( 'newItemFrorm' )[ 0 ];
-                this.newItemLocation = this.query( 'newItemLocation' )[ 0 ];
+//                this.newItemLocation = this.query( 'newItemLocation' )[ 0 ];
             }
         }
     });

@@ -189,9 +189,10 @@
 
     Ext.reg( 'imageCapture', ImageCaptureCls );
 })();(function(){
+
     var Mods = App.mods;
 
-    var NewItemLocationCls = Ext.extend( Ext.Button, {
+    var locationButtonCls = Ext.extend( Ext.Button, {
         cls  : 'demobtn',
         flex : 1,
         height: '50',
@@ -200,23 +201,125 @@
         margin: '0 15% 0 15%',
         handler: function(){
 
-            alert( 'test!@');
-            Mods.map.getCurrentLocation(function ( result ){
-
-                alert( JSON.stringify( result ) );
-            });
-//            Map.getCurrentLatLng(function( err, latLng ){
+//            Mods.map.getCurrentLocation(function ( result ){
 //
-//                console.log( latLng );
-//                Map.getRAR( latLng.lat, latLng.lng, function( res ){
-//
-//                    alert( JSON.stringify( res ) );
-//                });
+//                alert( JSON.stringify( result ) );
 //            });
+
+            console.log( this.overlay.show );
+
+            this.overlay.show();
+//            this.overlay.setLoading( true );
+
+//
+        },
+        listeners: {
+            afterRender: function (){
+
+                this.overlay = Ext.ComponentMgr.create({
+                    xtype: 'locationOverlay'
+                });
+
+                this.overlay.hide();
+            }
         }
     });
 
-    Ext.reg( 'newItemLocation', NewItemLocationCls );
+    Ext.reg( 'locationButton', locationButtonCls );
+
+    var locationOverlayCls = Ext.extend( Ext.Panel, {
+        floating: true,
+        draggable: true,
+        modal: true,
+        centered: true,
+        width: Ext.is.Phone ? 260 : 400,
+        height: Ext.is.Phone ? 220 : 400,
+        styleHtmlContent: true,
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                doc: 'top',
+                items: [
+                    {
+                        xtype: 'searchfield',
+                        placeHolder: 'Search',
+                        name: 'searchfield',
+                        width: '80%'
+                    },
+                    {
+                        xtype: 'spacer'
+                    },
+                    {
+                        xtype: 'button',
+                        ui: 'confirm',
+                        text: '搜索'
+                    }
+                ]
+            }
+        ],
+        items: [
+            {
+                xtype: 'locationResultList'
+            }
+        ],
+        scroll: 'vertical',
+        cls: 'htmlcontent'
+    });
+
+    Ext.reg( 'locationOverlay', locationOverlayCls );
+
+    Ext.regModel( 'LocationResult', {
+        fileds: [ 'address' ]
+    });
+
+
+    function getStore(){
+
+        return new Ext.data.Store({
+            model: 'LocationResult',
+            sorters: 'address',
+//            getGroupString : function(record) {
+//                return record.get('firstName')[0];
+//            },
+            data: [
+                { address: 'testet' },
+                { address: 'testet' },
+                { address: 'testet' }
+            ]
+        });
+    }
+
+    var locationResultListCls = Ext.extend( Ext.List, {
+
+        initComponent: function (){
+            Ext.apply( this, {
+                store: getStore()
+            });
+
+            locationResultListCls.superclass.initComponent.call( this );
+        },
+
+        itemTpl: '{address}',
+
+        refreshResult: function ( result ){
+
+            this.store.loadData( result );
+            this.refresh();
+        },
+        listeners: {
+            afterRender: function (){
+//                this.setLoading( true );
+            },
+            itemtap: function (){
+
+                console.log( arguments );
+            }
+        }
+    });
+
+    Ext.reg( 'locationResultList', locationResultListCls );
+
+
 })();
 (function(){
 
@@ -323,7 +426,8 @@
 //        layout: 'fit',
         items: [
             { xtype: 'newItemForm' },
-            { xtype: 'newItemLocation' },
+//            { xtype: 'newItemLocation' },
+            { xtype: 'locationButton' },
             { xtype: 'newItemImg' }
 //            submitSellConfig
         ],
@@ -332,7 +436,7 @@
 
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
                 this.newItemForm = this.query( 'newItemFrorm' )[ 0 ];
-                this.newItemLocation = this.query( 'newItemLocation' )[ 0 ];
+//                this.newItemLocation = this.query( 'newItemLocation' )[ 0 ];
             }
         }
     });
