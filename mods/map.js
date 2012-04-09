@@ -9,6 +9,10 @@
 
     Mods.map = {
 
+        /**
+         * 获取当前的地理位置信息
+         * @param next
+         */
         getCurrentLocation: function ( next ){
             var that = this;
 
