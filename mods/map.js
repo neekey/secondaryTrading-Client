@@ -18,12 +18,19 @@
 
             this.getCurrentLatLng( function ( err, latlng ){
 
-                alert( 'getCurrentLatLng callback' );
+//                alert( 'getCurrentLatLng callback' );
 
-                that.getRAR(latlng.lat, latlng.lng, function ( result ){
+                if( err ){
 
-                    next( result );
-                });
+                    alert( 'getCurrentLatLng ERROR:' + JSON.stringify( err ) );
+                }
+                else {
+                    that.getRAR(latlng.lat, latlng.lng, function ( result ){
+
+                        next( result );
+                    });
+                }
+
             });
         },
 
@@ -32,7 +39,7 @@
          */
         getCurrentLatLng: function( next ){
 
-            alert( 'getCurrentLatLng' );
+//            alert( 'getCurrentLatLng' );
             navigator.geolocation.getCurrentPosition(function(position) {
 
                 var coords = position.coords;
@@ -52,7 +59,7 @@
          */
         getRAR:function( lat, lng, next ){
 
-            alert( 'getRAR' );
+//            alert( 'getRAR' );
             var Request = Mods.request;
             var that = this;
             var url = APIS[ 'GEO' ];
@@ -64,7 +71,7 @@
                 callback: function( res ){
 
 //                    res = res.data;
-                    alert( 'getRAR callback' );
+//                    alert( 'getRAR callback' );
                     next( that.resultHandle( res.data ) );
                 }
             });
@@ -74,6 +81,7 @@
          * 地址解析
          * Address Resolution
          * @param {String} address 地址
+         * //todo 比如"浙江工业大学“这样的地址无法得到搜索结果的问题
          */
         getAR: function ( address, next ){
 
@@ -82,13 +90,15 @@
             var url = APIS[ 'GEO' ];
 
             alert( 'getAR' );
+            alert( 'url:' +url + '?address=' + encodeURIComponent( address ) + '&sensor=true&t=' + Date.now() );
             Request.send({
-                url: url + '?address=' + encodeURIComponent( address ) + '&sensor=true&t=' + Date.now(),
+                url: url + '?address=' + address + '&sensor=true&t=' + Date.now(),
                 method: 'POST',
                 type: 'GEO',
                 callback: function( res ){
 
                     alert( 'getAR cb' );
+                    alert( JSON.stringify( res ) );
                     next( that.resultHandle( res.data ) );
                 }
             });
@@ -98,8 +108,24 @@
          * 对数据进行预处理
          * @param data
          * @return {Object}
+         * //todo 对结果进行重构   应该将多个result成员都呈现出来
          */
         resultHandle: function ( data ){
+
+            if( !data ){
+                data = {};
+            }
+
+            if( !data.results ){
+
+                data.results = [{
+                    address_components: [],
+                    formatted_address: '',
+                    geometry: {
+                        location: {}
+                    }
+                }];
+            }
 
             var result = {
                 addressConponent: data.results[ 0 ].address_components,
