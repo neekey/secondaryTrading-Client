@@ -26,10 +26,6 @@
                 xtype: 'textfield',
                 name: 'price',
                 label: '价格'
-            },
-            {
-                xtype: 'hiddenfield',
-                name : 'location'
             }
         ],
         listeners : {
