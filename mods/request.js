@@ -80,31 +80,39 @@
             var url = obj.url || APIS[ type ];
             var method = obj.method;
 
-            Ext.Ajax.request({
-                url: url,
-                params: data,
-                method: method,
-                callback: function( options, success, response ){
+            if( url ){
 
-                    var resObj = {
-                        result: success,
-                        type: type,
-                        error: response,
-                        data: JSON.parse( response.responseText || '{}' )
-                    };
+                if( type !== 'GEO' ){
+                    Auth.attach( data );
 
-                    if( type !== 'GEO' ){
-                        ifAuthAttach && Auth.parse( resObj.data );
+                }
 
-                    }
+                Ext.Ajax.request({
+                    url: url,
+                    params: data,
+                    method: method,
+                    callback: function( options, success, response ){
 
-                    if( typeof callback === 'function' ){
+                        var resObj = {
+                            result: success,
+                            type: type,
+                            error: response,
+                            data: JSON.parse( response.responseText || '{}' )
+                        };
 
-                        callback( resObj );
-                    }
-                },
-                disableCaching: false
-            });
+                        if( type !== 'GEO' ){
+                            ifAuthAttach && Auth.parse( resObj.data );
+
+                        }
+
+                        if( typeof callback === 'function' ){
+
+                            callback( resObj );
+                        }
+                    },
+                    disableCaching: false
+                });
+            }
         }
     }
 })();

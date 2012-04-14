@@ -25,6 +25,7 @@
         SESSION: {
             ID_NAME: 'secondary_trading_session_id',
             RES_SESSION_FIELD_NAME: 'secondary_trading_session'
-        }
+        },
+        IF_DEVICE: IF_DEVICE
     };
 })();

@@ -1,5 +1,8 @@
 (function(){
 
+    var Mods = App.mods;
+    var Config = App.config;
+
     var NewItemCls = Ext.extend( Ext.Panel, {
 
         initComponent: function (){
@@ -28,7 +31,12 @@
                                 align: 'end',
                                 handler: function (){
 
-                                    var pics = that.newItemImg.getImageUrl();
+                                    // 若为在浏览器中调试，则使用测试数据
+                                    var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
+                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
+                                    ];
+
                                     var location = that.newItemLocation.getLocation();
                                     var formData = that.newItemForm.getValues();
 
@@ -37,10 +45,29 @@
                                     var errors = model.validate();
                                     var message = "";
 
-                                    console.log( data );
+//                                    console.log( data );
                                     if( errors.isValid() ){
 
-                                        console.log( 'valid' );
+                                        Mods.request.send({
+                                            method: 'post',
+                                            data: data,
+                                            type: 'NEW_ITEM',
+                                            callback: function ( d ){
+
+                                                var resData = d.data;
+                                                var result = resData.result;
+                                                var itemId;
+                                                console.log( 'response',d );
+
+                                                if( result ){
+                                                    itemId = resData.data.itemId;
+                                                    Ext.Msg.alert( '商品添加成功' );
+                                                }
+                                                else {
+                                                    Ext.Msg.alert( '商品添加失败！', resData.error );
+                                                }
+                                            }
+                                        }, true );
                                     }
                                     else {
                                         Ext.each( errors.items, function( rec, i ){
