@@ -7,6 +7,7 @@
             {type: 'presence', name: 'title',message:"商品标题不能为空"},
             {type: 'presence', name: 'desc',message:"描述不能为空"},
 //            {type: 'presence', name: 'latlng', message : "位置不能为空"},
+            //todo 价格的格式还是数据类型添加验证
             {type: 'presence', name: 'price', message : "价格不能为空"}
         ]
     });
