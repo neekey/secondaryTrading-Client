@@ -76,6 +76,7 @@
                 this.VSellMain = this.VMain.query( 'sell' )[ 0 ];
                 this.VSellMenu = this.VSellMain.query( 'sellMenu' )[ 0 ];
                 this.VSellNewItem = this.VSellMain.query( 'newItem' )[ 0 ];
+                this.VSellItemDetail = this.VSellMain.query( 'itemDetail' )[ 0 ];
 
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
@@ -90,6 +91,13 @@
             this.index();
 
             this.VSellMain.setActiveItem( this.VSellNewItem );
+        },
+
+        itemDetail: function (){
+
+            this.index();
+
+            this.VSellMain.setActiveItem( this.VSellItemDetail );
         },
 
         menu: function (){

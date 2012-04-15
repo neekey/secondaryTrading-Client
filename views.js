@@ -569,7 +569,11 @@
             },
             {
                 ui  : 'action',
-                text: '出售中的商品'
+                text: '出售中的商品',
+                handler: function (){
+
+                    Ext.redirect( 'sell/itemDetail' );
+                }
             }
         ],
         dockedItems: [
@@ -593,6 +597,9 @@
             },
             {
                 xtype: 'newItem'
+            },
+            {
+                xtype: 'itemDetail'
             }
         ]
     });
@@ -897,4 +904,461 @@
     });
 
     Ext.reg( 'welcome', welcomeCls );
+})();
+(function(){
+
+    var Mods = App.mods;
+    var Config = App.config;
+
+    var ItemDetailCls = Ext.extend( Ext.Panel, {
+
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '商品详情',
+                        items: [
+                            {
+                                text: '返回',
+                                ui: 'back',
+                                handler: function() {
+                                    Ext.redirect( 'main/sell' );
+                                }
+                            },
+                            { xtype: 'spacer' },
+                            {
+                                text: '购买',
+                                ui: 'confirm',
+                                align: 'end',
+                                handler: function (){
+
+                                    // 若为在浏览器中调试，则使用测试数据
+                                    var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
+                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
+                                    ];
+
+                                    var location = that.newItemLocation.getLocation();
+                                    var formData = that.newItemForm.getValues();
+
+                                    var data = that.itemDataHandle( formData, location, pics );
+                                    var model = Ext.ModelMgr.create( data, 'Item' );
+                                    var errors = model.validate();
+                                    var message = "";
+
+//                                    console.log( data );
+                                    if( errors.isValid() ){
+
+                                        Mods.request.send({
+                                            method: 'post',
+                                            data: data,
+                                            type: 'NEW_ITEM',
+                                            callback: function ( d ){
+
+                                                var resData = d.data;
+                                                var result = resData.result;
+                                                var itemId;
+                                                console.log( 'response',d );
+
+                                                if( result ){
+                                                    itemId = resData.data.itemId;
+                                                    Ext.Msg.alert( '商品添加成功' );
+                                                }
+                                                else {
+                                                    Ext.Msg.alert( '商品添加失败！', resData.error );
+                                                }
+                                            }
+                                        }, true );
+                                    }
+                                    else {
+                                        Ext.each( errors.items, function( rec, i ){
+
+                                            message += rec.message+"<br>";
+                                        });
+
+                                        Ext.Msg.alert( "表单有误：", message );
+
+                                        return false;
+                                    }
+
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            ItemDetailCls.superclass.initComponent.call( this );
+        },
+
+        layout: 'auto',
+        // 使得超过屏幕方向的内容可以被滑动看到
+        scroll: 'vertical',
+        items: [
+            { xtype: 'picSlide' }
+        ],
+        listeners: {
+            afterRender:function (){
+
+                this.picSlide = this.query( 'picSlide' )[ 0 ];
+            },
+            resize: function (){
+
+                console.log( 'itemDetail resize' );
+            },
+            bodyresize: function (){
+                console.log( 'itemDetail bodyresize' );
+
+            },
+            // 当窗口尺寸改变
+            afterlayout: function (){
+
+//                this.picSlide.doLayout();
+//                this.picSlide.onResize();
+//                this.picSlide.resizePicWraps();
+            }
+        },
+
+        itemDataHandle: function ( formData, location, pics ){
+        }
+    });
+
+    Ext.reg( 'itemDetail', ItemDetailCls );
+})();
+(function(){
+
+    var PicSlideCls = Ext.extend( Ext.Carousel, {
+        height: 300,
+//        width: '100%', 若添加了该属性，将导致组件在初始化时安装当时的100%计算，此后该width作为固定式使用，不会根据窗口变化而变化
+        picWraps: [],
+        indicator: true,
+        flex: 1,
+        defaults: {
+            html: '<div class="slide-pic-item"><img src="http://dummyimage.com/400x600/985236/fff.png"></div>',
+            picMargin: 10,
+            listeners: {
+                afterrender: function (){
+
+                    this.picWrap = this.body.child( '.slide-pic-item' );
+                    this.pic = this.picWrap.child( 'img' );
+
+                    this.picSlide.picWraps.push( this.picWrap );
+
+                    this.resizePicWrap();
+                },
+
+                afterlayout: function (){
+
+                    this.resizePicWrap();
+                }
+            },
+
+            /**
+             * 更新 slide-pic-item 宽高 并设置 img的宽高
+             */
+            resizePicWrap: function (){
+
+                var newWidth = this.picSlide.el.getWidth();
+                var newHeight = this.picSlide.el.getHeight();
+                var imgHeight = newWidth > newHeight ? newHeight - this.picMargin  - 30 + 'px' : 'auto';
+                var imgWidth = newWidth > newHeight ? 'auto' : newWidth - this.picMargin + 'px';
+
+                debugger;
+                this.picWrap.setWidth( newWidth );
+                this.picWrap.setHeight( newHeight );
+
+                this.pic.setStyle({
+                    'width': imgWidth,
+                    'height': imgHeight
+                });
+            }
+        },
+        items: [
+            {},{},{}
+        ],
+        listeners: {
+            afterrender: function (){
+
+                var that = this;
+
+                this.items.each( function ( item ){
+
+                    item.picSlide = that;
+                });
+
+                this.addListener( 'resize', function (){
+
+                    console.log( 'reresize' );
+                });
+
+
+            }
+        },
+
+        resizePicWraps: function ( width, height ){
+
+            this.items.each( function ( item ){
+
+                item.resizePicWrap();
+            });
+        }
+
+    });
+
+    Ext.reg( 'picSlide', PicSlideCls );
+})();(function(){
+
+    var Mods = App.mods;
+    var Config = App.config;
+
+    var NewItemCls = Ext.extend( Ext.Panel, {
+
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '新商品',
+                        items: [
+                            {
+                                text: '返回',
+                                ui: 'back',
+                                handler: function() {
+                                    Ext.redirect( 'main/sell' );
+                                }
+                            },
+                            { xtype: 'spacer' },
+                            {
+                                text: '发布',
+                                ui: 'confirm',
+                                align: 'end',
+                                handler: function (){
+
+                                    // 若为在浏览器中调试，则使用测试数据
+                                    var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
+                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
+                                    ];
+
+                                    var location = that.newItemLocation.getLocation();
+                                    var formData = that.newItemForm.getValues();
+
+                                    var data = that.itemDataHandle( formData, location, pics );
+                                    var model = Ext.ModelMgr.create( data, 'Item' );
+                                    var errors = model.validate();
+                                    var message = "";
+
+//                                    console.log( data );
+                                    if( errors.isValid() ){
+
+                                        Mods.request.send({
+                                            method: 'post',
+                                            data: data,
+                                            type: 'NEW_ITEM',
+                                            callback: function ( d ){
+
+                                                var resData = d.data;
+                                                var result = resData.result;
+                                                var itemId;
+                                                console.log( 'response',d );
+
+                                                if( result ){
+                                                    itemId = resData.data.itemId;
+                                                    Ext.Msg.alert( '商品添加成功' );
+                                                }
+                                                else {
+                                                    Ext.Msg.alert( '商品添加失败！', resData.error );
+                                                }
+                                            }
+                                        }, true );
+                                    }
+                                    else {
+                                        Ext.each( errors.items, function( rec, i ){
+
+                                            message += rec.message+"<br>";
+                                        });
+
+                                        Ext.Msg.alert( "表单有误：", message );
+
+                                        return false;
+                                    }
+
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            NewItemCls.superclass.initComponent.call( this );
+        },
+
+        layout: 'auto',
+        // 使得超过屏幕方向的内容可以被滑动看到
+        scroll: 'vertical',
+        items: [
+            { xtype: 'newItemForm' },
+//            { xtype: 'newItemLocation' },
+            { xtype: 'locationButton' },
+            { xtype: 'newItemImg' }
+//            submitSellConfig
+        ],
+        listeners: {
+            afterRender:function (){
+
+                this.newItemImg = this.query( 'newItemImg' )[ 0 ];
+                this.newItemForm = this.query( 'newItemForm' )[ 0 ];
+                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
+            }
+        },
+
+        itemDataHandle: function ( formData, location, pics ){
+
+            var data = {
+                title: formData.title,
+                desc: formData.desc,
+                price: formData.price,
+                latlng: location.latlng,
+                address: location.address,
+                pic1: pics[ 0 ],
+                pic2: pics[ 1 ],
+                pic3: pics[ 2 ]
+            };
+
+            return data;
+        }
+    });
+
+    Ext.reg( 'newItem', NewItemCls );
+})();
+(function(){
+
+    var NewItemFormCls = Ext.extend( Ext.form.FormPanel, {
+//        scroll: 'vertical',
+        title: '商品简介',
+        id: 'new-item',
+        defaults: {
+            required: true,
+            labelAlign: 'left',
+            labelWidth: '40%',
+            useClearIcon: true,
+            autoCapitalize : false
+        },
+        items: [
+            {
+                xtype: 'textfield',
+                name : 'title',
+                label: '标题'
+            },
+            {
+                xtype: 'textareafield',
+                name : 'desc',
+                label: '商品表述'
+            },
+            {
+                xtype: 'textfield',
+                name: 'price',
+                label: '价格'
+            }
+        ],
+        listeners : {
+            submit : function(form, result){
+                console.log('success', Ext.toArray(arguments));
+            },
+            exception : function(form, result){
+                console.log('failure', Ext.toArray(arguments));
+            }
+        }
+    });
+
+    Ext.reg( 'newItemForm', NewItemFormCls );
+})();
+(function(){
+
+    var NewItemImgCls = Ext.extend( Ext.Panel, {
+        xtype: 'panel',
+        layout: 'hbox',
+        cls: 'new-item-imgs',
+        height: 150,
+        defaults: {
+            xtype: 'imageCapture',
+            height: 100,
+            width: '30%',
+            margin: '0 5.2% 0 5.2%',
+            style: {
+                background: 'red'
+            },
+            ifData: true
+        },
+        items: [
+            {},{},{}
+        ],
+        listeners: {
+            afterRender: function (){
+//                picInstance = this;
+                this.imageCaptures = this.query( 'imageCapture' );
+            }
+        },
+
+        /**
+         * 获取图像的base64 uri
+         * @return {Array}
+         */
+        getImageUrl: function (){
+
+            var urls = [];
+            var index;
+            var image;
+
+            for( index = 0; image = this.imageCaptures[ index ]; index++ ){
+
+                urls.push( image.getImage() );
+            }
+
+            return urls;
+        }
+    });
+
+    Ext.reg( 'newItemImg', NewItemImgCls );
+})();
+(function(){
+    var Mods = App.mods;
+
+    var NewItemLocationCls = Ext.extend( Ext.Button, {
+        cls  : 'demobtn',
+        flex : 1,
+        height: '50',
+        ui  : 'decline',
+        text: '为商品定位',
+        margin: '0 15% 0 15%',
+        handler: function(){
+
+            alert( 'test!@');
+            Mods.map.getCurrentLocation(function ( result ){
+
+                alert( JSON.stringify( result ) );
+            });
+//            Map.getCurrentLatLng(function( err, latLng ){
+//
+//                console.log( latLng );
+//                Map.getRAR( latLng.lat, latLng.lng, function( res ){
+//
+//                    alert( JSON.stringify( res ) );
+//                });
+//            });
+        }
+    });
+
+    Ext.reg( 'newItemLocation', NewItemLocationCls );
 })();

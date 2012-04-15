@@ -12,6 +12,9 @@
             },
             {
                 xtype: 'newItem'
+            },
+            {
+                xtype: 'itemDetail'
             }
         ]
     });
