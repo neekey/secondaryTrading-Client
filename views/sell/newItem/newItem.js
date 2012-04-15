@@ -90,7 +90,9 @@
             NewItemCls.superclass.initComponent.call( this );
         },
 
-//        layout: 'fit',
+        layout: 'auto',
+        // 使得超过屏幕方向的内容可以被滑动看到
+        scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
 //            { xtype: 'newItemLocation' },
