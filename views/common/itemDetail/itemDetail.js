@@ -94,7 +94,33 @@
         // 使得超过屏幕方向的内容可以被滑动看到
         scroll: 'vertical',
         items: [
-            { xtype: 'picSlide' }
+            { xtype: 'picSlide' },
+            {
+                // todo 添加内容的动态设置方法
+                xtype: 'panel',
+
+                style: {
+                    margin: '5%'
+                },
+                listeners: {
+                    afterrender: function (){
+
+                        this.tpl = new Ext.Template( Ext.get( 'item-detail-tpl').getHTML() );
+                        this.tpl.append( this.body, {
+                            title: '标题',
+                            desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
+                            price: '9999',
+                            location: '浙江工业大学',
+                            sellerName: 'Neekey',
+                            date: '2011-01-02',
+                            email: 'ni@gmail.com',
+                            QQ: '1987987979',
+                            wangwang: '9879790'
+                        });
+
+                    }
+                }
+            }
         ],
         listeners: {
             afterRender:function (){

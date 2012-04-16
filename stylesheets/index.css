@@ -1,3 +1,6 @@
+
+/*item details*/
+
 .slide-pic-item {
 
     /*非IE的主流浏览器识别的垂直居中的方法*/
@@ -23,4 +26,58 @@
     vertical-align:middle;
     max-width: 100%;
     max-height: 100%;
+}
+
+#item-detail-info p {
+
+    margin-bottom: 10px;
+}
+
+#item-detail-info .item-brief {
+
+    background: #ffffff;
+    padding: 4%;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+
+}
+
+#item-detail-info .item-brief .title {
+
+    font-size: 120%;
+}
+#item-detail-info .item-brief .desc {
+
+    margin-top: 10px;
+    color: #666666;
+}
+
+#item-detail-info .item-info {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #666;
+}
+#item-detail-info .item-info p {
+
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #c2c2c2;
+}
+#item-detail-info .item-info .date {
+
+    border-bottom: none;
+}
+
+#item-detail-info .item-info .price span {
+
+    font-size: 120%;
+    color: #f60;
+}
+
+#item-detail-info .seller-info {
+
+    /*background: #919191;*/
+    /*padding: 5%;*/
+    /*border-radius: 5px;*/
+    /*color: #ddd;*/
+    padding-bottom: 20px;
 }

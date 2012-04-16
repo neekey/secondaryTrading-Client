@@ -1,6 +1,8 @@
 (function(){
 
     var PicSlideCls = Ext.extend( Ext.Carousel, {
+
+        // todo 添加动态设置item的方法
         height: 300,
 //        width: '100%', 若添加了该属性，将导致组件在初始化时安装当时的100%计算，此后该width作为固定式使用，不会根据窗口变化而变化
         picWraps: [],
