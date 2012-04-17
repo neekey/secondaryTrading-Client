@@ -938,55 +938,6 @@
                                 align: 'end',
                                 handler: function (){
 
-                                    // 若为在浏览器中调试，则使用测试数据
-                                    var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
-                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
-                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
-                                    ];
-
-                                    var location = that.newItemLocation.getLocation();
-                                    var formData = that.newItemForm.getValues();
-
-                                    var data = that.itemDataHandle( formData, location, pics );
-                                    var model = Ext.ModelMgr.create( data, 'Item' );
-                                    var errors = model.validate();
-                                    var message = "";
-
-//                                    console.log( data );
-                                    if( errors.isValid() ){
-
-                                        Mods.request.send({
-                                            method: 'post',
-                                            data: data,
-                                            type: 'NEW_ITEM',
-                                            callback: function ( d ){
-
-                                                var resData = d.data;
-                                                var result = resData.result;
-                                                var itemId;
-                                                console.log( 'response',d );
-
-                                                if( result ){
-                                                    itemId = resData.data.itemId;
-                                                    Ext.Msg.alert( '商品添加成功' );
-                                                }
-                                                else {
-                                                    Ext.Msg.alert( '商品添加失败！', resData.error );
-                                                }
-                                            }
-                                        }, true );
-                                    }
-                                    else {
-                                        Ext.each( errors.items, function( rec, i ){
-
-                                            message += rec.message+"<br>";
-                                        });
-
-                                        Ext.Msg.alert( "表单有误：", message );
-
-                                        return false;
-                                    }
-
                                 }
                             }
                         ]
@@ -1001,38 +952,41 @@
         // 使得超过屏幕方向的内容可以被滑动看到
         scroll: 'vertical',
         items: [
-            { xtype: 'picSlide' },
             {
-                // todo 添加内容的动态设置方法
-                xtype: 'panel',
-
-                style: {
-                    margin: '5%'
-                },
-                listeners: {
-                    afterrender: function (){
-
-                        this.tpl = new Ext.Template( Ext.get( 'item-detail-tpl').getHTML() );
-                        this.tpl.append( this.body, {
-                            title: '标题',
-                            desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
-                            price: '9999',
-                            location: '浙江工业大学',
-                            sellerName: 'Neekey',
-                            date: '2011-01-02',
-                            email: 'ni@gmail.com',
-                            QQ: '1987987979',
-                            wangwang: '9879790'
-                        });
-
-                    }
-                }
+                xtype: 'picSlide'
+            },
+            {
+                xtype: 'itemTextInfo'
             }
         ],
         listeners: {
             afterRender:function (){
 
+                var that = this;
                 this.picSlide = this.query( 'picSlide' )[ 0 ];
+                this.itemTextInfo = this.query( 'itemTextInfo' )[ 0 ];
+
+                // 下面仅为测试
+                // 由于在此时 自组件的afterrender事件都还未被出发，因此直接设置会有问题
+                setTimeout( function (){
+                    that.setItemTextInfo( {
+                        title: '标题',
+                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
+                        price: '9999',
+                        location: '浙江工业大学',
+                        sellerName: 'Neekey',
+                        date: '2011-01-02',
+                        email: 'ni@gmail.com',
+                        QQ: '1987987979',
+                        wangwang: '9879790'
+                    });
+
+                    that.setPics( [
+                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
+//                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
+                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
+                    ]);
+                }, 1000 ) ;
             },
             resize: function (){
 
@@ -1045,17 +999,69 @@
             // 当窗口尺寸改变
             afterlayout: function (){
 
-//                this.picSlide.doLayout();
-//                this.picSlide.onResize();
-//                this.picSlide.resizePicWraps();
             }
         },
 
         itemDataHandle: function ( formData, location, pics ){
+        },
+
+        /**
+         * 设置图片
+         * @param pics
+         */
+        setPics: function ( pics ){
+
+            this.picSlide.setPics( pics );
+        },
+
+        /**
+         * 设置商品的其他信息
+         * @param obj
+         */
+        setItemTextInfo: function ( obj ){
+
+            this.itemTextInfo.setInfo( obj );
         }
     });
 
     Ext.reg( 'itemDetail', ItemDetailCls );
+})();
+(function(){
+
+    var ItemTextInfoCls = Ext.extend( Ext.Panel, {
+        // todo 添加内容的动态设置方法
+        style: {
+            margin: '5%'
+        },
+        itemTextInfo: {
+            title: '',
+            desc: '',
+            price: '',
+            location: '',
+            sellerName: '',
+            date: '',
+            email: '',
+            QQ: '',
+            wangwang: ''
+        },
+        listeners: {
+            afterrender: function (){
+
+
+                this.tpl = new Ext.Template( Ext.get( 'item-detail-tpl').getHTML() );
+                this.setInfo();
+            }
+        },
+
+        setInfo: function ( info ){
+
+            this.itemTextInfo = info || this.itemTextInfo || {};
+            this.tpl.overwrite( this.body, this.itemTextInfo );
+
+        }
+    }) ;
+
+    Ext.reg( 'itemTextInfo', ItemTextInfoCls );
 })();
 (function(){
 
@@ -1067,65 +1073,30 @@
         picWraps: [],
         indicator: true,
         flex: 1,
+        pics: [],
         defaults: {
-            html: '<div class="slide-pic-item"><img src="http://dummyimage.com/400x600/985236/fff.png"></div>',
-            picMargin: 10,
-            listeners: {
-                afterrender: function (){
-
-                    this.picWrap = this.body.child( '.slide-pic-item' );
-                    this.pic = this.picWrap.child( 'img' );
-
-                    this.picSlide.picWraps.push( this.picWrap );
-
-                    this.resizePicWrap();
-                },
-
-                afterlayout: function (){
-
-                    this.resizePicWrap();
-                }
-            },
-
-            /**
-             * 更新 slide-pic-item 宽高 并设置 img的宽高
-             */
-            resizePicWrap: function (){
-
-                var newWidth = this.picSlide.el.getWidth();
-                var newHeight = this.picSlide.el.getHeight();
-                var imgHeight = newWidth > newHeight ? newHeight - this.picMargin  - 30 + 'px' : 'auto';
-                var imgWidth = newWidth > newHeight ? 'auto' : newWidth - this.picMargin + 'px';
-
-                debugger;
-                this.picWrap.setWidth( newWidth );
-                this.picWrap.setHeight( newHeight );
-
-                this.pic.setStyle({
-                    'width': imgWidth,
-                    'height': imgHeight
-                });
-            }
+//            xtype: 'picSlideItem'
         },
         items: [
-            {},{},{}
+//            {},{},{}
         ],
         listeners: {
             afterrender: function (){
 
                 var that = this;
 
-                this.items.each( function ( item ){
+//                this.items.each( function ( item, index ){
+//
+//                    item.setPicSlide( that );
+//                    item.picUrl = that.pics[ index ];
+//                });
 
-                    item.picSlide = that;
-                });
+                this.setPics( this.pics );
 
                 this.addListener( 'resize', function (){
 
                     console.log( 'reresize' );
                 });
-
-
             }
         },
 
@@ -1135,11 +1106,97 @@
 
                 item.resizePicWrap();
             });
+        },
+
+        setPics: function ( pics ){
+
+            this.pics = pics;
+            this.removeAll();
+
+            var pic;
+            var i;
+
+            for( i = 0; pic = pics[ i ]; i++ ){
+
+                this.insert( i, Ext.ComponentMgr.create({
+                    xtype: 'picSlideItem',
+                    picUrl: pic,
+                    picSlide: this
+                } ));
+            }
+
+            // 否则图片显示不出来
+            this.doLayout();
+        }
+
+    });
+
+    var PicItemCls = Ext.extend( Ext.Panel, {
+
+        html: '<div class="slide-pic-item"><img src=""></div>',
+        picMargin: 10,
+        listeners: {
+            afterrender: function (){
+
+                this.picWrap = this.body.child( '.slide-pic-item' );
+                this.pic = this.picWrap.child( 'img' );
+
+                this.picSlide.picWraps.push( this.picWrap );
+                this.setImg( this.picUrl );
+
+                this.resizePicWrap();
+            },
+
+            afterlayout: function (){
+
+                this.resizePicWrap();
+            }
+        },
+
+        setImg: function ( url ){
+
+            if( url ){
+                this.pic.set({
+                    src: url
+                });
+
+                this.picUrl = url;
+            }
+            else {
+
+                this.hide();
+            }
+
+        },
+
+        setPicSlide: function ( picSlide ){
+
+            this.picSlide = picSlide;
+        },
+
+        /**
+         * 更新 slide-pic-item 宽高 并设置 img的宽高
+         */
+        resizePicWrap: function (){
+
+            var newWidth = this.picSlide.el.getWidth();
+            var newHeight = this.picSlide.el.getHeight();
+            var imgHeight = newWidth > newHeight ? newHeight - this.picMargin  - 30 + 'px' : 'auto';
+            var imgWidth = newWidth > newHeight ? 'auto' : newWidth - this.picMargin + 'px';
+
+            this.picWrap.setWidth( newWidth );
+            this.picWrap.setHeight( newHeight );
+
+            this.pic.setStyle({
+                'max-width': imgWidth,
+                'max-height': imgHeight
+            });
         }
 
     });
 
     Ext.reg( 'picSlide', PicSlideCls );
+    Ext.reg( 'picSlideItem', PicItemCls );
 })();(function(){
 
     var Mods = App.mods;
