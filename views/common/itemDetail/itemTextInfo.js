@@ -28,7 +28,7 @@
         setInfo: function ( info ){
 
             this.itemTextInfo = info || this.itemTextInfo || {};
-            this.tpl.overwrite( this.body, this.itemTextInfo );
+            this.tpl && this.tpl.overwrite( this.body, this.itemTextInfo );
 
         }
     }) ;
