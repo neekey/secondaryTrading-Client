@@ -7,6 +7,7 @@
     var ResultItemCls = Ext.extend( Ext.Panel, {
 
         height: ITEM_HEIGHT,
+        margin: '20px 0 0 0',
         initComponent: function (){
 
             var that = this;

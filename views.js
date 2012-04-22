@@ -945,30 +945,44 @@
                             }
                         ]
                     }
+                ],
+                items: [
+                    {
+                        xtype: 'resultList'
+                    },
+                    {
+                        xtype: 'button',
+                        text: '查看更多结果',
+                        style: {
+                            margin: '1% 5% 10px 5%'
+                        },
+                        handler: function (){
+
+                            that.resultList.insertItem({
+                                address: 'nihaoaijoa',
+                                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+                                title: 'dafadfa',
+                                desc: 'daffddaffda',
+                                price: '1243414'
+                            });
+
+                            that.doLayout();
+                        }
+                    }
                 ]
             });
 
             SearchCls.superclass.initComponent.call( this );
         },
 
-//        layout: 'vbox',
+        layout: 'auto',
         // 使得超过屏幕方向的内容可以被滑动看到
-        scroll: 'vertical',
-        items: [
-            {
-                xtype: 'resultList'
-            },
-            {
-                xtype: 'button',
-                text: '查看更多结果',
-                style: {
-                    margin: '1% 5% 10px 5%'
-                }
-            }
-        ],
+        scroll: false,
+
         listeners: {
             afterRender:function (){
 
+                this.resultList = this.query( 'resultList')[ 0 ];
             },
             resize: function (){
 
@@ -996,6 +1010,7 @@
     var ResultItemCls = Ext.extend( Ext.Panel, {
 
         height: ITEM_HEIGHT,
+        margin: '20px 0 0 0',
         initComponent: function (){
 
             var that = this;
@@ -1183,6 +1198,7 @@
         items: [
             {}, {}, {}
         ],
+        scroll: false,
         listeners: {
             afterRender:function (){
 
@@ -1199,6 +1215,16 @@
             afterlayout: function (){
 
             }
+        },
+
+        insertItem: function ( itemInfo ){
+
+            var items = this.items;
+
+            this.insert( items.length, {
+                xtype: 'resultItem',
+                itemInfo: itemInfo
+            })
         }
     });
 

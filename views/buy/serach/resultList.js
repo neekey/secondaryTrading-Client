@@ -28,6 +28,7 @@
         items: [
             {}, {}, {}
         ],
+        scroll: false,
         listeners: {
             afterRender:function (){
 
@@ -44,6 +45,16 @@
             afterlayout: function (){
 
             }
+        },
+
+        insertItem: function ( itemInfo ){
+
+            var items = this.items;
+
+            this.insert( items.length, {
+                xtype: 'resultItem',
+                itemInfo: itemInfo
+            })
         }
     });
 
