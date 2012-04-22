@@ -1,7 +1,7 @@
 
 /*item details*/
 
-.slide-pic-item {
+.slide-pic-item, .pic-item {
 
     /*非IE的主流浏览器识别的垂直居中的方法*/
     display: table-cell;
@@ -21,11 +21,27 @@
     height: 100%;
 }
 
-.slide-pic-item img {
+.slide-pic-item img, .pic-item img {
     /*设置图片垂直居中*/
     vertical-align:middle;
     max-width: 100%;
     max-height: 100%;
+}
+
+.result-item-text {
+    padding-left: 20px;
+}
+.result-item-text .address {
+    color: #999;
+}
+.result-item-text .price {
+    color: #f60;
+    font-size: 130%;
+    font-weight: bold;
+}
+.result-item-text .title {
+    font-size: 150%;
+    font-weight: bold;
 }
 
 #item-detail-info p {

@@ -64,7 +64,12 @@
         title: '我要买',
         iconCls: 'organize',
         cls: 'card2',
-        badgeText: '4'
+        badgeText: '4',
+        items: [
+            {
+                xtype: 'itemSearch'
+            }
+        ]
     });
 
     Ext.reg( 'buy', BuyMainCls );
@@ -906,6 +911,299 @@
     Ext.reg( 'welcome', welcomeCls );
 })();
 (function(){
+
+    var Mods = App.mods;
+    var Config = App.config;
+
+    var SearchCls = Ext.extend( Ext.Panel, {
+
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '商品搜索',
+                        items: [
+                            {
+                                xtype: 'searchfield',
+                                placeHolder: '输入你需要的商品',
+                                width: '80%'
+                            },
+                            {
+                                text: '搜索',
+                                ui: 'confirm',
+                                align: 'end',
+                                width: '15%',
+                                handler: function (){
+
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            SearchCls.superclass.initComponent.call( this );
+        },
+
+//        layout: 'vbox',
+        // 使得超过屏幕方向的内容可以被滑动看到
+        scroll: 'vertical',
+        items: [
+            {
+                xtype: 'resultList'
+            },
+            {
+                xtype: 'button',
+                text: '查看更多结果',
+                style: {
+                    margin: '1% 5% 10px 5%'
+                }
+            }
+        ],
+        listeners: {
+            afterRender:function (){
+
+            },
+            resize: function (){
+
+                console.log( 'itemDetail resize' );
+            },
+            bodyresize: function (){
+                console.log( 'itemDetail bodyresize' );
+
+            },
+            // 当窗口尺寸改变
+            afterlayout: function (){
+
+            }
+        }
+    });
+
+    Ext.reg( 'itemSearch', SearchCls );
+})();
+(function(){
+
+    var Mods = App.mods;
+    var Config = App.config;
+    var ITEM_HEIGHT = 130;
+
+    var ResultItemCls = Ext.extend( Ext.Panel, {
+
+        height: ITEM_HEIGHT,
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+
+            });
+
+            ResultItemCls.superclass.initComponent.call( this );
+        },
+
+        // 水平布局
+        layout: 'hbox',
+        // 每个item包含的信息
+        itemInfo: {
+            address: '',
+            pic: '',
+            title: '',
+            desc: '',
+            price: ''
+        },
+        // todo 解决自动按照百分比调整宽度的问题
+        items: [
+            {
+                xtype: 'resultItemPic',
+                flex: 3
+            },
+            {
+                xtype: 'resultItemText',
+                flex: 7
+            }
+        ],
+        listeners: {
+            afterRender:function (){
+
+                this.itemPic = this.query( 'resultItemPic' )[ 0 ];
+                this.itemText = this.query( 'resultItemText' )[ 0 ];
+                this.setItemInfo();
+            },
+            // 当窗口尺寸改变
+            afterlayout: function (){
+
+//                this.itemPic.doLayout();
+//                this.onResize()
+            }
+        },
+
+        // 设置item信息
+        setItemInfo: function ( info ){
+
+            this.itemInfo = info || this.itemInfo || {};
+            this.itemPic.setImg( this.itemInfo.pic );
+            this.itemText.setInfo( this.itemInfo );
+        }
+    });
+
+    Ext.reg( 'resultItem', ResultItemCls );
+
+    /**
+     * item 图片部分，水平 居中
+     * @type {*}
+     */
+    var ResultItemPicCls = Ext.extend( Ext.Panel, {
+
+        html: '<div class="pic-item"><img src=""></div>',
+        picMargin: 10,
+        height: ITEM_HEIGHT,
+        picUrl: '',
+        listeners: {
+            afterrender: function (){
+
+                this.picWrap = this.body.child( '.pic-item' );
+                this.pic = this.picWrap.child( 'img' );
+
+                this.setImg();
+
+                this.resizePicWrap();
+            },
+
+            afterlayout: function (){
+
+                this.resizePicWrap();
+            }
+        },
+
+        /**
+         * 设置图片地址
+         * @param url
+         */
+        setImg: function ( url ){
+
+            this.picUrl = url || this.picUrl || '';
+
+            this.pic && this.pic.set({
+                src: this.picUrl
+            });
+        },
+
+        /**
+         * 更新 slide-pic-item 宽高 并设置 img的宽高
+         */
+        resizePicWrap: function (){
+
+            var bodyWidth = this.body.getWidth();
+            var bodyHeight = this.body.getHeight();
+            var imgHeight = bodyWidth > bodyHeight ? bodyHeight + 'px' : 'auto';
+            var imgWidth = bodyWidth > bodyHeight ? 'auto' : bodyWidth + 'px';
+
+            this.picWrap.setHeight( bodyHeight );
+            this.picWrap.setWidth( bodyWidth );
+
+            this.pic.setStyle({
+                'max-height': imgHeight,
+                'max-width': imgWidth
+            });
+
+        }
+    });
+
+    Ext.reg( 'resultItemPic', ResultItemPicCls );
+
+    /**
+     * 商品文字描述部分
+     * @type {*}
+     */
+    var ResultItemTextCls = Ext.extend( Ext.Panel, {
+
+        // todo 添加内容的动态设置方法
+        itemTextInfo: {
+            title: '',
+            desc: '',
+            price: '',
+            address: ''
+        },
+
+        listeners: {
+            afterrender: function (){
+
+                this.tpl = new Ext.Template( Ext.get( 'result-item-text-tpl').getHTML() );
+                this.setInfo();
+            }
+        },
+
+        /**
+         * 设置文字
+         * @param info
+         */
+        setInfo: function ( info ){
+
+            this.itemTextInfo = info || this.itemTextInfo || {};
+            this.tpl && this.tpl.overwrite( this.body, this.itemTextInfo );
+
+        }
+    });
+
+    Ext.reg( 'resultItemText', ResultItemTextCls );
+})();
+(function(){
+
+    var Mods = App.mods;
+    var Config = App.config;
+
+    var ResultListCls = Ext.extend( Ext.Panel, {
+
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+            });
+
+            ResultListCls.superclass.initComponent.call( this );
+        },
+
+        defaults: {
+            xtype: 'resultItem',
+            itemInfo: {
+                address: 'nihaoaijoa',
+                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+                title: 'dafadfa',
+                desc: 'daffddaffda',
+                price: '1243414'
+            }
+        },
+        items: [
+            {}, {}, {}
+        ],
+        listeners: {
+            afterRender:function (){
+
+            },
+            resize: function (){
+
+                console.log( 'itemDetail resize' );
+            },
+            bodyresize: function (){
+                console.log( 'itemDetail bodyresize' );
+
+            },
+            // 当窗口尺寸改变
+            afterlayout: function (){
+
+            }
+        }
+    });
+
+    Ext.reg( 'resultList', ResultListCls );
+})();(function(){
 
     var Mods = App.mods;
     var Config = App.config;
