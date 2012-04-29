@@ -29,6 +29,46 @@
                                 width: '15%',
                                 handler: function (){
 
+                                    var keyword = that.searchField.getValue();
+                                    var data = undefined;
+
+                                    if( keyword ){
+
+                                        data = {
+                                            query: 'this.title.indexOf("' + keyword + '") >= 0 || this.desc.indexOf("' + keyword + '")'
+                                        };
+
+                                        that.resultList.setLoading( true );
+
+                                        Mods.request.send({
+                                            method: 'get',
+                                            data: data,
+                                            type: 'QUERY_ITEM',
+                                            callback: function ( d ){
+
+                                                var resData = d.data;
+                                                var result = resData.result;
+                                                var data = resData.data;
+                                                console.log( 'response',d );
+
+                                                if( result ){
+
+                                                    that.resultList.removeAll();
+                                                    that.resultList.insertItem( data.items );
+                                                    that.doLayout();
+                                                    that.resultList.setLoading( false );
+                                                }
+                                                else {
+                                                    Ext.Msg.alert( '商品搜索失败！', resData.error );
+                                                }
+                                            }
+                                        }, true );
+                                    }
+                                    else {
+
+                                        Ext.Msg.alert( '关键词不能为空!' );
+                                    }
+
                                 }
                             }
                         ]
@@ -71,6 +111,8 @@
             afterRender:function (){
 
                 this.resultList = this.query( 'resultList')[ 0 ];
+                this.searchField = this.query( 'searchfield' )[ 0 ];
+
             },
             resize: function (){
 

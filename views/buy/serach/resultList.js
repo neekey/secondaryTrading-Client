@@ -50,11 +50,16 @@
         insertItem: function ( itemInfo ){
 
             var items = this.items;
+            var newItems = Ext.isArray( itemInfo ) ? itemInfo : [ itemInfo ];
+            var i, item;
 
-            this.insert( items.length, {
-                xtype: 'resultItem',
-                itemInfo: itemInfo
-            })
+            for( i = 0; item = newItems[ i ]; i++ ){
+
+                this.insert( items.length, {
+                    xtype: 'resultItem',
+                    itemInfo: item
+                });
+            }
         }
     });
 
