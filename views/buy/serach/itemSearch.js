@@ -3,6 +3,8 @@
     var Mods = App.mods;
     var Config = App.config;
 
+
+    // todo 添加对结果的储存（ 根据itemid进行储存 ）
     var SearchCls = Ext.extend( Ext.Panel, {
 
         initComponent: function (){
@@ -35,7 +37,8 @@
                                     if( keyword ){
 
                                         data = {
-                                            query: 'this.title.indexOf("' + keyword + '") >= 0 || this.desc.indexOf("' + keyword + '")'
+                                            title: keyword
+//                                            desc: keyword 暂时进搜索标题
                                         };
 
                                         that.resultList.setLoading( true );
