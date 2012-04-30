@@ -21,7 +21,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'main/sell' );
+                                    Ext.redirect( 'buy/search' );
                                 }
                             },
                             { xtype: 'spacer' },
@@ -62,23 +62,23 @@
                 // 下面仅为测试
                 // 由于在此时 自组件的afterrender事件都还未被出发，因此直接设置会有问题
                 setTimeout( function (){
-                    that.setItemTextInfo( {
-                        title: '标题',
-                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
-                        price: '9999',
-                        location: '浙江工业大学',
-                        sellerName: 'Neekey',
-                        date: '2011-01-02',
-                        email: 'ni@gmail.com',
-                        QQ: '1987987979',
-                        wangwang: '9879790'
-                    });
-
-                    that.setPics( [
-                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
-//                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
-                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
-                    ]);
+//                    that.setItemTextInfo( {
+//                        title: '标题',
+//                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
+//                        price: '9999',
+//                        location: '浙江工业大学',
+//                        sellerName: 'Neekey',
+//                        date: '2011-01-02',
+//                        email: 'ni@gmail.com',
+//                        QQ: '1987987979',
+//                        wangwang: '9879790'
+//                    });
+//
+//                    that.setPics( [
+//                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
+////                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
+//                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
+//                    ]);
                 }, 1000 ) ;
             },
             resize: function (){
@@ -95,7 +95,27 @@
             }
         },
 
-        itemDataHandle: function ( formData, location, pics ){
+        /**
+         * 设置当前商品详情信息
+         * @param item
+         */
+        setDetailInfo: function ( item ){
+
+            this.setPics( item.imgs );
+
+            var textInfo = {
+                title: item.title,
+                desc: item.desc,
+                price: item.price,
+                location: item.location,
+                sellerName: 'neekey',
+                date: 'hello~',
+                email: 'ni184775761@gmail.com',
+                QQ: '184775761',
+                wangwang: 'hello~'
+            };
+
+            this.setItemTextInfo( textInfo );
         },
 
         /**
@@ -105,6 +125,30 @@
         setPics: function ( pics ){
 
             this.picSlide.setPics( pics );
+        },
+
+        /**
+         * 根据商品id请求数据
+         * @param itemId
+         */
+        fetch: function ( itemId ){
+
+            var that = this;
+            this.setLoading( true );
+            Mods.itemRequest.getItemById( itemId, function ( err, item ){
+
+                if( err ){
+
+                    Ext.Msg.alert( '获取商品信息失败! ' + err );
+                }
+                else {
+
+                    that.setDetailInfo( item );
+                }
+
+                that.setLoading( false );
+            });
+
         },
 
         /**

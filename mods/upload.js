@@ -1,8 +1,9 @@
 (function(){
 
     var FILE_KEY = 'image';
+    var Mods = App.mods;
 
-    Ext.MODS.upload = {
+    Mods.upload = {
 
         /**
          * 进行图片上传

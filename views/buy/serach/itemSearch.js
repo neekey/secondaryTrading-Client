@@ -3,8 +3,6 @@
     var Mods = App.mods;
     var Config = App.config;
 
-
-    // todo 添加对结果的储存（ 根据itemid进行储存 ）
     var SearchCls = Ext.extend( Ext.Panel, {
 
         initComponent: function (){
@@ -43,29 +41,31 @@
 
                                         that.resultList.setLoading( true );
 
-                                        Mods.request.send({
-                                            method: 'get',
-                                            data: data,
-                                            type: 'QUERY_ITEM',
-                                            callback: function ( d ){
+                                        Mods.itemRequest.query( data, function ( err, data ){
 
-                                                var resData = d.data;
-                                                var result = resData.result;
-                                                var data = resData.data;
-                                                console.log( 'response',d );
+                                            if( err ){
 
-                                                if( result ){
+                                                Ext.Msg.alert( '获取商品信息出错：' + JSON.stringify( err ) );
+                                            }
+                                            else {
 
-                                                    that.resultList.removeAll();
-                                                    that.resultList.insertItem( data.items );
-                                                    that.doLayout();
-                                                    that.resultList.setLoading( false );
+                                                that.resultList.removeAll();
+                                                that.resultList.insertItem( data.items );
+                                                // 保存所有的结果ids，在获取更多结果中需要使用到
+                                                that.resultList.saveResultIds( data.ids );
+                                                that.doLayout();
+                                                that.resultList.setLoading( false );
+
+                                                // 若结果已经全部展示出来，则隐藏获取更多商品按钮
+                                                if( data.items.length >= data.ids.length ){
+
+                                                    that.getMoreResultBtn.hide();
                                                 }
                                                 else {
-                                                    Ext.Msg.alert( '商品搜索失败！', resData.error );
+                                                    that.getMoreResultBtn.show();
                                                 }
                                             }
-                                        }, true );
+                                        });
                                     }
                                     else {
 
@@ -84,21 +84,41 @@
                     {
                         xtype: 'button',
                         text: '查看更多结果',
-                        style: {
-                            margin: '1% 5% 10px 5%'
-                        },
                         handler: function (){
 
-                            that.resultList.insertItem({
-                                address: 'nihaoaijoa',
-                                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                                title: 'dafadfa',
-                                desc: 'daffddaffda',
-                                price: '1243414'
-                            });
+                            var moreIds = that.resultList.getMoreResultIds();
+                            var buttonSelf = this;
 
-                            that.doLayout();
+                            if( moreIds.length > 0  ){
+
+                                buttonSelf.setText( '数据加载中...' );
+                                buttonSelf.setDisabled( true );
+
+                                Mods.itemRequest.getItemsByIds( moreIds, function ( err, items ){
+
+                                    that.resultList.insertItem( items );
+                                    that.doLayout();
+
+                                    if( that.resultList.getMoreResultIds().length <= 0 ){
+
+                                        buttonSelf.hide();
+                                    }
+
+                                    buttonSelf.setText( '查看更多结果...' );
+                                    buttonSelf.setDisabled( false );
+
+                                });
+                            }
+                            else {
+
+                                Ext.Msg.alert( '没有更多匹配的结果' );
+                            }
                         }
+                    },
+                    {
+                        xtype: 'panel',
+                        text: 'hello',
+                        heigth: 50
                     }
                 ]
             });
@@ -108,13 +128,14 @@
 
         layout: 'auto',
         // 使得超过屏幕方向的内容可以被滑动看到
-        scroll: false,
+        scroll: 'vertical',
 
         listeners: {
             afterRender:function (){
 
                 this.resultList = this.query( 'resultList')[ 0 ];
                 this.searchField = this.query( 'searchfield' )[ 0 ];
+                this.getMoreResultBtn = this.query( 'button' )[ 0 ];
 
             },
             resize: function (){

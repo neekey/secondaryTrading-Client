@@ -6,3 +6,6 @@ cat controllers/* > controllers.js
 
 # models
 cat models/* > models.js
+
+# mods
+cat mods/* > mods.js

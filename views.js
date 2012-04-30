@@ -63,11 +63,17 @@
     var BuyMainCls = App.views.buyMain = Ext.extend( Ext.Panel, {
         title: '我要买',
         iconCls: 'organize',
+        layout: 'card',
         cls: 'card2',
         badgeText: '4',
         items: [
             {
+                // 商品搜索
                 xtype: 'itemSearch'
+            },
+            {
+                // 商品详情
+                xtype: 'itemDetail'
             }
         ]
     });
@@ -941,6 +947,49 @@
                                 width: '15%',
                                 handler: function (){
 
+                                    var keyword = that.searchField.getValue();
+                                    var data = undefined;
+
+                                    if( keyword ){
+
+                                        data = {
+                                            title: keyword
+//                                            desc: keyword 暂时进搜索标题
+                                        };
+
+                                        that.resultList.setLoading( true );
+
+                                        Mods.itemRequest.query( data, function ( err, data ){
+
+                                            if( err ){
+
+                                                Ext.Msg.alert( '获取商品信息出错：' + JSON.stringify( err ) );
+                                            }
+                                            else {
+
+                                                that.resultList.removeAll();
+                                                that.resultList.insertItem( data.items );
+                                                // 保存所有的结果ids，在获取更多结果中需要使用到
+                                                that.resultList.saveResultIds( data.ids );
+                                                that.doLayout();
+                                                that.resultList.setLoading( false );
+
+                                                // 若结果已经全部展示出来，则隐藏获取更多商品按钮
+                                                if( data.items.length >= data.ids.length ){
+
+                                                    that.getMoreResultBtn.hide();
+                                                }
+                                                else {
+                                                    that.getMoreResultBtn.show();
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+
+                                        Ext.Msg.alert( '关键词不能为空!' );
+                                    }
+
                                 }
                             }
                         ]
@@ -953,21 +1002,41 @@
                     {
                         xtype: 'button',
                         text: '查看更多结果',
-                        style: {
-                            margin: '1% 5% 10px 5%'
-                        },
                         handler: function (){
 
-                            that.resultList.insertItem({
-                                address: 'nihaoaijoa',
-                                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                                title: 'dafadfa',
-                                desc: 'daffddaffda',
-                                price: '1243414'
-                            });
+                            var moreIds = that.resultList.getMoreResultIds();
+                            var buttonSelf = this;
 
-                            that.doLayout();
+                            if( moreIds.length > 0  ){
+
+                                buttonSelf.setText( '数据加载中...' );
+                                buttonSelf.setDisabled( true );
+
+                                Mods.itemRequest.getItemsByIds( moreIds, function ( err, items ){
+
+                                    that.resultList.insertItem( items );
+                                    that.doLayout();
+
+                                    if( that.resultList.getMoreResultIds().length <= 0 ){
+
+                                        buttonSelf.hide();
+                                    }
+
+                                    buttonSelf.setText( '查看更多结果...' );
+                                    buttonSelf.setDisabled( false );
+
+                                });
+                            }
+                            else {
+
+                                Ext.Msg.alert( '没有更多匹配的结果' );
+                            }
                         }
+                    },
+                    {
+                        xtype: 'panel',
+                        text: 'hello',
+                        heigth: 50
                     }
                 ]
             });
@@ -977,12 +1046,15 @@
 
         layout: 'auto',
         // 使得超过屏幕方向的内容可以被滑动看到
-        scroll: false,
+        scroll: 'vertical',
 
         listeners: {
             afterRender:function (){
 
                 this.resultList = this.query( 'resultList')[ 0 ];
+                this.searchField = this.query( 'searchfield' )[ 0 ];
+                this.getMoreResultBtn = this.query( 'button' )[ 0 ];
+
             },
             resize: function (){
 
@@ -1030,7 +1102,8 @@
             pic: '',
             title: '',
             desc: '',
-            price: ''
+            price: '',
+            _id: ''
         },
         // todo 解决自动按照百分比调整宽度的问题
         items: [
@@ -1049,6 +1122,17 @@
                 this.itemPic = this.query( 'resultItemPic' )[ 0 ];
                 this.itemText = this.query( 'resultItemText' )[ 0 ];
                 this.setItemInfo();
+
+                var that = this;
+
+                // 添加touch事件
+                this.mon( this.el, {
+                    'tap': function (){
+
+                        console.log( that.itemInfo._id );
+                        Ext.redirect( 'itemdetail/' + that.itemInfo._id );
+                    }
+                });
             },
             // 当窗口尺寸改变
             afterlayout: function (){
@@ -1175,6 +1259,8 @@
 
     var ResultListCls = Ext.extend( Ext.Panel, {
 
+        // 清欠结果的所有id
+        resultIds: [],
         initComponent: function (){
 
             var that = this;
@@ -1196,9 +1282,10 @@
             }
         },
         items: [
-            {}, {}, {}
+//            {}, {}, {},{},{}, {}, {},{},{}, {}, {},{}
         ],
-        scroll: false,
+//        layout: 'auto',
+//        scroll: false,
         listeners: {
             afterRender:function (){
 
@@ -1217,15 +1304,46 @@
             }
         },
 
+        /**
+         * 插入结果项
+         * @param itemInfo {Object|Array} 可以插入一个或者多个
+         */
         insertItem: function ( itemInfo ){
 
             var items = this.items;
+            var newItems = Ext.isArray( itemInfo ) ? itemInfo : [ itemInfo ];
+            var i, item;
 
-            this.insert( items.length, {
-                xtype: 'resultItem',
-                itemInfo: itemInfo
-            })
+            for( i = 0; item = newItems[ i ]; i++ ){
+
+                this.insert( items.length, {
+                    xtype: 'resultItem',
+                    itemInfo: item
+                });
+            }
+        },
+
+        /**
+         * 储存所有结果id
+         * @param ids
+         */
+        saveResultIds: function ( ids ){
+
+            this.resultIds = ids;
+        },
+
+        /**
+         * 获取接下来要获取的ids
+         * @param maxLen 一次最多多少id
+         * @return {Array}
+         */
+        getMoreResultIds: function ( maxLen ){
+
+            var currentIndex = this.items.length;
+
+            return this.resultIds.slice( currentIndex, currentIndex + ( maxLen || 10 ) );
         }
+
     });
 
     Ext.reg( 'resultList', ResultListCls );
@@ -1252,7 +1370,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'main/sell' );
+                                    Ext.redirect( 'buy/search' );
                                 }
                             },
                             { xtype: 'spacer' },
@@ -1293,23 +1411,23 @@
                 // 下面仅为测试
                 // 由于在此时 自组件的afterrender事件都还未被出发，因此直接设置会有问题
                 setTimeout( function (){
-                    that.setItemTextInfo( {
-                        title: '标题',
-                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
-                        price: '9999',
-                        location: '浙江工业大学',
-                        sellerName: 'Neekey',
-                        date: '2011-01-02',
-                        email: 'ni@gmail.com',
-                        QQ: '1987987979',
-                        wangwang: '9879790'
-                    });
-
-                    that.setPics( [
-                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
-//                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
-                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
-                    ]);
+//                    that.setItemTextInfo( {
+//                        title: '标题',
+//                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
+//                        price: '9999',
+//                        location: '浙江工业大学',
+//                        sellerName: 'Neekey',
+//                        date: '2011-01-02',
+//                        email: 'ni@gmail.com',
+//                        QQ: '1987987979',
+//                        wangwang: '9879790'
+//                    });
+//
+//                    that.setPics( [
+//                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
+////                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
+//                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
+//                    ]);
                 }, 1000 ) ;
             },
             resize: function (){
@@ -1326,7 +1444,27 @@
             }
         },
 
-        itemDataHandle: function ( formData, location, pics ){
+        /**
+         * 设置当前商品详情信息
+         * @param item
+         */
+        setDetailInfo: function ( item ){
+
+            this.setPics( item.imgs );
+
+            var textInfo = {
+                title: item.title,
+                desc: item.desc,
+                price: item.price,
+                location: item.location,
+                sellerName: 'neekey',
+                date: 'hello~',
+                email: 'ni184775761@gmail.com',
+                QQ: '184775761',
+                wangwang: 'hello~'
+            };
+
+            this.setItemTextInfo( textInfo );
         },
 
         /**
@@ -1336,6 +1474,30 @@
         setPics: function ( pics ){
 
             this.picSlide.setPics( pics );
+        },
+
+        /**
+         * 根据商品id请求数据
+         * @param itemId
+         */
+        fetch: function ( itemId ){
+
+            var that = this;
+            this.setLoading( true );
+            Mods.itemRequest.getItemById( itemId, function ( err, item ){
+
+                if( err ){
+
+                    Ext.Msg.alert( '获取商品信息失败! ' + err );
+                }
+                else {
+
+                    that.setDetailInfo( item );
+                }
+
+                that.setLoading( false );
+            });
+
         },
 
         /**

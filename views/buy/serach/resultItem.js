@@ -27,7 +27,8 @@
             pic: '',
             title: '',
             desc: '',
-            price: ''
+            price: '',
+            _id: ''
         },
         // todo 解决自动按照百分比调整宽度的问题
         items: [
@@ -46,6 +47,17 @@
                 this.itemPic = this.query( 'resultItemPic' )[ 0 ];
                 this.itemText = this.query( 'resultItemText' )[ 0 ];
                 this.setItemInfo();
+
+                var that = this;
+
+                // 添加touch事件
+                this.mon( this.el, {
+                    'tap': function (){
+
+                        console.log( that.itemInfo._id );
+                        Ext.redirect( 'itemdetail/' + that.itemInfo._id );
+                    }
+                });
             },
             // 当窗口尺寸改变
             afterlayout: function (){

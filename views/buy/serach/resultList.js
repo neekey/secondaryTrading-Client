@@ -5,6 +5,8 @@
 
     var ResultListCls = Ext.extend( Ext.Panel, {
 
+        // 清欠结果的所有id
+        resultIds: [],
         initComponent: function (){
 
             var that = this;
@@ -26,9 +28,10 @@
             }
         },
         items: [
-            {}, {}, {}
+//            {}, {}, {},{},{}, {}, {},{},{}, {}, {},{}
         ],
-        scroll: false,
+//        layout: 'auto',
+//        scroll: false,
         listeners: {
             afterRender:function (){
 
@@ -47,6 +50,10 @@
             }
         },
 
+        /**
+         * 插入结果项
+         * @param itemInfo {Object|Array} 可以插入一个或者多个
+         */
         insertItem: function ( itemInfo ){
 
             var items = this.items;
@@ -60,7 +67,29 @@
                     itemInfo: item
                 });
             }
+        },
+
+        /**
+         * 储存所有结果id
+         * @param ids
+         */
+        saveResultIds: function ( ids ){
+
+            this.resultIds = ids;
+        },
+
+        /**
+         * 获取接下来要获取的ids
+         * @param maxLen 一次最多多少id
+         * @return {Array}
+         */
+        getMoreResultIds: function ( maxLen ){
+
+            var currentIndex = this.items.length;
+
+            return this.resultIds.slice( currentIndex, currentIndex + ( maxLen || 10 ) );
         }
+
     });
 
     Ext.reg( 'resultList', ResultListCls );
