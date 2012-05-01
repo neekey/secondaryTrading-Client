@@ -14,8 +14,9 @@
         text: '为商品定位',
         margin: '0 15% 0 15%',
         location: {
-            latlng: '',
-            address: ''
+            // 测试数据 todo 去掉测试数据
+            latlng: '12,32',
+            address: '32'
         },
         // 是否已经自动获取过当前位置
         ifAutoLocation: false,

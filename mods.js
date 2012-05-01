@@ -241,6 +241,7 @@
 
             var item;
             var data;
+            var that = this;
 
             // 先检查本地缓存中是否有数据
             if( item = ItemCache[ id ] ){
@@ -259,10 +260,41 @@
                     else {
 
                         ItemCache[ id ] = data.items[ 0 ];
-                        next( undefined, data.items[ 0 ] );
+                        next( undefined, that.imgPathHandle( data.items[ 0 ] ) );
                     }
                 });
             }
+        },
+
+        /**
+         * 处理数据中包含的img信息，转化为可以请求的图片地址
+         * @param items
+         * @return {*}
+         */
+        imgPathHandle: function ( items ){
+
+            var isArray = Ext.isArray( items );
+            var item;
+            var imgs;
+            var img;
+            var i;
+            var j;
+            items = isArray ? items : [ items ];
+
+            for( j = 0; item = items[ j ]; j++, i = 0 ){
+
+                imgs = item.imgs;
+
+                if( imgs ){
+
+                    for( i = 0; img = imgs[ i ]; i++ ){
+
+                        imgs[ i ] = Config.APIHOST + 'img?id=' + img._id;
+                    }
+                }
+            }
+
+            return isArray ? items : items[ 0 ];
         },
 
         /**
@@ -273,6 +305,7 @@
         getItemsByIds: function ( ids, next ){
 
             var data = { ids: ids.join( ',' ) };
+            var that = this;
 
             this.query( data, function ( err, data ){
 
@@ -280,7 +313,7 @@
                     next( err );
                 }
                 else {
-                    next( err, data.items );
+                    next( err, that.imgPathHandle( data.items ) );
                 }
             });
         },
@@ -313,8 +346,6 @@
                 }
             }, true );
         }
-
-
     };
 
 })();/**
@@ -484,7 +515,7 @@
             var callback = obj.callback;
             var data = obj.data || {};
 
-            var timeout = obj.timeout || 5000;
+            var timeout = obj.timeout || 30000;
             var ifTimeout = false;
             var timer;
 

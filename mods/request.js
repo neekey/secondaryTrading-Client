@@ -26,7 +26,7 @@
             var callback = obj.callback;
             var data = obj.data || {};
 
-            var timeout = obj.timeout || 5000;
+            var timeout = obj.timeout || 30000;
             var ifTimeout = false;
             var timer;
 
