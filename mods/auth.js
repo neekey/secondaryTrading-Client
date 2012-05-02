@@ -15,7 +15,8 @@
 
         /**
          * 检查当前用户是否登陆
-         * @param next
+         * @param {Function} next ( ifLogin, data ) --> data = { result:,error,data,type }
+         *
          */
         checkAuth: function ( next ){
 
@@ -32,13 +33,13 @@
 
                             ifLogin = true;
 
-                            next( true );
+                            next( true, data );
                         }
                         else {
 
                             ifLogin = false;
 
-                            next( false );
+                            next( false, data );
                         }
                     }
                 });
@@ -53,7 +54,7 @@
          * 登陆
          * @param email
          * @param password
-         * @param next ( ifLogin )
+         * @param next ( ifLogin, data ) --> data = { result, data, error, type, login }
          */
         login: function( email, password, next ){
 
@@ -73,24 +74,27 @@
 
                         Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
 
-                            next( true );
+                            next( true, data );
                         });
                     }
                     else {
+
+                        // 该login字段表明在发送请求是是否已经处于login的状态
+                        // 若已经login了，显然该请求会失败（提示已经登陆过）那么则直接人为已经登陆
                         if( data.login ){
 
                             ifLogin = true;
 
-                            next( true );
+                            next( true, data );
                         }
                         else {
 
                             ifLogin = false;
 
-                            Ext.Msg.alert( "登陆失败！", data.error, function (){
+                            Ext.Msg.alert( "登陆失败！", data.error + ': ' + JSON.stringify( data.data ), function (){
 
-                                next( false );
-                            } );
+                                next( false, data );
+                            });
                         }
                     }
                 }
@@ -113,12 +117,12 @@
 
                             ifLogin = false;
 
-                            next( true );
+                            next( true, data );
                         });
                     }
                     else {
 
-                        Ext.Msg.alert( '注销失败', data.error );
+                        Ext.Msg.alert( '注销失败', data.error + ': ' + JSON.stringify( data.data ) );
                     }
                 }
             }, true );
@@ -141,7 +145,7 @@
         },
 
         /**
-         * 从服务器返回的数据中解析出session数据
+         * 从服务器返回的数据中解析出session数据, 并保存
          */
         parse: function( data ){
 

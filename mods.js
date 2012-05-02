@@ -15,7 +15,8 @@
 
         /**
          * 检查当前用户是否登陆
-         * @param next
+         * @param {Function} next ( ifLogin, data ) --> data = { result:,error,data,type }
+         *
          */
         checkAuth: function ( next ){
 
@@ -32,13 +33,13 @@
 
                             ifLogin = true;
 
-                            next( true );
+                            next( true, data );
                         }
                         else {
 
                             ifLogin = false;
 
-                            next( false );
+                            next( false, data );
                         }
                     }
                 });
@@ -53,7 +54,7 @@
          * 登陆
          * @param email
          * @param password
-         * @param next ( ifLogin )
+         * @param next ( ifLogin, data ) --> data = { result, data, error, type, login }
          */
         login: function( email, password, next ){
 
@@ -73,24 +74,27 @@
 
                         Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
 
-                            next( true );
+                            next( true, data );
                         });
                     }
                     else {
+
+                        // 该login字段表明在发送请求是是否已经处于login的状态
+                        // 若已经login了，显然该请求会失败（提示已经登陆过）那么则直接人为已经登陆
                         if( data.login ){
 
                             ifLogin = true;
 
-                            next( true );
+                            next( true, data );
                         }
                         else {
 
                             ifLogin = false;
 
-                            Ext.Msg.alert( "登陆失败！", data.error, function (){
+                            Ext.Msg.alert( "登陆失败！", data.error + ': ' + JSON.stringify( data.data ), function (){
 
-                                next( false );
-                            } );
+                                next( false, data );
+                            });
                         }
                     }
                 }
@@ -113,12 +117,12 @@
 
                             ifLogin = false;
 
-                            next( true );
+                            next( true, data );
                         });
                     }
                     else {
 
-                        Ext.Msg.alert( '注销失败', data.error );
+                        Ext.Msg.alert( '注销失败', data.error + ': ' + JSON.stringify( data.data ) );
                     }
                 }
             }, true );
@@ -141,7 +145,7 @@
         },
 
         /**
-         * 从服务器返回的数据中解析出session数据
+         * 从服务器返回的数据中解析出session数据, 并保存
          */
         parse: function( data ){
 
@@ -321,7 +325,7 @@
         /**
          * 检索商品
          * @param data
-         * @param next （ err, items )
+         * @param next （ data, items ) --> data = { result:, error, type, data }若成功，则data为undefined
          */
         query: function ( data, next ){
 
@@ -341,7 +345,7 @@
                     }
                     else {
 
-                        next( resData.error )
+                        next( d )
                     }
                 }
             }, true );
@@ -361,7 +365,7 @@
 
         /**
          * 获取当前的地理位置信息
-         * @param next
+         * @param next ( ifSuccess, resultData ) resultData = { addressConponent, formattedAddress, location}
          */
         getCurrentLocation: function ( next ){
             var that = this;
@@ -372,12 +376,24 @@
 
                 if( err ){
 
-                    alert( 'getCurrentLatLng ERROR:' + JSON.stringify( err ) );
+                    Ext.Msg.alert( '获取当前GPS信息出错: ' + JSON.stringify( err ), function(){
+
+                        next( false );
+                    });
                 }
                 else {
-                    that.getRAR(latlng.lat, latlng.lng, function ( result ){
+                    that.getRAR(latlng.lat, latlng.lng, function ( errData, result ){
 
-                        next( result );
+                        if( errData ){
+
+                            Ext.Msg.alert( '获取当前位置信息失败! ', '', function (){
+
+                                next( true, result );
+                            } );
+                        }
+                        else {
+                            next( true, result );
+                        }
                     });
                 }
 
@@ -406,6 +422,9 @@
         /**
          * 反向地址解析
          * Reverse Address Resolution
+         * @param {String} lat
+         * @param {String} lng
+         * @param {Function} next( data, resultData ) --> data = { result, type, data }
          */
         getRAR:function( lat, lng, next ){
 
@@ -420,9 +439,17 @@
                 type: 'GEO',
                 callback: function( res ){
 
-//                    res = res.data;
-//                    alert( 'getRAR callback' );
-                    next( that.resultHandle( res.data ) );
+                    var result = res.result;
+                    var data = res.data;
+
+                    if( result ){
+
+                        next( undefined, that.resultHandle( res.data ) );
+                    }
+                    else {
+
+                        next( data, that.resultHandle( res.data ) );
+                    }
                 }
             });
         },
@@ -431,6 +458,7 @@
          * 地址解析
          * Address Resolution
          * @param {String} address 地址
+         * @param {Function} next( data, addressData ) 若请求成功，data为undefined data = { result, type, data }
          * //todo 比如"浙江工业大学“这样的地址无法得到搜索结果的问题
          */
         getAR: function ( address, next ){
@@ -447,9 +475,15 @@
                 type: 'GEO',
                 callback: function( res ){
 
-                    alert( 'getAR cb' );
-                    alert( JSON.stringify( res ) );
-                    next( that.resultHandle( res.data ) );
+                    var result = res.result;
+                    var data = res.data;
+
+                    if( result ){
+                        next( undefined, that.resultHandle( res.data ) );
+                    }
+                    else {
+                        next( res, that.resultHandle( res.data ) );
+                    }
                 }
             });
         },
@@ -528,7 +562,6 @@
 
                 }
 
-
                 // 先请求是否已经登陆
                 JSONP.request({
                     url: url,
@@ -559,6 +592,17 @@
             }
         },
 
+        /**
+         * 发送请求
+         * @param obj {
+         *      type: 数据请求类型 一个对应请求url的字符串 比如 （ LOGIN ),
+         *      callback: 回调  ( data ) data --> { result: 请求是否成功, type: 与obj.type一致，data: 服务器返回的数据 }
+         *      data: 附带的数据
+         *      url: 若制定url则会覆盖type对应的连接
+         *      method: 制定 post 还是 get
+         * }
+         * @param ifAuthAttach
+         */
         send: function( obj, ifAuthAttach ){
 
             ifAuthAttach = ifAuthAttach || false;
@@ -576,6 +620,7 @@
 
                 }
 
+                //todo 添加超时
                 Ext.Ajax.request({
                     url: url,
                     params: data,
@@ -585,7 +630,6 @@
                         var resObj = {
                             result: success,
                             type: type,
-                            error: response,
                             data: JSON.parse( response.responseText || '{}' )
                         };
 

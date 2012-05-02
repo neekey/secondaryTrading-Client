@@ -39,7 +39,6 @@
 
                 }
 
-
                 // 先请求是否已经登陆
                 JSONP.request({
                     url: url,
@@ -70,6 +69,17 @@
             }
         },
 
+        /**
+         * 发送请求
+         * @param obj {
+         *      type: 数据请求类型 一个对应请求url的字符串 比如 （ LOGIN ),
+         *      callback: 回调  ( data ) data --> { result: 请求是否成功, type: 与obj.type一致，data: 服务器返回的数据 }
+         *      data: 附带的数据
+         *      url: 若制定url则会覆盖type对应的连接
+         *      method: 制定 post 还是 get
+         * }
+         * @param ifAuthAttach
+         */
         send: function( obj, ifAuthAttach ){
 
             ifAuthAttach = ifAuthAttach || false;
@@ -87,6 +97,7 @@
 
                 }
 
+                //todo 添加超时
                 Ext.Ajax.request({
                     url: url,
                     params: data,
@@ -96,7 +107,6 @@
                         var resObj = {
                             result: success,
                             type: type,
-                            error: response,
                             data: JSON.parse( response.responseText || '{}' )
                         };
 

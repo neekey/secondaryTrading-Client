@@ -99,7 +99,7 @@
         /**
          * 检索商品
          * @param data
-         * @param next （ err, items )
+         * @param next （ data, items ) --> data = { result:, error, type, data }若成功，则data为undefined
          */
         query: function ( data, next ){
 
@@ -119,7 +119,7 @@
                     }
                     else {
 
-                        next( resData.error )
+                        next( d )
                     }
                 }
             }, true );
