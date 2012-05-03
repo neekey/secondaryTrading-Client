@@ -229,7 +229,7 @@
         /**
          * 请求位置信息
          * @param address 用户输入的搜索词
-         * @param next
+         * @param next( err, addressObj )
          */
         requestLocation: function ( address, next ){
 
@@ -239,9 +239,9 @@
             }
             else {
 
-                Mods.map.getCurrentLocation(function ( result ){
+                Mods.map.getCurrentLocation(function ( ifSuccess, result ){
 
-                    next( result );
+                    next( ifSuccess, result );
                 });
             }
         },
@@ -294,13 +294,11 @@
 
                         that.overlay.setLoading( true );
 
-                        that.requestLocation( undefined, function ( result ){
+                        that.requestLocation( undefined, function ( ifSuccess, result ){
 
-                            console.log( 'result', result );
-                            alert( 'result:' + JSON.stringify( result ) );
                             that.overlay.setLoading( false );
-                            that.ifAutoLocation = true;
 
+                            that.ifAutoLocation = true;
                             that.overlay.addressList.refreshResult( result );
                         });
                     }
@@ -363,10 +361,8 @@
 
                                         that.setLoading( true );
 
-                                        that.locationButton.requestLocation( address, function ( result ){
+                                        that.locationButton.requestLocation( address, function ( ifSuccess, result ){
 
-                                            console.log( 'result', result );
-                                            alert( 'result:' + JSON.stringify( result ) );
                                             that.setLoading( false );
                                             that.addressList.refreshResult( result );
                                         });
