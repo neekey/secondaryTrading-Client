@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <title>PhoneGap</title>
     <!--<script src="http://jsconsole.com/remote.js?3B4B28B5-AAB2-4C80-8F6E-270E0A1D8369"></script>-->
+    <!--<script src="http://debug.phonegap.com/target/target-script-min.js#anonymous"></script>-->
     <link rel="stylesheet" href="sencha-touch-1.1.1/resources/css/sencha-touch.css" type="text/css">
-    <link rel="stylesheet" href="stylesheets/index.css" type="text/css">
+    <link rel="stylesheet" href="style.css" type="text/css">
 
 
     <script type="text/javascript" src="lib/phonegap-1.2.0.js"></script>
@@ -59,13 +60,16 @@
     </div>
 </script>
 
-<script id="result-item-text-tpl" type="text/template">
+<script id="result-item-tpl" type="text/template">
 
-    <div class="result-item-text">
-        <p class="title">{title}</p>
-        <p class="desc">{desc}</p>
-        <p class="price">{price}</p>
-        <p class="address">{address}</p>
+    <div class="result-item">
+        <div class="result-item-pic"><img src="{pic}"></div>
+        <div class="result-item-text">
+            <p class="title">{title}</p>
+            <p class="desc">{desc}</p>
+            <p class="price">{price}</p>
+            <p class="address">{address}</p>
+        </div>
     </div>
 </script>
 

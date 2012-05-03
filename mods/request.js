@@ -64,7 +64,7 @@
                 timer = setTimeout(function (){
 
                     ifTimeout = true;
-                    callback( { result: false } );
+                    callback( { error: '登陆超时', result: false } );
                 }, timeout );
             }
         },

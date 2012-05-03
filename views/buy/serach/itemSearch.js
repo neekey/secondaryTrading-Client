@@ -49,10 +49,12 @@
                                             }
                                             else {
 
+                                                that.resultList.clearList();
                                                 that.resultList.removeAll();
                                                 that.resultList.insertItem( data.items );
                                                 // 保存所有的结果ids，在获取更多结果中需要使用到
                                                 that.resultList.saveResultIds( data.ids );
+                                                that.onResize();
                                                 that.doLayout();
                                                 that.resultList.setLoading( false );
 
@@ -71,7 +73,6 @@
 
                                         Ext.Msg.alert( '关键词不能为空!' );
                                     }
-
                                 }
                             }
                         ]

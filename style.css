@@ -1,0 +1,144 @@
+/*item details*/
+.slide-pic-item,
+.pic-item {
+  /*非IE的主流浏览器识别的垂直居中的方法*/
+
+  display: table-cell;
+  vertical-align: middle;
+  /*设置水平居中*/
+
+  text-align: center;
+  /* 针对IE的Hack */
+
+  /**display: block;*/
+
+  /**font-size: 175px; */
+
+  /*约为高度的0.873，200*0.873 约为175*/
+
+  /**font-family: Arial; */
+
+  /*防止非utf-8引起的hack失效问题，如gbk编码*/
+
+  /*width: 200px;*/
+
+  /*height: 200px;*/
+
+  /*border: 1px solid #eee;*/
+
+  width: 100%;
+  height: 100%;
+}
+.slide-pic-item img,
+.pic-item img {
+  /*设置图片垂直居中*/
+
+  vertical-align: middle;
+  max-width: 100%;
+  max-height: 100%;
+}
+.result-item-text {
+  padding-left: 20px;
+}
+.result-item-text .address {
+  color: #999;
+}
+.result-item-text .price {
+  color: #f60;
+  font-size: 130%;
+  font-weight: bold;
+}
+.result-item-text .title {
+  font-size: 150%;
+  font-weight: bold;
+}
+#item-detail-info p {
+  margin-bottom: 10px;
+}
+#item-detail-info .item-brief {
+  background: #ffffff;
+  padding: 4%;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+#item-detail-info .item-brief .title {
+  font-size: 120%;
+}
+#item-detail-info .item-brief .desc {
+  margin-top: 10px;
+  color: #666666;
+}
+#item-detail-info .item-info {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #666;
+}
+#item-detail-info .item-info p {
+  padding-bottom: 5px;
+  border-bottom: 1px dotted #c2c2c2;
+}
+#item-detail-info .item-info .date {
+  border-bottom: none;
+}
+#item-detail-info .item-info .price span {
+  font-size: 120%;
+  color: #f60;
+}
+#item-detail-info .seller-info {
+  /*background: #919191;*/
+
+  /*padding: 5%;*/
+
+  /*border-radius: 5px;*/
+
+  /*color: #ddd;*/
+
+  padding-bottom: 20px;
+}
+/* 清楚浮动，不过既然高度已经固定 这部分就不用了
+.result-item:after {*/
+/*content: '';*/
+/*display: block;*/
+/*visibility: hidden;*/
+/*height: 0px;*/
+/*width: 0px;*/
+/*clear: both;*/
+/*}*/
+.result-item {
+  height: 130px;
+}
+.result-item-pic {
+  vertical-align: middle;
+  overflow: hidden;
+  text-align: center;
+  height: 130px;
+  line-height: 130px;
+  background: red;
+  width: 30%;
+  float: left;
+}
+/*设置图片垂直居中*/
+.result-item-pic img {
+  vertical-align: middle;
+  max-width: 100%;
+  max-height: 100%;
+}
+.result-item-text {
+  width: 65%;
+  margin-left: 5%;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  overflow: hidden;
+}
+.result-item-text .address {
+  color: #999;
+}
+.result-item-text .price {
+  color: #f60;
+  font-size: 130%;
+  font-weight: bold;
+}
+.result-item-text .title {
+  font-size: 150%;
+  font-weight: bold;
+}

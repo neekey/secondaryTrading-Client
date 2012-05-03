@@ -9,3 +9,6 @@ cat models/* > models.js
 
 # mods
 cat mods/* > mods.js
+
+# css
+lessc stylesheets/style.less > style.css

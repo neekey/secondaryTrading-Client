@@ -1,0 +1,54 @@
+/* 清楚浮动，不过既然高度已经固定 这部分就不用了
+.result-item:after {*/
+/*content: '';*/
+/*display: block;*/
+/*visibility: hidden;*/
+/*height: 0px;*/
+/*width: 0px;*/
+/*clear: both;*/
+/*}*/
+
+@resultItemWidth: 130px;
+
+.result-item {
+    height: @resultItemWidth;
+}
+
+//垂直居中，参考a http://www.blueidea.com/tech/web/2006/3231.asp
+.result-item-pic {
+
+    vertical-align: middle;
+    overflow: hidden;
+    text-align: center;
+    height: @resultItemWidth;
+    line-height: @resultItemWidth;
+    background: red;
+    width: 30%;
+    float: left;
+}
+
+/*设置图片垂直居中*/
+.result-item-pic img {
+    vertical-align:middle;
+    max-width: 100%;
+    max-height: 100%;
+}
+.result-item-text {
+    width: 65%;
+    margin-left: 5%;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+    overflow: hidden;
+}
+.result-item-text .address {
+    color: #999;
+}
+.result-item-text .price {
+    color: #f60;
+    font-size: 130%;
+    font-weight: bold;
+}
+.result-item-text .title {
+    font-size: 150%;
+    font-weight: bold;
+}
