@@ -1259,13 +1259,38 @@
 
         // 清欠结果的所有id
         resultItems: [
-            {
-                address: 'nihaoaijoa',
-                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                title: 'dafadfa',
-                desc: 'daffddaffda',
-                price: '1243414'
-            }
+//            {
+//                address: 'nihaoaijoa',
+//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+//                title: 'dafadfa',
+//                desc: 'daffddaffda',
+//                price: '1243414',
+//                _id: 'test'
+//            },
+//            {
+//                address: 'nihaoaijoa',
+//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+//                title: 'dafadfa',
+//                desc: 'daffddaffda',
+//                price: '1243414',
+//                _id: 'test'
+//            },
+//            {
+//                address: 'nihaoaijoa',
+//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+//                title: 'dafadfa',
+//                desc: 'daffddaffda',
+//                price: '1243414',
+//                _id: 'test'
+//            },
+//            {
+//                address: 'nihaoaijoa',
+//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+//                title: 'dafadfa',
+//                desc: 'daffddaffda',
+//                price: '1243414',
+//                _id: 'test'
+//            }
         ],
         resultIds: [],
         initComponent: function (){
@@ -1288,16 +1313,17 @@
                 this.initRender();
 
                 // 添加item被tap委托事件
-                this.body.addListener( 'tap', function ( e ){
-
-                    var target = Ext.get( e.target );
-                    var item = target.findParent( '.result-item' );
-
-                    if( item ){
-
-                        that.fireEvent( 'itemClicked', item );
-                    }
-                });
+                // 该方法会导致整个列表无法滚动...尼玛!!!!!!!
+//                this.body.addListener( 'tap', function ( e ){
+//
+//                    var target = Ext.get( e.target );
+//                    var item = target.findParent( '.result-item' );
+//
+//                    if( item ){
+//
+//                        that.fireEvent( 'itemClicked', item );
+//                    }
+//                });
             },
             resize: function (){
             },
@@ -1307,7 +1333,7 @@
             afterlayout: function (){
             },
             // item被点击
-            itemClicked: function ( item ){
+            itemTaped: function ( item ){
 
                 Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
             }
@@ -1319,17 +1345,17 @@
         initRender: function (){
 
             var that = this;
+            var itemBak = this.resultItems;
             if( this.resultItems.length > 0 ){
 
-                Ext.each( this.resultItems, function ( item ){
-
-                    that.tpl.append( that.body, item );
-                } );
-
-                that.doLayout();
+                this.resultItems = [];
+                this.insertItem( itemBak );
             }
         },
 
+        /**
+         * 清空列表
+         */
         clearList: function (){
 
             this.body.setHTML( '' );
@@ -1348,6 +1374,18 @@
             Ext.each( newItems, function ( item ){
 
                 that.tpl.append( that.body, that.itemInfoHandle( item ) );
+
+                // 获取刚刚插入的item
+                var child = that.body.last( '.result-item' );
+
+                // 为item内的pic容器添加tap事件
+                // 只有点击pic部分才会出发转移到商品详情的逻辑
+                // 之所以这么做，是因为添加了tap，会导致在tap区域滚动会出问题...
+                // 因此只好部分添加tap事件了... 肯跌啊...
+                child.child( '.result-item-pic' ).addListener( 'tap', function (){
+
+                    that.fireEvent( 'itemTaped', child );
+                });
             } );
 
             that.doLayout();
