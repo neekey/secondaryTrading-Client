@@ -1281,8 +1281,23 @@
 //        scroll: false,
         listeners: {
             afterRender:function (){
+
+                var that = this;
+
                 this.tpl = new Ext.Template( Ext.get( 'result-item-tpl').getHTML() );
                 this.initRender();
+
+                // 添加item被tap委托事件
+                this.body.addListener( 'tap', function ( e ){
+
+                    var target = Ext.get( e.target );
+                    var item = target.findParent( '.result-item' );
+
+                    if( item ){
+
+                        that.fireEvent( 'itemClicked', item );
+                    }
+                });
             },
             resize: function (){
             },
@@ -1290,6 +1305,11 @@
             },
             // 当窗口尺寸改变
             afterlayout: function (){
+            },
+            // item被点击
+            itemClicked: function ( item ){
+
+                Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
             }
         },
 
@@ -1327,10 +1347,34 @@
 
             Ext.each( newItems, function ( item ){
 
-                that.tpl.append( that.body, item );
+                that.tpl.append( that.body, that.itemInfoHandle( item ) );
             } );
 
             that.doLayout();
+        },
+
+        /**
+         * 对item数据进行处理
+         * 1、选取第一个img 组装成图片地址，并赋值给pic
+         * @param item { title, desc, title, imgs: [] ..} -> { title, desc, pic: url , ... }
+         * @return {Object}
+         */
+        itemInfoHandle: function ( item ){
+
+            var imgs = item.imgs;
+            var pic;
+
+            if( imgs && imgs.length > 0 ){
+
+                pic = Config.APIHOST + 'img?id=' + imgs[ 0 ][ '_id' ];
+            }
+            else {
+                pic = undefined;
+            }
+
+            item.pic = pic;
+
+            return item;
         },
 
         /**
