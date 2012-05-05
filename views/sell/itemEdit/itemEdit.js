@@ -47,6 +47,17 @@
                                 align: 'end',
                                 handler: function (){
 
+                                    var itemId = that.itemId;
+                                    Mods.itemRequest.delItem( itemId, function ( err ){
+
+                                        if( !err ){
+
+                                            Ext.Msg.alert( '商品删除成功!', '将回到商品列表', function (){
+                                                // 若删除成功，返回列表
+                                                Ext.redirect( 'sell/sellList' );
+                                            } );
+                                        }
+                                    });
                                 }
                             }
                         ]
@@ -149,10 +160,20 @@
                 }
                 else {
 
-                    // 对返回的数据进行一定的预处理后，设置给 itemInfo
-                    that.setItemInfo( that.itemInfoHandle( item ) );
-                    // 根据 itemInfo 的值 进行渲染
-                    that.renderItem();
+                    if( item ){
+
+                        // 对返回的数据进行一定的预处理后，设置给 itemInfo
+                        that.setItemInfo( that.itemInfoHandle( item ) );
+                        // 根据 itemInfo 的值 进行渲染
+                        that.renderItem();
+                    }
+                    else {
+
+                        Ext.Msg.alert( '该商品不存在!', '将回到商品列表', function (){
+
+                            Ext.redirect( 'sell/sellList' );
+                        });
+                    }
                 }
 
                 that.setLoading( false );

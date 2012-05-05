@@ -211,7 +211,7 @@
         cls  : 'demobtn',
         flex : 1,
         height: '50',
-        ui  : 'decline',
+        ui  : 'confirm',
         text: '为商品定位',
         margin: '0 15% 0 15%',
         location: {
@@ -2213,6 +2213,17 @@
                                 align: 'end',
                                 handler: function (){
 
+                                    var itemId = that.itemId;
+                                    Mods.itemRequest.delItem( itemId, function ( err ){
+
+                                        if( !err ){
+
+                                            Ext.Msg.alert( '商品删除成功!', '将回到商品列表', function (){
+                                                // 若删除成功，返回列表
+                                                Ext.redirect( 'sell/sellList' );
+                                            } );
+                                        }
+                                    });
                                 }
                             }
                         ]
@@ -2315,10 +2326,20 @@
                 }
                 else {
 
-                    // 对返回的数据进行一定的预处理后，设置给 itemInfo
-                    that.setItemInfo( that.itemInfoHandle( item ) );
-                    // 根据 itemInfo 的值 进行渲染
-                    that.renderItem();
+                    if( item ){
+
+                        // 对返回的数据进行一定的预处理后，设置给 itemInfo
+                        that.setItemInfo( that.itemInfoHandle( item ) );
+                        // 根据 itemInfo 的值 进行渲染
+                        that.renderItem();
+                    }
+                    else {
+
+                        Ext.Msg.alert( '该商品不存在!', '将回到商品列表', function (){
+
+                            Ext.redirect( 'sell/sellList' );
+                        });
+                    }
                 }
 
                 that.setLoading( false );
@@ -2506,16 +2527,13 @@
     var NewItemImgCls = Ext.extend( Ext.Panel, {
         xtype: 'panel',
         layout: 'hbox',
-        cls: 'new-item-imgs',
         height: 150,
         defaults: {
             xtype: 'imageCapture',
             height: 100,
             width: '30%',
             margin: '0 5.2% 0 5.2%',
-            style: {
-                background: 'red'
-            },
+            cls: 'new-item-imgs',
             ifData: true
         },
         items: [

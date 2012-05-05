@@ -159,6 +159,40 @@
                     }
                 }
             }, true );
+        },
+
+        /**
+         * 删除item
+         * @param itemId itemId
+         * @param next ( err )
+         */
+        delItem: function ( itemId, next ){
+
+            var data = {
+                id: itemId
+            };
+
+            Mods.request.send({
+                method: 'get',
+                data: data,
+                type: 'DEL_ITEM',
+                callback: function ( d ){
+
+                    var resData = d.data;
+                    var result = resData.result;
+                    var data = resData.data;
+
+                    if( result ){
+
+                        next( undefined, resData );
+                    }
+                    else {
+
+                        Ext.Msg.alert( '删除商品失败:' + resData.error + ' ' + JSON.stringify( resData.data ) );
+                        next( resData )
+                    }
+                }
+            }, true );
         }
     };
 

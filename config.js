@@ -18,6 +18,7 @@
             LOGOUT: API_HOST + 'logout',
             CHECKAUTH: API_HOST + 'checkauth',
             NEW_ITEM: API_HOST + 'newItem',
+            DEL_ITEM: API_HOST + 'itemdel',
             GEO: 'http://maps.google.com/maps/api/geocode/json',
             QUERY_ITEM: API_HOST + 'searchitem',
             SELLING_LIST: API_HOST + 'sellinglist'

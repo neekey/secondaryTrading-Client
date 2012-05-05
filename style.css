@@ -106,6 +106,7 @@
 /*}*/
 .result-item {
   height: 130px;
+  margin: 1%;
 }
 .result-item-pic {
   vertical-align: middle;
@@ -113,7 +114,8 @@
   text-align: center;
   height: 130px;
   line-height: 130px;
-  background: red;
+  background: white;
+  border-radius: 5px;
   width: 30%;
   float: left;
 }
@@ -186,4 +188,8 @@
   margin-top: 10px;
   height: 30px;
   text-align: center;
+}
+.new-item-imgs {
+  background: white;
+  border-radius: 5px;
 }

@@ -10,7 +10,7 @@
         cls  : 'demobtn',
         flex : 1,
         height: '50',
-        ui  : 'decline',
+        ui  : 'confirm',
         text: '为商品定位',
         margin: '0 15% 0 15%',
         location: {
