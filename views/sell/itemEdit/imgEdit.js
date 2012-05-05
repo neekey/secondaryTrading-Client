@@ -224,6 +224,41 @@
         },
 
         /**
+         * 返回修改的item的图片请求,包括删除的旧的图像，以及新增的新图像
+         * @return {Object} { addItems: [ base64图像数据数组 ], removeImgs: [ 被删除的旧图像的id数组 ] }
+         */
+        getUpdateInfo: function (){
+
+            var addImgs = [];
+
+            var imgItem = this.body.query( '.item-edit-imgs-item' );
+
+            Ext.each( imgItem, function ( item ){
+
+                // 若没有id，则说明是新图片
+                if( !item.getAttribute( 'data-id' ) ){
+
+                    var img = Ext.get( item ).query( 'img')[ 0 ];
+                    var url;
+
+                    if( img ){
+
+                        url = img.getAttribute( 'src' );
+                    }
+
+                    if( url ){
+                        addImgs.push( url );
+                    }
+                }
+            });
+
+            return {
+                addImgs: addImgs,
+                removeImgs: this.removeImgs
+            };
+        },
+
+        /**
          * 设置图像信息
          * @param imgs
          */

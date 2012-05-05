@@ -39,6 +39,32 @@
                                 align: 'end',
                                 handler: function (){
 
+                                    var data = that.getUpdateInfo();
+                                    var model = Ext.ModelMgr.create( data, 'Item' );
+                                    var errors = model.validate();
+                                    var message = "";
+
+                                    if( errors.isValid() ){
+
+                                        Mods.itemRequest.updateItem( that.itemId, data, function ( errObj ){
+
+                                            if( !errObj ){
+
+                                                Ext.Msg.alert( '修改商品成功!' );
+                                            }
+                                        });
+                                    }
+                                    else {
+
+                                        Ext.each( errors.items, function( rec, i ){
+
+                                            message += rec.message+"<br>";
+                                        });
+
+                                        Ext.Msg.alert( "表单有误：", message );
+
+                                        return false;
+                                    }
                                 }
                             },
                             {
@@ -87,22 +113,38 @@
             }
         },
 
-        itemDataHandle: function ( formData, location, pics ){
+        /**
+         * 获取相对原有商品信息的变更
+         * @return {Object}
+         */
+        getUpdateInfo: function (){
 
-            var data = {
+            // 若为在浏览器中调试，则使用测试数据
+
+
+            var location = this.newItemLocation.getLocation();
+            var formData = this.newItemForm.getValues();
+            var imgUpdate = this.imgEdit.getUpdateInfo();
+
+            return {
                 title: formData.title,
                 desc: formData.desc,
                 price: formData.price,
+                addImgNum: imgUpdate.addImgs.length,
+                removeImgs: imgUpdate.removeImgs,
+                pic1: imgUpdate.addImgs[ 0 ],
+                pic2: imgUpdate.addImgs[ 1 ],
+                pic3: imgUpdate.addImgs[ 2 ],
                 latlng: location.latlng,
-                address: location.address,
-                pic1: pics[ 0 ],
-                pic2: pics[ 1 ],
-                pic3: pics[ 2 ]
+                address: location.address
             };
-
-            return data;
         },
 
+        /**
+         * 对iteminfo 做一些预处理(通常在fetch到数据之后）
+         * @param itemInfo
+         * @return {*}
+         */
         itemInfoHandle: function ( itemInfo ){
 
             itemInfo.latlng = itemInfo.location.join( ',' );
