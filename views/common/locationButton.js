@@ -45,6 +45,10 @@
             }
         },
 
+        /**
+         * 设置当前按钮的 locationInfo 并更新按钮文字
+         * @param locationInfo
+         */
         setLocationInfo: function ( locationInfo ){
 
             this.location = {
