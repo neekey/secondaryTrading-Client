@@ -77,6 +77,7 @@
          *      data: 附带的数据
          *      url: 若制定url则会覆盖type对应的连接
          *      method: 制定 post 还是 get
+         *      disableCaching: 是否不缓存数据 默认为false
          * }
          * @param ifAuthAttach
          */
@@ -88,6 +89,7 @@
             var callback = obj.callback;
             var data = obj.data || {};
             var url = obj.url || APIS[ type ];
+            var disableCaching = obj.disableCaching;
             var method = obj.method;
 
             if( url ){
@@ -120,7 +122,7 @@
                             callback( resObj );
                         }
                     },
-                    disableCaching: false
+                    disableCaching: disableCaching === undefined ? false : disableCaching
                 });
             }
         }

@@ -56,6 +56,7 @@
 
             Mods.request.send({
                 method: 'get',
+                disableCaching: true,
                 data: {
                     email: email
                 },
@@ -141,6 +142,7 @@
 
             Mods.request.send({
                 method: 'get',
+                disableCaching: true,
                 data: data,
                 type: 'QUERY_ITEM',
                 callback: function ( d ){
@@ -193,6 +195,9 @@
                     }
                 }
             }, true );
+
+            // 删除缓存
+            delete ItemCache[ itemId ];
         }
     };
 
