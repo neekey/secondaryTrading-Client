@@ -45,6 +45,16 @@
             }
         },
 
+        setLocationInfo: function ( locationInfo ){
+
+            this.location = {
+                latlng: locationInfo.latlng,
+                address: locationInfo.address
+            };
+
+            this.setText( this.location.address );
+        },
+
         /**
          * 保存位置信息
          * @param location

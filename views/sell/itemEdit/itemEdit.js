@@ -67,8 +67,8 @@
             afterRender:function (){
 
                 this.imgEdit = this.query( 'imgEdit' )[ 0 ];
-//                this.newItemForm = this.query( 'newItemForm' )[ 0 ];
-//                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
+                this.newItemForm = this.query( 'newItemForm' )[ 0 ];
+                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
             },
             activate: function (){
 
@@ -92,21 +92,44 @@
             return data;
         },
 
+        itemInfoHandle: function ( itemInfo ){
+
+            itemInfo.latlng = itemInfo.location.join( ',' );
+
+            return itemInfo;
+        },
+
+        /**
+         * 设置 itemId
+         * @param itemId
+         */
         setItemId: function ( itemId ){
 
             this.itemId = itemId;
         },
 
+        /**
+         * 将itemInfo 设置给 this.itemInfo
+         * @param itemInfo
+         */
         setItemInfo: function ( itemInfo ){
 
-//            this.setItemId( itemInfo._id );
             this.itemInfo = itemInfo;
         },
 
+        /**
+         * 根据itemInfo对视图进行更新
+         */
         renderItem: function (){
 
             var itemInfo = this.itemInfo;
+            // 创建一个model 用于填写表单
+            var model = Ext.ModelMgr.create( itemInfo, 'Item' );
+            this.newItemForm.loadRecord( model );
+            // 设置图像
             this.imgEdit.setImages( itemInfo.imgs );
+            // 设置location信息
+            this.newItemLocation.setLocationInfo( itemInfo );
         },
 
         /**
@@ -126,7 +149,9 @@
                 }
                 else {
 
-                    that.setItemInfo( item );
+                    // 对返回的数据进行一定的预处理后，设置给 itemInfo
+                    that.setItemInfo( that.itemInfoHandle( item ) );
+                    // 根据 itemInfo 的值 进行渲染
                     that.renderItem();
                 }
 
