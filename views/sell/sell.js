@@ -14,9 +14,11 @@
                 xtype: 'newItem'
             },
             {
-                xtype: 'itemDetail'
+                xtype: 'sellingList'
             }
         ]
+//        layout: 'auto',
+//        scroll: 'vertical'
     });
 
     Ext.reg( 'sell', SellMainCls );

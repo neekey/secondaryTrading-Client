@@ -7,38 +7,38 @@
 
         // 清欠结果的所有id
         resultItems: [
-//            {
-//                address: 'nihaoaijoa',
-//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-//                title: 'dafadfa',
-//                desc: 'daffddaffda',
-//                price: '1243414',
-//                _id: 'test'
-//            },
-//            {
-//                address: 'nihaoaijoa',
-//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-//                title: 'dafadfa',
-//                desc: 'daffddaffda',
-//                price: '1243414',
-//                _id: 'test'
-//            },
-//            {
-//                address: 'nihaoaijoa',
-//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-//                title: 'dafadfa',
-//                desc: 'daffddaffda',
-//                price: '1243414',
-//                _id: 'test'
-//            },
-//            {
-//                address: 'nihaoaijoa',
-//                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-//                title: 'dafadfa',
-//                desc: 'daffddaffda',
-//                price: '1243414',
-//                _id: 'test'
-//            }
+            {
+                address: 'nihaoaijoa',
+                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+                title: 'dafadfa',
+                desc: 'daffddaffda',
+                price: '1243414',
+                _id: 'test'
+            },
+            {
+                address: 'nihaoaijoa',
+                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+                title: 'dafadfa',
+                desc: 'daffddaffda',
+                price: '1243414',
+                _id: 'test'
+            },
+            {
+                address: 'nihaoaijoa',
+                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+                title: 'dafadfa',
+                desc: 'daffddaffda',
+                price: '1243414',
+                _id: 'test'
+            },
+            {
+                address: 'nihaoaijoa',
+                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
+                title: 'dafadfa',
+                desc: 'daffddaffda',
+                price: '1243414',
+                _id: 'test'
+            }
         ],
         resultIds: [],
         initComponent: function (){
@@ -50,8 +50,8 @@
 
             ResultListCls.superclass.initComponent.call( this );
         },
-//        layout: 'auto',
-//        scroll: false,
+//        layout: 'fit',
+//        scroll: 'vertical',
         listeners: {
             afterRender:function (){
 
@@ -79,11 +79,6 @@
             },
             // 当窗口尺寸改变
             afterlayout: function (){
-            },
-            // item被点击
-            itemTaped: function ( item ){
-
-                Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
             }
         },
 

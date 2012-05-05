@@ -1,5 +1,7 @@
 (function(){
 
+    var Mods = App.mods;
+
     Ext.regController( 'sell', {
 
         index: function (){
@@ -12,6 +14,7 @@
                 this.VSellMenu = this.VSellMain.query( 'sellMenu' )[ 0 ];
                 this.VSellNewItem = this.VSellMain.query( 'newItem' )[ 0 ];
                 this.VSellItemDetail = this.VSellMain.query( 'itemDetail' )[ 0 ];
+                this.VSellList = this.VSellMain.query( 'sellingList' )[ 0 ];
 
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
@@ -39,6 +42,14 @@
 
             this.index();
             this.VSellMain.setActiveItem( this.VSellMenu );
+        },
+
+        sellList: function (){
+
+            this.index();
+            this.VSellMain.setActiveItem( this.VSellList );
+
+            this.VSellList.getSellingItem();
         }
     });
 })();

@@ -161,6 +161,27 @@
         },
 
         /**
+         * 获取当前用户的信息
+         */
+        getUserEmail: function (){
+
+            var email;
+
+            if( session ){
+                email = session.get( 'email' );
+
+                if( !email ){
+                    email = undefined;
+                }
+            }
+            else {
+                email = undefined;
+            }
+
+            return email;
+        },
+
+        /**
          * 保存session数据
          */
         save: function(){

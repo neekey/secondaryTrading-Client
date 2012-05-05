@@ -23,7 +23,7 @@
                 text: '出售中的商品',
                 handler: function (){
 
-                    Ext.redirect( 'sell/itemDetail' );
+                    Ext.redirect( 'sell/sellList' );
                 }
             }
         ],

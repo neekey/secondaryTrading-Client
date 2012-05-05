@@ -134,9 +134,15 @@
         listeners: {
             afterRender:function (){
 
+                var that = this;
+
                 this.resultList = this.query( 'resultList')[ 0 ];
                 this.searchField = this.query( 'searchfield' )[ 0 ];
                 this.getMoreResultBtn = this.query( 'button' )[ 0 ];
+
+                this.resultList.addListener( 'itemTaped', function ( item ){
+                    that.fireEvent( 'itemTaped', item );
+                });
 
             },
             resize: function (){
@@ -146,6 +152,10 @@
             bodyresize: function (){
                 console.log( 'itemDetail bodyresize' );
 
+            },
+            itemTaped: function ( item ){
+
+                Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
             },
             // 当窗口尺寸改变
             afterlayout: function (){

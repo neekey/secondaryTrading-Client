@@ -19,7 +19,8 @@
             CHECKAUTH: API_HOST + 'checkauth',
             NEW_ITEM: API_HOST + 'newItem',
             GEO: 'http://maps.google.com/maps/api/geocode/json',
-            QUERY_ITEM: API_HOST + 'searchitem'
+            QUERY_ITEM: API_HOST + 'searchitem',
+            SELLING_LIST: API_HOST + 'sellinglist'
         },
         // 用于JSONP请求的KEY
         API_JSONP_KEY: 'callback',
