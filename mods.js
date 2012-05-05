@@ -161,6 +161,27 @@
         },
 
         /**
+         * 获取当前用户的信息
+         */
+        getUserEmail: function (){
+
+            var email;
+
+            if( session ){
+                email = session.get( 'email' );
+
+                if( !email ){
+                    email = undefined;
+                }
+            }
+            else {
+                email = undefined;
+            }
+
+            return email;
+        },
+
+        /**
          * 保存session数据
          */
         save: function(){
@@ -231,6 +252,7 @@
 
     var Config = App.config;
     var Mods = App.mods;
+    var Auth = Mods.auth;
     // 缓存item信息 { id -> itemOBj }
     var ItemCache = {};
 
@@ -268,6 +290,41 @@
                     }
                 });
             }
+        },
+
+        /**
+         * (根据用户的email)获取当前用户的正在出售的商品
+         * @param {Function} next( err, items )
+         */
+        getSellingItem: function ( next ){
+
+            var email = Auth.getUserEmail();
+            var that = this;
+
+            Mods.request.send({
+                method: 'get',
+                data: {
+                    email: email
+                },
+                type: 'SELLING_LIST',
+                callback: function ( d ){
+
+                    var resData = d.data;
+                    var result = resData.result;
+                    var data = resData.data;
+
+                    if( result ){
+
+                        next( undefined, that.imgPathHandle( data.items ) );
+                    }
+                    else {
+
+                        Ext.Msg.alert( resData.error + ': ' + JSON.stringify( resData.data ) );
+                        next( d )
+                    }
+                }
+            }, true );
+
         },
 
         /**
