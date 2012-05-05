@@ -8,6 +8,7 @@
         iconCls: 'search',
         id: 'welcome-register',
         apiType: 'REGISTER',
+        scroll: false,
 
         initComponent: function (){
 

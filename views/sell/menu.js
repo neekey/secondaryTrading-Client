@@ -9,6 +9,7 @@
             height: '50',
             margin: '0 0 10 0'
         },
+        scroll: false,
         items: [
             {
                 ui  : 'action',

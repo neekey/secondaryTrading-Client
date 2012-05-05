@@ -122,7 +122,13 @@
          * 设置图片
          * @param pics
          */
-        setPics: function ( pics ){
+        setPics: function ( imgs ){
+
+            var pics = [];
+
+            Ext.each( imgs, function ( img ){
+                pics.push( img.url );
+            });
 
             this.picSlide.setPics( pics );
         },

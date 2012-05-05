@@ -41,6 +41,13 @@
             }
 
             return urls;
+        },
+
+        /**
+         *
+         */
+        getImages: function (){
+
         }
     });
 

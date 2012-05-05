@@ -73,5 +73,30 @@
     </div>
 </script>
 
+<script type="text/template" id="item-edit-imgs">
+    <div class="item-edit-imgs">
+        <ul class="item-edit-imgs-list">
+            <tpl for=".">
+            <li class="item-edit-imgs-item" data-id="{_id}">
+                <div class="item-edit-pic-wrap">
+                    <tpl if="typeof _id === 'undefined'"><span class="item-edit-img-tip">添加</span><img class="hidden" src="{url}"></tpl>
+                    <tpl if="typeof _id !== 'undefined'"><span class="item-edit-img-tip hidden">添加</span><img src="{url}"></tpl>
+                </div>
+                <tpl if="typeof _id === 'undefined'">
+                    <div class="item-edit-pic-remove  x-button demobtn hidden">
+                        <span class="x-button-label">删除</span>
+                    </div>
+                </tpl>
+                <tpl if="typeof _id !== 'undefined'">
+                    <div class="item-edit-pic-remove  x-button demobtn">
+                        <span class="x-button-label">删除</span>
+                    </div>
+                </tpl>
+            </li>
+            </tpl>
+        </ul>
+    </div>
+</script>
+
 </body>
 </html>

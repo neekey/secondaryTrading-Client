@@ -1,0 +1,62 @@
+@editImgItemHeight: 200px;
+@imgWrapHeight: 100px;
+
+// 父容器
+.item-edit-imgs {
+    margin-top: 20px;
+}
+
+// 列表，清楚浮动
+.item-edit-imgs-list:after {
+    content: '';
+    display: block;
+    visibility: hidden;
+    height: 0px;
+    width: 0px;
+    clear: both;
+}
+
+// 每个图像item单元
+.item-edit-imgs-item {
+    height: @editImgItemHeight;
+    width: 30%;
+    float: left;
+    margin: 0 1% 0 2%;
+}
+
+.item-edit-imgs-item .hidden {
+    display: none;
+}
+
+//垂直居中，参考a http://www.blueidea.com/tech/web/2006/3231.asp
+.item-edit-pic-wrap {
+
+    vertical-align: middle;
+    overflow: hidden;
+    text-align: center;
+    height: @imgWrapHeight;
+    line-height: @imgWrapHeight;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 10px #dddddd;
+    width: 100%;
+}
+
+.item-edit-pic-wrap img {
+    vertical-align:middle;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+// 若没有图像的文字提示
+.item-edit-img-tip {
+    font-size: 32px;
+    color: #eeeeee;
+}
+
+// 移除图像按钮
+.item-edit-pic-remove {
+    margin-top: 10px;
+    height: 30px;
+    text-align: center;
+}

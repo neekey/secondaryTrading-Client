@@ -350,7 +350,7 @@
 
                     for( i = 0; img = imgs[ i ]; i++ ){
 
-                        imgs[ i ] = Config.APIHOST + 'img?id=' + img._id;
+                        img.url = Config.APIHOST + 'img?id=' + img._id;
                     }
                 }
             }

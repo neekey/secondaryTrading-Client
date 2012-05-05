@@ -9,6 +9,8 @@
         scroll: 'vertical',
         id: 'welcome-login',
         apiType: 'LOGIN',
+        scroll: false,
+
 
         /**
          * 组件初始化

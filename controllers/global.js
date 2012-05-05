@@ -39,7 +39,11 @@
 
                     var buyController = Ext.ControllerManager.get( 'buy' );
                     buyController.itemDetail( action );
+                }
+                else if( controllerName === 'itemedit' ){
 
+                    var buyController = Ext.ControllerManager.get( 'sell' );
+                    buyController.itemEdit( action );
                 }
             }
         });

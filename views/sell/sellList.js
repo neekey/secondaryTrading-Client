@@ -56,7 +56,7 @@
             },
             itemTaped: function ( item ){
 
-                Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
+                Ext.redirect( 'itemedit/' + item.getAttribute( 'data-id' ) );
             }
         },
 

@@ -15,6 +15,9 @@
             },
             {
                 xtype: 'sellingList'
+            },
+            {
+                xtype: 'itemEdit'
             }
         ]
 //        layout: 'auto',
