@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html manifest="manifest">
 <head>
     <meta charset="utf-8">
     <title>PhoneGap</title>
@@ -95,6 +95,20 @@
             </li>
             </tpl>
         </ul>
+    </div>
+</script>
+
+<script type="text/template" id="current-location-info-tpl">
+
+    <div class="current-location-wrap">
+        <span class="current-location-title">当前位置:</span>
+        <tpl if="typeof address === 'undefined'">
+        <span class="current-location">点击“定位”设置您的当前位置!</span>
+        </tpl>
+        <tpl if="typeof address !== 'undefined'">
+        <span class="current-location">{address}</span>
+        </tpl>
+        <span class="location-tip">( 设置您的所在位置，能更好地为您匹配商品 )</span>
     </div>
 </script>
 

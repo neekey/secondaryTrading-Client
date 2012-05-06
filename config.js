@@ -17,6 +17,8 @@
             REGISTER: API_HOST + 'register',
             LOGOUT: API_HOST + 'logout',
             CHECKAUTH: API_HOST + 'checkauth',
+            GET_USER: API_HOST + 'userinfo',
+            UPDATE_USER: API_HOST + 'updateuser',
             NEW_ITEM: API_HOST + 'newItem',
             DEL_ITEM: API_HOST + 'itemdel',
             UPDATE_ITEM: API_HOST + 'updateitem',

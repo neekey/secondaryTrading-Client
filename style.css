@@ -193,3 +193,24 @@
   background: white;
   border-radius: 5px;
 }
+.location-tip {
+  text-align: left;
+  text-shadow: white 0 1px 1px;
+  color: red;
+  fonr-size: .2em;
+  margin: 1em 0.7em 0.3em;
+}
+.myprofile-location-container {
+  padding: 2%;
+  margin: 1em;
+  background: white;
+  border-radius: 5px;
+}
+.current-location-title {
+  font-weight: bold;
+  color: #333333;
+  margin-right: 10px;
+}
+.current-location {
+  color: gray;
+}

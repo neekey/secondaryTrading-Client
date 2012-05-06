@@ -15,16 +15,6 @@
                 xtype: 'toolbar',
                 dock: 'top',
                 title: '我是卖家'
-//                items: [
-//                    {
-//                        xtype: 'button',
-//                        text: '返回',
-//                        handler: function (){
-//
-//                            Ext.redirect( 'sell/menu' );
-//                        }
-//                    }
-//                ]
             }
         ],
         items: [
