@@ -411,6 +411,43 @@
         },
 
         /**
+         * 更新item
+         * @param itemId
+         * @param updateObj
+         * @param next
+         */
+        updateItem: function ( itemId, updateObj, next ){
+
+            updateObj.id = itemId;
+
+            Mods.request.send({
+                method: 'post',
+                data: updateObj,
+                disableCaching: true,
+                type: 'UPDATE_ITEM',
+                callback: function ( d ){
+
+                    var resData = d.data;
+                    var result = resData.result;
+                    var data = resData.data;
+
+                    if( result ){
+
+                        next( undefined, resData );
+                    }
+                    else {
+
+                        Ext.Msg.alert( '修改商品失败:' + resData.error + ' ' + JSON.stringify( resData.data ) );
+                        next( resData )
+                    }
+                }
+            }, true );
+
+            // 删除缓存
+            delete ItemCache[ itemId ];
+        },
+
+        /**
          * 删除item
          * @param itemId itemId
          * @param next ( err )

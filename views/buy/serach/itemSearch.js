@@ -15,18 +15,28 @@
                     {
                         xtype: 'toolbar',
                         dock: 'top',
+                        title: '商品搜索'
+                    }
+                ],
+                items: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
                         title: '商品搜索',
-                        items: [
+                            items: [
                             {
                                 xtype: 'searchfield',
                                 placeHolder: '输入你需要的商品',
-                                width: '80%'
+                                width: '75%'
+                            },
+                            {
+                                xtype: 'spacer'
                             },
                             {
                                 text: '搜索',
                                 ui: 'confirm',
                                 align: 'end',
-                                width: '15%',
+                                width: '20%',
                                 handler: function (){
 
                                     var keyword = that.searchField.getValue();
@@ -76,9 +86,7 @@
                                 }
                             }
                         ]
-                    }
-                ],
-                items: [
+                    },
                     {
                         xtype: 'resultList'
                     },

@@ -6,13 +6,30 @@
         defaults: {
             xtype: 'button',
             cls  : 'demobtn',
-            height: '50',
-            margin: '0 0 10 0'
+            height: 45,
+            margin: '30% 10%'
         },
         scroll: false,
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                dock: 'top',
+                title: '我是卖家'
+//                items: [
+//                    {
+//                        xtype: 'button',
+//                        text: '返回',
+//                        handler: function (){
+//
+//                            Ext.redirect( 'sell/menu' );
+//                        }
+//                    }
+//                ]
+            }
+        ],
         items: [
             {
-                ui  : 'action',
+                ui  : 'confirm',
                 text: '添加新商品',
                 handler: function(){
 
@@ -27,9 +44,6 @@
                     Ext.redirect( 'sell/sellList' );
                 }
             }
-        ],
-        dockedItems: [
-
         ]
     });
 

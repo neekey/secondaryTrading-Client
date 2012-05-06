@@ -550,9 +550,38 @@
         cls: 'card2',
         badgeText: '4',
         defaults: {
-            xtype: 'button'
+            xtype: 'button',
+            margin: '30% 10%',
+            height: 45
         },
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                dock: 'top',
+                title: '个人中心'
+//                items: [
+//                    {
+//                        xtype: 'button',
+//                        text: '返回',
+//                        handler: function (){
+//
+//                            Ext.redirect( 'sell/menu' );
+//                        }
+//                    }
+//                ]
+            }
+        ],
         items: [
+            {
+                text: '偏好设置',
+                ui: 'confirm',
+                handler: function(){
+
+                    Auth.logout(function (){
+                        Ext.redirect( 'welcome/login' );
+                    });
+                }
+            },
             {
                 text: '注销',
                 handler: function(){
@@ -577,13 +606,30 @@
         defaults: {
             xtype: 'button',
             cls  : 'demobtn',
-            height: '50',
-            margin: '0 0 10 0'
+            height: 45,
+            margin: '30% 10%'
         },
         scroll: false,
+        dockedItems: [
+            {
+                xtype: 'toolbar',
+                dock: 'top',
+                title: '我是卖家'
+//                items: [
+//                    {
+//                        xtype: 'button',
+//                        text: '返回',
+//                        handler: function (){
+//
+//                            Ext.redirect( 'sell/menu' );
+//                        }
+//                    }
+//                ]
+            }
+        ],
         items: [
             {
-                ui  : 'action',
+                ui  : 'confirm',
                 text: '添加新商品',
                 handler: function(){
 
@@ -598,9 +644,6 @@
                     Ext.redirect( 'sell/sellList' );
                 }
             }
-        ],
-        dockedItems: [
-
         ]
     });
 
@@ -1038,18 +1081,28 @@
                     {
                         xtype: 'toolbar',
                         dock: 'top',
+                        title: '商品搜索'
+                    }
+                ],
+                items: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
                         title: '商品搜索',
-                        items: [
+                            items: [
                             {
                                 xtype: 'searchfield',
                                 placeHolder: '输入你需要的商品',
-                                width: '80%'
+                                width: '75%'
+                            },
+                            {
+                                xtype: 'spacer'
                             },
                             {
                                 text: '搜索',
                                 ui: 'confirm',
                                 align: 'end',
-                                width: '15%',
+                                width: '20%',
                                 handler: function (){
 
                                     var keyword = that.searchField.getValue();
@@ -1099,9 +1152,7 @@
                                 }
                             }
                         ]
-                    }
-                ],
-                items: [
+                    },
                     {
                         xtype: 'resultList'
                     },
@@ -2120,6 +2171,41 @@
         },
 
         /**
+         * 返回修改的item的图片请求,包括删除的旧的图像，以及新增的新图像
+         * @return {Object} { addItems: [ base64图像数据数组 ], removeImgs: [ 被删除的旧图像的id数组 ] }
+         */
+        getUpdateInfo: function (){
+
+            var addImgs = [];
+
+            var imgItem = this.body.query( '.item-edit-imgs-item' );
+
+            Ext.each( imgItem, function ( item ){
+
+                // 若没有id，则说明是新图片
+                if( !item.getAttribute( 'data-id' ) ){
+
+                    var img = Ext.get( item ).query( 'img')[ 0 ];
+                    var url;
+
+                    if( img ){
+
+                        url = img.getAttribute( 'src' );
+                    }
+
+                    if( url ){
+                        addImgs.push( url );
+                    }
+                }
+            });
+
+            return {
+                addImgs: addImgs,
+                removeImgs: this.removeImgs
+            };
+        },
+
+        /**
          * 设置图像信息
          * @param imgs
          */
@@ -2205,6 +2291,32 @@
                                 align: 'end',
                                 handler: function (){
 
+                                    var data = that.getUpdateInfo();
+                                    var model = Ext.ModelMgr.create( data, 'Item' );
+                                    var errors = model.validate();
+                                    var message = "";
+
+                                    if( errors.isValid() ){
+
+                                        Mods.itemRequest.updateItem( that.itemId, data, function ( errObj ){
+
+                                            if( !errObj ){
+
+                                                Ext.Msg.alert( '修改商品成功!' );
+                                            }
+                                        });
+                                    }
+                                    else {
+
+                                        Ext.each( errors.items, function( rec, i ){
+
+                                            message += rec.message+"<br>";
+                                        });
+
+                                        Ext.Msg.alert( "表单有误：", message );
+
+                                        return false;
+                                    }
                                 }
                             },
                             {
@@ -2253,22 +2365,38 @@
             }
         },
 
-        itemDataHandle: function ( formData, location, pics ){
+        /**
+         * 获取相对原有商品信息的变更
+         * @return {Object}
+         */
+        getUpdateInfo: function (){
 
-            var data = {
+            // 若为在浏览器中调试，则使用测试数据
+
+
+            var location = this.newItemLocation.getLocation();
+            var formData = this.newItemForm.getValues();
+            var imgUpdate = this.imgEdit.getUpdateInfo();
+
+            return {
                 title: formData.title,
                 desc: formData.desc,
                 price: formData.price,
+                addImgNum: imgUpdate.addImgs.length,
+                removeImgs: imgUpdate.removeImgs,
+                pic1: imgUpdate.addImgs[ 0 ],
+                pic2: imgUpdate.addImgs[ 1 ],
+                pic3: imgUpdate.addImgs[ 2 ],
                 latlng: location.latlng,
-                address: location.address,
-                pic1: pics[ 0 ],
-                pic2: pics[ 1 ],
-                pic3: pics[ 2 ]
+                address: location.address
             };
-
-            return data;
         },
 
+        /**
+         * 对iteminfo 做一些预处理(通常在fetch到数据之后）
+         * @param itemInfo
+         * @return {*}
+         */
         itemInfoHandle: function ( itemInfo ){
 
             itemInfo.latlng = itemInfo.location.join( ',' );
