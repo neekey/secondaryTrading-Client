@@ -214,3 +214,7 @@
 .current-location {
   color: gray;
 }
+.location-map {
+  height: 100%;
+  width: 100%;
+}

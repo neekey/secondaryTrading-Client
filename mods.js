@@ -535,22 +535,67 @@
 
         /**
          * 获取当前GPS信息
+         * @param {Function} next( errMsg, { lat, lng }
          */
         getCurrentLatLng: function( next ){
 
-//            alert( 'getCurrentLatLng' );
-            navigator.geolocation.getCurrentPosition(function(position) {
+            var browserSupportFlag =  new Boolean();
 
-                var coords = position.coords;
+            // Try W3C Geolocation (Preferred)
+            if(navigator.geolocation) {
+                browserSupportFlag = true;
 
-                next( undefined, {
-                    lat: coords.latitude,
-                    lng: coords.longitude
+                alert( 'navigator.geolocation exists!' );
+
+                if( navigator.geolocation.getCurrentPosition ){
+
+                    alert( 'getCurrentPosition exists!' );
+                }
+                navigator.geolocation.getCurrentPosition(function(position) {
+
+                    alert( 'location get!' );
+
+                    var coords = position.coords;
+
+                    next( undefined, {
+                        lat: coords.latitude,
+                        lng: coords.longitude
+                    });
+                }, function() {
+                    handleNoGeolocation(browserSupportFlag);
                 });
-            }, function( err ){
+                // Try Google Gears Geolocation
+            } else if (google.gears) {
+                browserSupportFlag = true;
+                var geo = google.gears.factory.create('beta.geolocation');
+                geo.getCurrentPosition(function(position) {
+                    var coords = position.coords;
 
-                next( err );
-            }, { enableHighAccuracy: true });
+                    next( undefined, {
+                        lat: coords.latitude,
+                        lng: coords.longitude
+                    });
+                }, function() {
+                    handleNoGeoLocation(browserSupportFlag);
+                });
+                // Browser doesn't support Geolocation
+            } else {
+                browserSupportFlag = false;
+                handleNoGeolocation(browserSupportFlag);
+            }
+
+            function handleNoGeolocation(errorFlag) {
+                var errorMsg;
+
+                if (errorFlag == true) {
+                    errorMsg = "GPS模块获取地理位置信息失败";
+                } else {
+                    errorMsg = "您当前设备不支持地理信息获取";
+                }
+
+                next( errorMsg );
+            }
+
         },
         /**
          * 反向地址解析
