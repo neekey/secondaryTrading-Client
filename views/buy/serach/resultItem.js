@@ -55,7 +55,7 @@
                     'tap': function (){
 
                         console.log( that.itemInfo._id );
-                        Ext.redirect( 'itemdetail/' + that.itemInfo._id );
+                        Mods.route.redirect( 'itemdetail/' + that.itemInfo._id );
                     }
                 });
             },

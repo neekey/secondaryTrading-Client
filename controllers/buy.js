@@ -36,7 +36,7 @@
          * 商品页详情部分
          * @param {String} itemId 商品id
          */
-        itemDetail: function ( itemId ){
+        detail: function ( itemId ){
 
             this.index();
 

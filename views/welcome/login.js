@@ -2,6 +2,7 @@
 
     var Request = App.mods.request;
     var Auth = App.mods.auth;
+    var Mods = App.mods;
 
     var LoginCls = App.views.login = Ext.extend( Ext.form.FormPanel, {
 
@@ -53,7 +54,7 @@
 
                                             if( ifLogin ){
 
-                                                Ext.redirect( 'main' );
+                                                Mods.route.redirect( 'main' );
                                                 // 重置表单
                                                 that.reset();
                                             }

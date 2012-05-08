@@ -29,7 +29,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'sell/sellList' );
+                                    Mods.route.redirect( 'sell/sellList' );
                                 }
                             },
                             { xtype: 'spacer' },
@@ -80,7 +80,7 @@
 
                                             Ext.Msg.alert( '商品删除成功!', '将回到商品列表', function (){
                                                 // 若删除成功，返回列表
-                                                Ext.redirect( 'sell/sellList' );
+                                                Mods.route.redirect( 'sell/sellList' );
                                             } );
                                         }
                                     });
@@ -213,7 +213,7 @@
 
                         Ext.Msg.alert( '该商品不存在!', '将回到商品列表', function (){
 
-                            Ext.redirect( 'sell/sellList' );
+                            Mods.route.redirect( 'sell/sellList' );
                         });
                     }
                 }

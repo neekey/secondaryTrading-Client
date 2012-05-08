@@ -153,17 +153,9 @@
                 });
 
             },
-            resize: function (){
-
-                console.log( 'itemDetail resize' );
-            },
-            bodyresize: function (){
-                console.log( 'itemDetail bodyresize' );
-
-            },
             itemTaped: function ( item ){
 
-                Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'buy/detail/' + item.getAttribute( 'data-id' ) );
             },
             // 当窗口尺寸改变
             afterlayout: function (){

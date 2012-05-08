@@ -30,7 +30,7 @@
                                 ui: 'back',
                                 handler: function (){
 
-                                    Ext.redirect( 'profile/menu' );
+                                    Mods.route.redirect( 'profile/menu' );
                                 }
                             },
                             {
