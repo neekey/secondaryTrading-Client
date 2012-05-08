@@ -96,7 +96,13 @@
         items: [
             { xtype: 'newItemForm' },
 //            { xtype: 'newItemLocation' },
-            { xtype: 'locationButton' },
+            {
+                xtype: 'button',
+                handler: function (){
+
+                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
+                }
+            },
             { xtype: 'newItemImg' }
 //            submitSellConfig
         ],

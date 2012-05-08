@@ -114,6 +114,35 @@
             }
 
         },
+
+        /**
+         * 进行地址解析
+         * @param obj { address: '', latLng: 一个google Map LatLng对象 }
+         * @param next ( err, address, latlng )
+         */
+        geocode: function ( obj, next ){
+
+            if( !this.geocoder ){
+
+                this.geocoder = new google.maps.Geocoder();
+            }
+
+            this.geocoder.geocode( obj, function ( results, status ){
+
+                if ( status == google.maps.GeocoderStatus.OK ) {
+
+                    // 结果的范围由精确到大范围 比如 .....华星路 最后到 中国 所以一般我们选 第一个
+                    if ( results[ 0 ]) {
+
+                        next( undefined, results[0].formatted_address, results[0].geometry.location );
+                    }
+                } else {
+
+                    next( '地址查询失败! 错误代码：' + status );
+                }
+            });
+
+        },
         /**
          * 反向地址解析
          * Reverse Address Resolution

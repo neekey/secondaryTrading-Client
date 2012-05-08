@@ -14,14 +14,16 @@
                 xtype: 'newItem'
             },
             {
+                xtype: 'positionSearch',
+                scroll: false
+            },
+            {
                 xtype: 'sellingList'
             },
             {
                 xtype: 'itemEdit'
             }
         ]
-//        layout: 'auto',
-//        scroll: 'vertical'
     });
 
     Ext.reg( 'sell', SellMainCls );

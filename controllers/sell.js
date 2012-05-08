@@ -14,6 +14,7 @@
                 this.VSellMenu = this.VSellMain.query( 'sellMenu' )[ 0 ];
                 this.VSellNewItem = this.VSellMain.query( 'newItem' )[ 0 ];
                 this.VSellItemDetail = this.VSellMain.query( 'itemDetail' )[ 0 ];
+                this.VSellPositionSearch = this.VSellMain.query( 'positionSearch' )[ 0 ];
                 this.VSellList = this.VSellMain.query( 'sellingList' )[ 0 ];
                 this.VSellItemEdit = this.VSellMain.query( 'itemEdit' )[ 0 ];
 
@@ -30,6 +31,16 @@
             this.index();
 
             this.VSellMain.setActiveItem( this.VSellNewItem );
+        },
+
+        positionSearch: function ( targetHash ){
+
+            targetHash = targetHash.split( ',').join( '/' );
+
+            this.index();
+
+            this.VSellMain.setActiveItem( this.VSellPositionSearch );
+            this.VSellPositionSearch.setTargetHash( targetHash );
         },
 
         itemDetail: function (){

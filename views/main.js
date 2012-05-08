@@ -16,9 +16,6 @@
             type: 'fade',
             cover: true
         },
-        defaults: {
-            scroll: 'vertical'
-        },
         listeners: {
             afterrender: function(){
             }
