@@ -162,8 +162,8 @@
         draggable: false,
         modal: true,
         centered: true,
-        width: Ext.is.Phone ? '100%' : 700,
-        height: Ext.is.Phone ? '100%' : 600,
+        width: Ext.is.Phone ? '70%' : 700,
+        height: Ext.is.Phone ? '70%' : 600,
 //        styleHtmlContent: true,
 
 //        items: [
@@ -210,6 +210,7 @@
             show: function (){
 
                 var that = this;
+                var fakePostion = [30.2329954, 120.0376216];
 
                 Mods.map.getCurrentLatLng(function ( err, latlng ){
 

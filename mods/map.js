@@ -49,8 +49,12 @@
         /**
          * 获取当前GPS信息
          * @param {Function} next( errMsg, { lat, lng }
+         * @param {Number} timeout
          */
-        getCurrentLatLng: function( next ){
+        getCurrentLatLng: function( next, timeout ){
+
+            // 默认超时1分钟
+            timeout = timeout || 60000;
 
             var browserSupportFlag =  new Boolean();
 
@@ -58,55 +62,55 @@
             if(navigator.geolocation) {
                 browserSupportFlag = true;
 
-                alert( 'navigator.geolocation exists!' );
+                // 获取地理位置，并设置超时1分钟
+                navigator.geolocation.getCurrentPosition( onSuccess, onError, { enableHighAccuracy: true, timeout: timeout });
 
-                if( navigator.geolocation.getCurrentPosition ){
-
-                    alert( 'getCurrentPosition exists!' );
-                }
-                navigator.geolocation.getCurrentPosition(function(position) {
-
-                    alert( 'location get!' );
-
-                    var coords = position.coords;
-
-                    next( undefined, {
-                        lat: coords.latitude,
-                        lng: coords.longitude
-                    });
-                }, function() {
-                    handleNoGeolocation(browserSupportFlag);
-                });
                 // Try Google Gears Geolocation
             } else if (google.gears) {
+
                 browserSupportFlag = true;
                 var geo = google.gears.factory.create('beta.geolocation');
-                geo.getCurrentPosition(function(position) {
-                    var coords = position.coords;
+                geo.getCurrentPosition( onSuccess, onError );
 
-                    next( undefined, {
-                        lat: coords.latitude,
-                        lng: coords.longitude
-                    });
-                }, function() {
-                    handleNoGeoLocation(browserSupportFlag);
-                });
                 // Browser doesn't support Geolocation
             } else {
                 browserSupportFlag = false;
                 handleNoGeolocation(browserSupportFlag);
             }
 
-            function handleNoGeolocation(errorFlag) {
-                var errorMsg;
+            /**
+             * 成功获取到地理位置信息
+             * @param position { coords: { latitude: , longitude: }, timestamp: }
+             */
+            function onSuccess( position ){
+
+                var coords = position.coords;
+
+                next( undefined, {
+                    lat: coords.latitude,
+                    lng: coords.longitude
+                });
+            }
+
+            function onError( err ){
+
+                var code = err.code;
+                var message = err.message;
+
+                var msg = '地理位置信息获取失败：Code: ' + code + ' Message: ' + message;
+
+                handleNoGeolocation( browserSupportFlag, msg )
+            }
+
+            function handleNoGeolocation(errorFlag, msg ) {
 
                 if (errorFlag == true) {
-                    errorMsg = "GPS模块获取地理位置信息失败";
+                    msg = msg || ''
                 } else {
-                    errorMsg = "您当前设备不支持地理信息获取";
+                   msg = '您当前设备不支持地理信息获取';
                 }
 
-                next( errorMsg );
+                next( msg );
             }
 
         },
