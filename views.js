@@ -946,7 +946,7 @@
                                 ui: 'back',
                                 handler: function (){
 
-                                    Ext.redirect( 'profile/menu' );
+                                    Mods.route.redirect( 'profile/menu' );
                                 }
                             },
                             {
@@ -1255,6 +1255,7 @@
 (function(){
 
     var Auth = App.mods.auth;
+    var Mods = App.mods;
 
     var profileMenuCls = Ext.extend( Ext.Panel, {
 
@@ -1277,7 +1278,7 @@
                 ui: 'confirm',
                 handler: function (){
 
-                    Ext.redirect( 'profile/myProfile' );
+                    Mods.route.redirect( 'profile/myProfile' );
                 }
             },
             {
@@ -1285,7 +1286,7 @@
                 ui: 'confirm',
                 handler: function(){
 
-                    Ext.redirect( 'profile/preferences' );
+                    Mods.route.redirect( 'profile/preferences' );
                 }
             },
             {
@@ -1293,7 +1294,7 @@
                 handler: function(){
 
                     Auth.logout(function (){
-                        Ext.redirect( 'welcome/login' );
+                        Mods.route.redirect( 'welcome/login' );
                     });
                 }
             }
@@ -1304,6 +1305,7 @@
 })();
 (function(){
 
+    var Mods = App.mods;
     var SellMenuCls = App.views.sellMenu = Ext.extend( Ext.Panel, {
 
         id: 'wannaSell-index',
@@ -1327,7 +1329,7 @@
                 text: '添加新商品',
                 handler: function(){
 
-                    Ext.redirect( 'sell/newItem' );
+                    Mods.route.redirect( 'sell/newItem' );
                 }
             },
             {
@@ -1335,7 +1337,7 @@
                 text: '出售中的商品',
                 handler: function (){
 
-                    Ext.redirect( 'sell/sellList' );
+                    Mods.route.redirect( 'sell/sellList' );
                 }
             }
         ]
@@ -1395,7 +1397,7 @@
                                 text: '返回',
                                 handler: function (){
 
-                                    Ext.redirect( 'sell/menu' );
+                                    Mods.route.redirect( 'sell/menu' );
                                 }
                             }
                         ]
@@ -1429,7 +1431,7 @@
             },
             itemTaped: function ( item ){
 
-                Ext.redirect( 'itemedit/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'sell/edit/' + item.getAttribute( 'data-id' ) );
             }
         },
 
@@ -1460,6 +1462,7 @@
 
     var Request = App.mods.request;
     var Auth = App.mods.auth;
+    var Mods = App.mods;
 
     var LoginCls = App.views.login = Ext.extend( Ext.form.FormPanel, {
 
@@ -1511,7 +1514,7 @@
 
                                             if( ifLogin ){
 
-                                                Ext.redirect( 'main' );
+                                                Mods.route.redirect( 'main' );
                                                 // 重置表单
                                                 that.reset();
                                             }
@@ -1913,17 +1916,9 @@
                 });
 
             },
-            resize: function (){
-
-                console.log( 'itemDetail resize' );
-            },
-            bodyresize: function (){
-                console.log( 'itemDetail bodyresize' );
-
-            },
             itemTaped: function ( item ){
 
-                Ext.redirect( 'itemdetail/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'buy/detail/' + item.getAttribute( 'data-id' ) );
             },
             // 当窗口尺寸改变
             afterlayout: function (){
@@ -1991,7 +1986,7 @@
                     'tap': function (){
 
                         console.log( that.itemInfo._id );
-                        Ext.redirect( 'itemdetail/' + that.itemInfo._id );
+                        Mods.route.redirect( 'itemdetail/' + that.itemInfo._id );
                     }
                 });
             },
@@ -2320,7 +2315,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'buy/search' );
+                                    Mods.route.redirect( 'buy/search' );
                                 }
                             },
                             { xtype: 'spacer' },
@@ -2975,7 +2970,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'sell/sellList' );
+                                    Mods.route.redirect( 'sell/sellList' );
                                 }
                             },
                             { xtype: 'spacer' },
@@ -3026,7 +3021,7 @@
 
                                             Ext.Msg.alert( '商品删除成功!', '将回到商品列表', function (){
                                                 // 若删除成功，返回列表
-                                                Ext.redirect( 'sell/sellList' );
+                                                Mods.route.redirect( 'sell/sellList' );
                                             } );
                                         }
                                     });
@@ -3159,7 +3154,7 @@
 
                         Ext.Msg.alert( '该商品不存在!', '将回到商品列表', function (){
 
-                            Ext.redirect( 'sell/sellList' );
+                            Mods.route.redirect( 'sell/sellList' );
                         });
                     }
                 }
@@ -3195,7 +3190,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'main/sell' );
+                                    Mods.route.redirect( 'main/sell' );
                                 }
                             },
                             { xtype: 'spacer' },

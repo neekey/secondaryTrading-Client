@@ -1,5 +1,6 @@
 (function(){
 
+    var Mods = App.mods;
     var SellMenuCls = App.views.sellMenu = Ext.extend( Ext.Panel, {
 
         id: 'wannaSell-index',
@@ -23,7 +24,7 @@
                 text: '添加新商品',
                 handler: function(){
 
-                    Ext.redirect( 'sell/newItem' );
+                    Mods.route.redirect( 'sell/newItem' );
                 }
             },
             {
@@ -31,7 +32,7 @@
                 text: '出售中的商品',
                 handler: function (){
 
-                    Ext.redirect( 'sell/sellList' );
+                    Mods.route.redirect( 'sell/sellList' );
                 }
             }
         ]

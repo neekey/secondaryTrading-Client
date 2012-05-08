@@ -4,6 +4,7 @@
 (function(){
 
     var Auth = App.mods.auth;
+    var Mods = App.mods;
 
     var profileMenuCls = Ext.extend( Ext.Panel, {
 
@@ -26,7 +27,7 @@
                 ui: 'confirm',
                 handler: function (){
 
-                    Ext.redirect( 'profile/myProfile' );
+                    Mods.route.redirect( 'profile/myProfile' );
                 }
             },
             {
@@ -34,7 +35,7 @@
                 ui: 'confirm',
                 handler: function(){
 
-                    Ext.redirect( 'profile/preferences' );
+                    Mods.route.redirect( 'profile/preferences' );
                 }
             },
             {
@@ -42,7 +43,7 @@
                 handler: function(){
 
                     Auth.logout(function (){
-                        Ext.redirect( 'welcome/login' );
+                        Mods.route.redirect( 'welcome/login' );
                     });
                 }
             }

@@ -22,7 +22,7 @@
                                 text: '返回',
                                 handler: function (){
 
-                                    Ext.redirect( 'sell/menu' );
+                                    Mods.route.redirect( 'sell/menu' );
                                 }
                             }
                         ]
@@ -56,7 +56,7 @@
             },
             itemTaped: function ( item ){
 
-                Ext.redirect( 'itemedit/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'sell/edit/' + item.getAttribute( 'data-id' ) );
             }
         },
 

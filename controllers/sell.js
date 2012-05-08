@@ -53,7 +53,7 @@
             this.VSellList.getSellingItem();
         },
 
-        itemEdit: function ( itemId ){
+        edit: function ( itemId ){
 
             if( itemId ){
                 this.index();

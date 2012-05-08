@@ -24,9 +24,7 @@
 
         buy: function (){
 
-            alert( 'test' );
             Ext.ControllerManager.get( 'sell' ).menu();
-
         }
     });
 })();

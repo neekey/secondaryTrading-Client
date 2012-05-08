@@ -21,7 +21,7 @@
                                 text: '返回',
                                 ui: 'back',
                                 handler: function() {
-                                    Ext.redirect( 'buy/search' );
+                                    Mods.route.redirect( 'buy/search' );
                                 }
                             },
                             { xtype: 'spacer' },
