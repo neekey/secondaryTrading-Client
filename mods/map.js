@@ -118,7 +118,7 @@
         /**
          * 进行地址解析
          * @param obj { address: '', latLng: 一个google Map LatLng对象 }
-         * @param next ( err, address, latlng )
+         * @param next ( err, address, latlng ) 若使用 address 搜索 结果为 [ { address: , location: }]
          */
         geocode: function ( obj, next ){
 
@@ -131,11 +131,28 @@
 
                 if ( status == google.maps.GeocoderStatus.OK ) {
 
-                    // 结果的范围由精确到大范围 比如 .....华星路 最后到 中国 所以一般我们选 第一个
-                    if ( results[ 0 ]) {
+                    if( obj.latLng ){
+                        // 结果的范围由精确到大范围 比如 .....华星路 最后到 中国 所以一般我们选 第一个
+                        if ( results[ 0 ]) {
 
-                        next( undefined, results[0].formatted_address, results[0].geometry.location );
+                            next( undefined, results[0].formatted_address, results[0].geometry.location );
+                        }
                     }
+                    else if( obj.address ) {
+
+                        var addressResult = [];
+
+                        Ext.each( results, function ( result ){
+
+                            addressResult.push({
+                                address: result.formatted_address,
+                                location: result.geometry.location
+                            });
+                        });
+
+                        next( undefined, addressResult );
+                    }
+
                 } else {
 
                     next( '地址查询失败! 错误代码：' + status );
@@ -143,6 +160,48 @@
             });
 
         },
+
+        /**
+         * 根据给定的一群点，获取一个bounds
+         * @param {Array} locations google map LatLng 对象数组
+         */
+        getBoundsByLocations: function ( locations ){
+
+            var maxLat = undefined;
+            var maxLng = undefined;
+            var minLat = undefined;
+            var minLng = undefined;
+
+            Ext.each( locations, function ( location ){
+
+                var lat = location.lat();
+                var lng = location.lng();
+
+                if( maxLat === undefined || lat > maxLat ){
+
+                    maxLat = lat;
+                }
+
+                if( minLat === undefined || lat < minLat ){
+
+                    minLat = lat;
+                }
+
+                if( maxLng === undefined || lng > maxLng ){
+
+                    maxLng = lng;
+                }
+
+                if( minLng === undefined || lng < minLng ){
+
+                    minLng = lng;
+                }
+            });
+
+            return new google.maps.LatLngBounds( new google.maps.LatLng( maxLat, minLng ),
+                new google.maps.LatLng( minLat, maxLng ) );
+        },
+
         /**
          * 反向地址解析
          * Reverse Address Resolution
