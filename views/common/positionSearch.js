@@ -286,7 +286,8 @@
                 });
             } );
 
-            google.maps.event.addListener( newMarker, 'click', function (){
+            // sencha touch 1.1 在 google maps api >= 3.4 的bug（click无效），配合map.marker.click.fix.js 并改为mouseup
+            google.maps.event.addListener( newMarker, 'mouseup', function (){
 
                 // 先关掉所有的infoWindow
                 that.closeAllInfoWindow();
