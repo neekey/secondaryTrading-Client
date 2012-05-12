@@ -1,5 +1,23 @@
 (function(){
 
+    var Mods = App.mods;
+
+    Mods.getScript = function ( src, delay ){
+
+        delay = delay || 1000;
+
+//        setTimeout(function (){
+
+            var newScript = document.createElement( 'script' );
+            newScript.src = src;
+
+            document.head.appendChild( newScript );
+//        },  );
+    };
+
+})();
+(function(){
+
     var Config = App.config;
     var Mods = App.mods;
     var Session = Config.SESSION;
@@ -255,7 +273,7 @@
 
         Camera.getPicture( onSuccess, onError, {
             quality: quality,
-            destinationType: ifData ? Camera.DestinationType.DATA_URI : Camera.DestinationType.FILE_URI,
+            destinationType: ifData ? Camera.DestinationType.DATA_URL : Camera.DestinationType.FILE_URI,
             sourceType: ifCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY
         });
     };
@@ -560,7 +578,28 @@
             var browserSupportFlag =  new Boolean();
 
             // Try W3C Geolocation (Preferred)
-            if(navigator.geolocation) {
+            if( window.plugins.stGeolocation ){
+
+                browserSupportFlag = true;
+
+                window.plugins.stGeolocation.get( function ( err, location ){
+
+                    if( err ){
+
+                        onError( err );
+                    }
+                    else {
+
+                        location.coords = {
+                            latitude: location.latitude,
+                            longitude: location.longitude
+                        };
+
+                        onSuccess( location );
+                    }
+                });
+            }
+            else if(navigator.geolocation) {
                 browserSupportFlag = true;
 
                 // 获取地理位置，并设置超时1分钟

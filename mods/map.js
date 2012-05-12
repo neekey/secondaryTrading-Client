@@ -59,7 +59,28 @@
             var browserSupportFlag =  new Boolean();
 
             // Try W3C Geolocation (Preferred)
-            if(navigator.geolocation) {
+            if( window.plugins.stGeolocation ){
+
+                browserSupportFlag = true;
+
+                window.plugins.stGeolocation.get( function ( err, location ){
+
+                    if( err ){
+
+                        onError( err );
+                    }
+                    else {
+
+                        location.coords = {
+                            latitude: location.latitude,
+                            longitude: location.longitude
+                        };
+
+                        onSuccess( location );
+                    }
+                });
+            }
+            else if(navigator.geolocation) {
                 browserSupportFlag = true;
 
                 // 获取地理位置，并设置超时1分钟

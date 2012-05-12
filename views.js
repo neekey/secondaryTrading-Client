@@ -925,7 +925,6 @@
 
             that.address = '';
             that.latlng = {};
-            that.geocoder = new google.maps.Geocoder();
 
             // 用于记录所有的marker
             this.markers = [];
@@ -1002,6 +1001,7 @@
                                                         latlngs.push( result.location );
                                                     });
 
+                                                    alert( results.length );
                                                     // 获取包含所有结果的bound
                                                     bound = Mods.map.getBoundsByLocations( latlngs );
 
@@ -1040,54 +1040,60 @@
             activate: function (){
 
                 var that = this;
-                var fakePostion = [30.2329954, 120.0376216];
+                var fakePostion = [30.23304355,120.03763513000001];
 
-                this.setLoading( true );
+                if( !that.map ){
 
-                Mods.map.getCurrentLatLng(function ( err, latlng ){
+                    that.map = new google.maps.Map( that.mapDiv, {
+                        zoom: 16,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    });
+                }
 
-                    that.setLoading( false );
+//                this.map.setCenter( new google.maps.LatLng( fakePostion[ 0 ], fakePostion[ 1 ] ) );
 
-                    if( err ){
-
-                        Ext.Msg.alert( err + ' 您可以手动搜索位置!' );
-                    }
-                    else {
-
-                        var position = new google.maps.LatLng( latlng.lat, latlng.lng );
-
-                        if( !that.map ){
-
-                            that.map = new google.maps.Map( that.mapDiv, {
-                                zoom: 16,
-                                center: position,
-                                mapTypeId: google.maps.MapTypeId.ROADMAP
-                            });
-
-                            window.map = that.map;
-                        }
-
-                        that.map.setCenter( position );
-
-                        // 其中resultLatLng为 google Map的 LatLng对象
-                        Mods.map.geocode( { latLng: position }, function ( err, address, resultLatLng ){
-
-                            if( err ){
-
-                                Ext.Msg.alert( err );
-                            }
-                            else {
-
-                                that.map.setZoom( 16 );
-
-                                that.addPosition( address, resultLatLng );
-                                that.address = address;
-                                that.latlng = resultLatLng;
-                            }
-                        });
-                    }
-                });
+                this.searchCurrentPosition();
             }
+        },
+
+        searchCurrentPosition: function (){
+
+            this.setLoading( true );
+            var that = this;
+
+            Mods.map.getCurrentLatLng(function ( err, latlng ){
+
+                that.setLoading( false );
+
+                if( err ){
+
+                    Ext.Msg.alert( err + ' 您可以手动搜索位置!' );
+                }
+                else {
+
+                    var position = new google.maps.LatLng( latlng.lat, latlng.lng );
+
+                    that.map.setCenter( position );
+
+                    // 其中resultLatLng为 google Map的 LatLng对象
+                    Mods.map.geocode( { latLng: position }, function ( err, address, resultLatLng ){
+
+                        if( err ){
+
+//                            Ext.Msg.alert( err );
+                            alert( err );
+                        }
+                        else {
+
+                            that.map.setZoom( 12 );
+
+                            that.addPosition( address, resultLatLng );
+                            that.address = address;
+                            that.latlng = resultLatLng;
+                        }
+                    });
+                }
+            });
         },
 
         /**
@@ -1215,7 +1221,8 @@
          */
         goBack: function (){
 
-            this.sendPositionBack( this.address, this.latlng.toUrlValue() );
+            var latlngUrlValue = this.latlng.toUrlValue ? this.latlng.toUrlValue() : '';
+            this.sendPositionBack( this.address, latlngUrlValue );
             this.clearMap();
         }
     });
@@ -1813,6 +1820,10 @@
                                 ui: 'confirm',
                                 handler: function() {
 
+                                    // 在android下面，password被激活后貌似拥有很高的z-index，会遮挡住alert，甚至到了新的视图，依旧存在
+                                    // 此处让email的textfield focus，以取消掉password部分的focus效果
+                                    that.emailTextField.focus();
+
                                     var values = that.getValues();
                                     var model = Ext.ModelMgr.create( values, 'Login' );
                                     var errors = model.validate();
@@ -1882,6 +1893,10 @@
         ],
 
         listeners : {
+            afterrender: function (){
+
+                this.emailTextField = this.query( 'textfield' )[ 0 ];
+            },
             submit : function(form, result){
                 console.log('success', Ext.toArray(arguments));
             },

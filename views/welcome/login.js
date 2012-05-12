@@ -43,6 +43,10 @@
                                 ui: 'confirm',
                                 handler: function() {
 
+                                    // 在android下面，password被激活后貌似拥有很高的z-index，会遮挡住alert，甚至到了新的视图，依旧存在
+                                    // 此处让email的textfield focus，以取消掉password部分的focus效果
+                                    that.emailTextField.focus();
+
                                     var values = that.getValues();
                                     var model = Ext.ModelMgr.create( values, 'Login' );
                                     var errors = model.validate();
@@ -112,6 +116,10 @@
         ],
 
         listeners : {
+            afterrender: function (){
+
+                this.emailTextField = this.query( 'textfield' )[ 0 ];
+            },
             submit : function(form, result){
                 console.log('success', Ext.toArray(arguments));
             },

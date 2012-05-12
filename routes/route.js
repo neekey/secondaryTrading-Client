@@ -63,7 +63,7 @@
 
                 var slugs = newHash.split( '/' );
                 // 第一个参数为控制器
-                var controllerSlug = slugs[ 0 ];
+                var controllerSlug = slugs[ 0 ] || 'welcome';
                 // 第二个参数为action
                 var actionSlug = slugs[ 1 ] || DefaultAction;
                 // 剩下的参数为传递给控制器的参数

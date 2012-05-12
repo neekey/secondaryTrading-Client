@@ -24,7 +24,7 @@
 
         Camera.getPicture( onSuccess, onError, {
             quality: quality,
-            destinationType: ifData ? Camera.DestinationType.DATA_URI : Camera.DestinationType.FILE_URI,
+            destinationType: ifData ? Camera.DestinationType.DATA_URL : Camera.DestinationType.FILE_URI,
             sourceType: ifCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY
         });
     };
