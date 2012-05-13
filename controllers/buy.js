@@ -5,7 +5,7 @@
 
     Ext.regController( 'buy', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -18,16 +18,20 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VBuyMain );
+        },
+
+        index: function (){
+
+            this.search();
         },
 
         // 索索页部分
         search: function (){
 
-            this.index();
-            debugger;
+            this.resume();
 
             this.VBuyMain.setActiveItem( this.VBuySearch );
         },
@@ -38,7 +42,7 @@
          */
         detail: function ( itemId ){
 
-            this.index();
+            this.resume();
 
             this.VBuyMain.setActiveItem( this.VBuyItemDetail );
 

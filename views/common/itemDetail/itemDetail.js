@@ -18,11 +18,7 @@
                         title: '商品详情',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'buy/search' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {

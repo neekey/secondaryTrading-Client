@@ -4,7 +4,7 @@
 
     Ext.regController( 'sell', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -21,44 +21,47 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VSellMain );
         },
 
-        newItem: function (){
+        index: function (){
 
-            this.index();
+            this.menu();
+        },
+
+        newItem: function ( address, latlng ){
+
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellNewItem );
         },
 
-        positionSearch: function ( targetHash ){
+        positionSearch: function (){
 
-            targetHash = targetHash.split( ',').join( '/' );
-
-            this.index();
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellPositionSearch );
-            this.VSellPositionSearch.setTargetHash( targetHash );
+            this.VSellPositionSearch.setTargetHash();
         },
 
         itemDetail: function (){
 
-            this.index();
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellItemDetail );
         },
 
         menu: function (){
 
-            this.index();
+            this.resume();
             this.VSellMain.setActiveItem( this.VSellMenu );
         },
 
         sellList: function (){
 
-            this.index();
+            this.resume();
             this.VSellMain.setActiveItem( this.VSellList );
 
             this.VSellList.getSellingItem();
@@ -67,7 +70,7 @@
         edit: function ( itemId ){
 
             if( itemId ){
-                this.index();
+                this.resume();
                 this.VSellItemEdit.setItemId( itemId );
                 this.VSellMain.setActiveItem( this.VSellItemEdit );
             }

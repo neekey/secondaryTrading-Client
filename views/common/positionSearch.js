@@ -199,7 +199,7 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.redirect( this.targetHash + '/' + address + '/' + latlngUrl );
+            Mods.route.redirect( Mods.route.getPreviousHash() || 'welcome/login' + '/' + address + '/' + latlngUrl );
         },
 
         /**

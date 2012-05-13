@@ -7,7 +7,7 @@
 
     Ext.regController( 'profile', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -20,20 +20,25 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VProfileMain );
         },
 
+        index: function (){
+
+            this.menu();
+        },
+
         menu: function (){
 
-            this.index();
+            this.resume();
             this.VProfileMain.setActiveItem( this.VProfileMenu );
         },
 
         myProfile: function (){
 
-            this.index();
+            this.resume();
             this.VProfileMain.setActiveItem( this.VProfileMyProfile );
         },
 

@@ -18,11 +18,7 @@
                         title: '新商品',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'main/sell' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -95,13 +91,13 @@
         scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
-//            { xtype: 'newItemLocation' },
             {
-                xtype: 'button',
-                handler: function (){
-
-                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
-                }
+                xtype: 'myProfileLocation'
+//
+//                handler: function (){
+//
+//                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
+//                }
             },
             { xtype: 'newItemImg' }
 //            submitSellConfig

@@ -6,12 +6,23 @@
     Mods.route = (function (){
 
         var Route = {
+
+            // 用来保存路由的变化的过程队列
+            hashQueue: [],
+
             /**
              * 设置hash
              * @param newHash 要设置的hash值
              * @param ifSilent 是否为安静地设置，而不出发route事件
              */
             redirect: function ( newHash, ifSilent ){
+
+                var currentHash = this.getHash();
+
+                if( currentHash !== newHash ){
+
+                    this.hashQueue.push( currentHash );
+                }
 
                 if( ifSilent ){
 
@@ -23,12 +34,42 @@
             },
 
             /**
+             * 返回到上一个hash
+             */
+            goBack: function (){
+
+                var previousHash = this.getPreviousHash( true );
+                window.location.hash = previousHash;
+            },
+
+            /**
              * 获取当前的hash
              * @return {*}
              */
             getHash: function (){
 
                 return Ext.History.getToken();
+            },
+
+            /**
+             * 获取上一个hash值
+             * @param ifDel 获取hash值后是否将上一个hash删除
+             * @return {String}
+             */
+            getPreviousHash: function ( ifDel ){
+
+                var previousHash;
+
+                if( ifDel ){
+
+                    previousHash = this.hashQueue.pop();
+                }
+                else {
+
+                    previousHash = this.hashQueue[ this.hashQueue.length - 1 ];
+                }
+
+                return previousHash || '';
             },
 
             /**
@@ -63,7 +104,7 @@
 
                 var slugs = newHash.split( '/' );
                 // 第一个参数为控制器
-                var controllerSlug = slugs[ 0 ] || 'welcome';
+                var controllerSlug = Ext.ControllerManager.get( slugs[ 0 ] ) ? slugs[ 0 ] : 'welcome';
                 // 第二个参数为action
                 var actionSlug = slugs[ 1 ] || DefaultAction;
                 // 剩下的参数为传递给控制器的参数

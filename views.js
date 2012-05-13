@@ -3,6 +3,8 @@
  */
 (function(){
 
+    var Mods = App.mods;
+
     var MainCls = App.views.main = Ext.extend( Ext.TabPanel, {
 
         tabBar: {
@@ -18,6 +20,29 @@
         },
         listeners: {
             afterrender: function(){
+            },
+            cardswitch: function ( main, newCard, oldCard, index ){
+
+                var newXtype = newCard.xtype;
+
+                switch( newXtype ){
+
+                    case 'sell': {
+
+                        Mods.route.redirect( 'sell' );
+                        break;
+                    }
+                    case 'buy': {
+
+                        Mods.route.redirect( 'buy' );
+                        break;
+                    }
+                    case 'profile': {
+
+                        Mods.route.redirect( 'profile' );
+                        break;
+                    }
+                }
             }
         },
         items: [
@@ -450,6 +475,25 @@
     Ext.reg( 'locationResultList', locationResultListCls );
 
 
+})();
+(function(){
+
+    var Mods = App.mods;
+
+    var GoBackButtonCls = Ext.extend( Ext.Button, {
+
+        ui: 'back',
+        text: '返回',
+        handler: function (){
+
+//            var previousHash = Mods.route.getPreviousHash();
+//            var backHash = previousHash.indexOf( '/' ) > 0 ? previousHash.split( '/' )[ 0 ] : previousHash;
+
+            Mods.route.goBack();
+        }
+    });
+
+    Ext.reg( 'goBackButton', GoBackButtonCls );
 })();
 /**
  * 图片获取组件
@@ -1112,7 +1156,7 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.redirect( this.targetHash + '/' + address + '/' + latlngUrl );
+            Mods.route.redirect( Mods.route.getPreviousHash() || 'welcome/login' + '/' + address + '/' + latlngUrl );
         },
 
         /**
@@ -1256,13 +1300,7 @@
                         title: '个人信息设置',
                         items: [
                             {
-                                xtype: 'button',
-                                text: '返回',
-                                ui: 'back',
-                                handler: function (){
-
-                                    Mods.route.redirect( 'profile/menu' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             {
                                 xtype: 'spacer'
@@ -1474,7 +1512,7 @@
             afterlayout: function (){
 
                 var currentLocationWrap = this.body.query( '.current-location-wrap' )[ 0 ];
-                var locationButton = this.query( 'locationButton' )[ 0 ];
+                var locationButton = this.query( 'button' )[ 0 ];
                 var currentHeight = Ext.get( currentLocationWrap).getHeight();
                 var buttonHeight = locationButton.getHeight();
                 var targetHeight = currentHeight > buttonHeight ? currentHeight : buttonHeight;
@@ -1500,9 +1538,13 @@
                 }
             },
             {
-                xtype: 'locationButton',
+                xtype: 'button',
                 width: '25%',
-                text: '定位'
+                text: '定位',
+                handler: function (){
+
+                    Mods.route.redirect( 'sell/positionSearch' );
+                }
             }
         ],
 
@@ -1710,12 +1752,7 @@
                         title: '正在出售的商品',
                         items: [
                             {
-                                xtype: 'button',
-                                text: '返回',
-                                handler: function (){
-
-                                    Mods.route.redirect( 'sell/menu' );
-                                }
+                                xtype: 'goBackButton'
                             }
                         ]
                     }
@@ -2637,11 +2674,7 @@
                         title: '商品详情',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'buy/search' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -3292,11 +3325,7 @@
                         title: '商品编辑',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'sell/sellList' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -3512,11 +3541,7 @@
                         title: '新商品',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'main/sell' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -3589,13 +3614,13 @@
         scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
-//            { xtype: 'newItemLocation' },
             {
-                xtype: 'button',
-                handler: function (){
-
-                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
-                }
+                xtype: 'myProfileLocation'
+//
+//                handler: function (){
+//
+//                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
+//                }
             },
             { xtype: 'newItemImg' }
 //            submitSellConfig

@@ -25,13 +25,7 @@
                         title: '个人信息设置',
                         items: [
                             {
-                                xtype: 'button',
-                                text: '返回',
-                                ui: 'back',
-                                handler: function (){
-
-                                    Mods.route.redirect( 'profile/menu' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             {
                                 xtype: 'spacer'
@@ -243,7 +237,7 @@
             afterlayout: function (){
 
                 var currentLocationWrap = this.body.query( '.current-location-wrap' )[ 0 ];
-                var locationButton = this.query( 'locationButton' )[ 0 ];
+                var locationButton = this.query( 'button' )[ 0 ];
                 var currentHeight = Ext.get( currentLocationWrap).getHeight();
                 var buttonHeight = locationButton.getHeight();
                 var targetHeight = currentHeight > buttonHeight ? currentHeight : buttonHeight;
@@ -269,9 +263,13 @@
                 }
             },
             {
-                xtype: 'locationButton',
+                xtype: 'button',
                 width: '25%',
-                text: '定位'
+                text: '定位',
+                handler: function (){
+
+                    Mods.route.redirect( 'sell/positionSearch' );
+                }
             }
         ],
 

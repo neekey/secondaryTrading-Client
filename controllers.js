@@ -5,7 +5,7 @@
 
     Ext.regController( 'buy', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -18,16 +18,20 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VBuyMain );
+        },
+
+        index: function (){
+
+            this.search();
         },
 
         // 索索页部分
         search: function (){
 
-            this.index();
-            debugger;
+            this.resume();
 
             this.VBuyMain.setActiveItem( this.VBuySearch );
         },
@@ -38,7 +42,7 @@
          */
         detail: function ( itemId ){
 
-            this.index();
+            this.resume();
 
             this.VBuyMain.setActiveItem( this.VBuyItemDetail );
 
@@ -54,7 +58,7 @@
 
     Ext.regController( 'main', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -65,14 +69,21 @@
             this.viewport.setActiveItem( this.VMain );
         },
 
+        index: function (){
+
+            this.sell();
+        },
+
         sell: function (){
 
+            this.resume();
             Ext.ControllerManager.get( 'sell' ).menu();
 
         },
 
         buy: function (){
 
+            this.resume();
             Ext.ControllerManager.get( 'sell' ).menu();
         }
     });
@@ -86,7 +97,7 @@
 
     Ext.regController( 'profile', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -99,20 +110,25 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VProfileMain );
         },
 
+        index: function (){
+
+            this.menu();
+        },
+
         menu: function (){
 
-            this.index();
+            this.resume();
             this.VProfileMain.setActiveItem( this.VProfileMenu );
         },
 
         myProfile: function (){
 
-            this.index();
+            this.resume();
             this.VProfileMain.setActiveItem( this.VProfileMyProfile );
         },
 
@@ -129,7 +145,7 @@
 
     Ext.regController( 'sell', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -146,44 +162,47 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VSellMain );
         },
 
-        newItem: function (){
+        index: function (){
 
-            this.index();
+            this.menu();
+        },
+
+        newItem: function ( address, latlng ){
+
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellNewItem );
         },
 
-        positionSearch: function ( targetHash ){
+        positionSearch: function (){
 
-            targetHash = targetHash.split( ',').join( '/' );
-
-            this.index();
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellPositionSearch );
-            this.VSellPositionSearch.setTargetHash( targetHash );
+            this.VSellPositionSearch.setTargetHash();
         },
 
         itemDetail: function (){
 
-            this.index();
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellItemDetail );
         },
 
         menu: function (){
 
-            this.index();
+            this.resume();
             this.VSellMain.setActiveItem( this.VSellMenu );
         },
 
         sellList: function (){
 
-            this.index();
+            this.resume();
             this.VSellMain.setActiveItem( this.VSellList );
 
             this.VSellList.getSellingItem();
@@ -192,7 +211,7 @@
         edit: function ( itemId ){
 
             if( itemId ){
-                this.index();
+                this.resume();
                 this.VSellItemEdit.setItemId( itemId );
                 this.VSellMain.setActiveItem( this.VSellItemEdit );
             }
