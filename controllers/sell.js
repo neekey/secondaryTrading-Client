@@ -36,6 +36,11 @@
             this.resume();
 
             this.VSellMain.setActiveItem( this.VSellNewItem );
+
+            if( address && latlng ){
+                this.VSellNewItem.setLocationInfo( address, latlng );
+            }
+
         },
 
         positionSearch: function (){

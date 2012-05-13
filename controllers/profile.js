@@ -37,10 +37,14 @@
             this.VProfileMain.setActiveItem( this.VProfileMenu );
         },
 
-        myProfile: function (){
+        myProfile: function ( address, latlng ){
 
             this.resume();
             this.VProfileMain.setActiveItem( this.VProfileMyProfile );
+
+            if( address && latlng ){
+                this.VProfileMyProfile.setLocationInfo( address, latlng );
+            }
         },
 
         positionSearch: function (){
