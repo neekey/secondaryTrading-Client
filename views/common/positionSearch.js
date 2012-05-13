@@ -31,7 +31,7 @@
                                 ui: 'back',
                                 handler: function() {
 
-                                    that.goBack();
+                                    Mods.route.goBack();
                                 }
                             }
                         ]
@@ -154,7 +154,7 @@
 
                 if( err ){
 
-                    Ext.Msg.alert( err + ' 您可以手动搜索位置!' );
+                    alert( err + ' 您可以手动搜索位置!' );
                 }
                 else {
 
@@ -199,7 +199,7 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.redirect( this.targetHash + '/' + address + '/' + latlngUrl );
+            Mods.route.goBack( [ address, latlngUrl ] );
         },
 
         /**

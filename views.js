@@ -3,6 +3,8 @@
  */
 (function(){
 
+    var Mods = App.mods;
+
     var MainCls = App.views.main = Ext.extend( Ext.TabPanel, {
 
         tabBar: {
@@ -18,6 +20,29 @@
         },
         listeners: {
             afterrender: function(){
+            },
+            cardswitch: function ( main, newCard, oldCard, index ){
+
+                var newXtype = newCard.xtype;
+
+                switch( newXtype ){
+
+                    case 'sell': {
+
+                        Mods.route.redirect( 'sell' );
+                        break;
+                    }
+                    case 'buy': {
+
+                        Mods.route.redirect( 'buy' );
+                        break;
+                    }
+                    case 'profile': {
+
+                        Mods.route.redirect( 'profile' );
+                        break;
+                    }
+                }
             }
         },
         items: [
@@ -450,6 +475,25 @@
     Ext.reg( 'locationResultList', locationResultListCls );
 
 
+})();
+(function(){
+
+    var Mods = App.mods;
+
+    var GoBackButtonCls = Ext.extend( Ext.Button, {
+
+        ui: 'back',
+        text: '返回',
+        handler: function (){
+
+//            var previousHash = Mods.route.getPreviousHash();
+//            var backHash = previousHash.indexOf( '/' ) > 0 ? previousHash.split( '/' )[ 0 ] : previousHash;
+
+            Mods.route.goBack();
+        }
+    });
+
+    Ext.reg( 'goBackButton', GoBackButtonCls );
 })();
 /**
  * 图片获取组件
@@ -944,7 +988,7 @@
                                 ui: 'back',
                                 handler: function() {
 
-                                    that.goBack();
+                                    Mods.route.goBack();
                                 }
                             }
                         ]
@@ -1067,7 +1111,7 @@
 
                 if( err ){
 
-                    Ext.Msg.alert( err + ' 您可以手动搜索位置!' );
+                    alert( err + ' 您可以手动搜索位置!' );
                 }
                 else {
 
@@ -1112,7 +1156,7 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.redirect( this.targetHash + '/' + address + '/' + latlngUrl );
+            Mods.route.goBack( [ address, latlngUrl ] );
         },
 
         /**
@@ -1243,6 +1287,8 @@
     var myProfileCls = Ext.extend( Ext.Panel, {
 
         scroll: 'vertical',
+        // 用来记录是否处于选取位置信息的状态
+        isSearchLocation: false,
         initComponent: function (){
 
             var that = this;
@@ -1256,13 +1302,7 @@
                         title: '个人信息设置',
                         items: [
                             {
-                                xtype: 'button',
-                                text: '返回',
-                                ui: 'back',
-                                handler: function (){
-
-                                    Mods.route.redirect( 'profile/menu' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             {
                                 xtype: 'spacer'
@@ -1282,7 +1322,7 @@
                                         cellphone: formData.cellphone,
                                         qq: formData.qq,
                                         wangwang: formData.wangwang,
-                                        location: Ext.isArray( locationData.location ) ? locationData.location.join( ',' ) : locationData.location,
+                                        location: Ext.isArray( locationData.latlng ) ? locationData.latlng.join( ',' ) : locationData.latlng,
                                         address: locationData.address
                                     };
 
@@ -1324,7 +1364,8 @@
                         xtype: 'myProfileForm'
                     },
                     {
-                        xtype: 'myProfileLocation'
+                        xtype: 'myProfileLocation',
+                        locationSearchHash: that.locationSearchHash
                     }
                 ]
             });
@@ -1336,13 +1377,28 @@
 
             afterrender: function (){
 
+                var that = this;
+
                 this.myProfileLocation = this.query( 'myProfileLocation' )[ 0 ];
                 this.myProfileForm = this.query( 'myProfileForm' )[ 0 ];
+
+                // 若定位按钮被点击，就会触发该事件
+                this.myProfileLocation.addListener( 'searchLocation', function (){
+
+                    that.isSearchLocation = true;
+                });
             },
             // 一旦被激活，就请求数据
             activate: function (){
 
-                this.fetch();
+                if( this.isSearchLocation === false ){
+
+                    this.fetch();
+                }
+                else {
+
+                    this.isSearchLocation = false;
+                }
             }
         },
 
@@ -1366,6 +1422,14 @@
                     that.userInfo = user;
                     that.updateView();
                 }
+            });
+        },
+
+        setLocationInfo: function ( address, latlng ){
+
+            this.myProfileLocation.setLocationInfo( {
+                address: address,
+                latlng: latlng
             });
         },
 
@@ -1466,15 +1530,55 @@
     var myProfileLocationCls = Ext.extend( Ext.Panel, {
         layout: 'hbox',
         cls: 'myprofile-location-container',
-
+        locationSearchHash: 'sell/positionSearch',
         address: undefined,
-        location: undefined,
+        latlng: undefined,
+
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+                items: [
+                    {
+                        xtype: 'panel',
+                        width: '70%',
+                        layout: 'fit',
+                        cls: 'current-location-info',
+                        tplId: 'current-location-info-tpl',
+                        html: '',
+                        listeners: {
+
+                            afterrender: function (){
+
+                                this.tpl = new Ext.XTemplate( Ext.get( this.tplId ).getHTML() );
+                                this.tpl.overwrite( this.body, {} );
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'button',
+                        width: '25%',
+                        text: '定位',
+                        ui: 'confirm',
+                        handler: function (){
+
+                            Mods.route.redirect( that.locationSearchHash );
+                            that.fireEvent( 'searchLocation' );
+                        }
+                    }
+                ]
+            });
+
+            myProfileLocationCls.superclass.initComponent.call( this );
+        },
+
         listeners: {
 
             afterlayout: function (){
 
                 var currentLocationWrap = this.body.query( '.current-location-wrap' )[ 0 ];
-                var locationButton = this.query( 'locationButton' )[ 0 ];
+                var locationButton = this.query( 'button' )[ 0 ];
                 var currentHeight = Ext.get( currentLocationWrap).getHeight();
                 var buttonHeight = locationButton.getHeight();
                 var targetHeight = currentHeight > buttonHeight ? currentHeight : buttonHeight;
@@ -1482,45 +1586,23 @@
                 this.body.setHeight( targetHeight );
             }
         },
-        items: [
-            {
-                xtype: 'panel',
-                width: '70%',
-                layout: 'fit',
-                cls: 'current-location-info',
-                tplId: 'current-location-info-tpl',
-                html: '',
-                listeners: {
 
-                    afterrender: function (){
-
-                        this.tpl = new Ext.XTemplate( Ext.get( this.tplId ).getHTML() );
-                        this.tpl.overwrite( this.body, {} );
-                    }
-                }
-            },
-            {
-                xtype: 'locationButton',
-                width: '25%',
-                text: '定位'
-            }
-        ],
 
         /**
          * 获取当前的location信息
-         * @return {Object} { address:, location: }
+         * @return {Object} { address:, latlng: }
          */
         getLocationInfo: function (){
 
             return {
                 address: this.address,
-                location: this.location
+                latlng: this.latlng
             };
         },
 
         /**
          * 设置location信息，并更新视图
-         * @param infoObj  { address: , location: }
+         * @param infoObj  { address: , latlng: }
          */
         setLocationInfo: function ( infoObj ){
 
@@ -1530,7 +1612,7 @@
             }
 
             this.address = infoObj.address;
-            this.location = infoObj.location;
+            this.latlng = infoObj.latlng;
             var address = infoObj.address ? infoObj.address : '点击“定位”设置您的当前位置!';
 
             this.currentLocationSpan.setHTML( address );
@@ -1555,7 +1637,12 @@
                 xtype: 'profileMenu'
             },
             {
-                xtype: 'myProfile'
+                xtype: 'myProfile',
+                locationSearchHash: 'profile/positionSearch'
+            },
+            {
+                xtype: 'positionSearch',
+                scroll: false
             }
         ]
     });
@@ -1710,12 +1797,7 @@
                         title: '正在出售的商品',
                         items: [
                             {
-                                xtype: 'button',
-                                text: '返回',
-                                handler: function (){
-
-                                    Mods.route.redirect( 'sell/menu' );
-                                }
+                                xtype: 'goBackButton'
                             }
                         ]
                     }
@@ -1748,7 +1830,7 @@
             },
             itemTaped: function ( item ){
 
-                Mods.route.redirect( 'sell/edit/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'sell/edit', [ item.getAttribute( 'data-id' ) ] );
             }
         },
 
@@ -2243,7 +2325,7 @@
             },
             itemTaped: function ( item ){
 
-                Mods.route.redirect( 'buy/detail/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'buy/detail', [ item.getAttribute( 'data-id' ) ] );
             },
             // 当窗口尺寸改变
             afterlayout: function (){
@@ -2637,11 +2719,7 @@
                         title: '商品详情',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'buy/search' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -3292,11 +3370,7 @@
                         title: '商品编辑',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'sell/sellList' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -3512,11 +3586,7 @@
                         title: '新商品',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'main/sell' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -3531,7 +3601,7 @@
                                         'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
                                     ];
 
-                                    var location = that.newItemLocation.getLocation();
+                                    var location = that.newItemLocation.getLocationInfo();
                                     var formData = that.newItemForm.getValues();
 
                                     var data = that.itemDataHandle( formData, location, pics );
@@ -3539,7 +3609,6 @@
                                     var errors = model.validate();
                                     var message = "";
 
-//                                    console.log( data );
                                     if( errors.isValid() ){
 
                                         Mods.request.send({
@@ -3555,10 +3624,16 @@
 
                                                 if( result ){
                                                     itemId = resData.data.itemId;
-                                                    Ext.Msg.alert( '商品添加成功' );
+                                                    Ext.Msg.alert( '商品添加成功', '', function (){
+
+                                                        Mods.route.redirect( 'sell/sellList' );
+                                                    });
                                                 }
                                                 else {
-                                                    Ext.Msg.alert( '商品添加失败！', resData.error );
+                                                    Ext.Msg.alert( '商品添加失败！', resData.error, function (){
+
+                                                        Mods.route.redirect( 'sell' );
+                                                    } );
                                                 }
                                             }
                                         }, true );
@@ -3589,24 +3664,24 @@
         scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
-//            { xtype: 'newItemLocation' },
-            {
-                xtype: 'button',
-                handler: function (){
-
-                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
-                }
-            },
+            { xtype: 'myProfileLocation' },
             { xtype: 'newItemImg' }
-//            submitSellConfig
         ],
         listeners: {
             afterRender:function (){
 
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
                 this.newItemForm = this.query( 'newItemForm' )[ 0 ];
-                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
+                this.newItemLocation = this.query( 'myProfileLocation' )[ 0 ];
             }
+        },
+
+        setLocationInfo: function ( address, latlng ){
+
+            this.newItemLocation.setLocationInfo( {
+                address: address,
+                latlng: latlng
+            });
         },
 
         itemDataHandle: function ( formData, location, pics ){

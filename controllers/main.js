@@ -5,7 +5,7 @@
 
     Ext.regController( 'main', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -16,14 +16,21 @@
             this.viewport.setActiveItem( this.VMain );
         },
 
+        index: function (){
+
+            this.sell();
+        },
+
         sell: function (){
 
+            this.resume();
             Ext.ControllerManager.get( 'sell' ).menu();
 
         },
 
         buy: function (){
 
+            this.resume();
             Ext.ControllerManager.get( 'sell' ).menu();
         }
     });

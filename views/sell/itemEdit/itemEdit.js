@@ -26,11 +26,7 @@
                         title: '商品编辑',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'sell/sellList' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {

@@ -18,12 +18,7 @@
                         title: '正在出售的商品',
                         items: [
                             {
-                                xtype: 'button',
-                                text: '返回',
-                                handler: function (){
-
-                                    Mods.route.redirect( 'sell/menu' );
-                                }
+                                xtype: 'goBackButton'
                             }
                         ]
                     }
@@ -56,7 +51,7 @@
             },
             itemTaped: function ( item ){
 
-                Mods.route.redirect( 'sell/edit/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'sell/edit', [ item.getAttribute( 'data-id' ) ] );
             }
         },
 

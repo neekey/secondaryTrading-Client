@@ -117,8 +117,16 @@
 
                 var code = err.code;
                 var message = err.message;
+                var msg;
 
-                var msg = '地理位置信息获取失败：Code: ' + code + ' Message: ' + message;
+
+                if( !code && !message ){
+
+                    msg = '地理位置信息获取失败：' + err ;
+                }else {
+
+                    msg = '地理位置信息获取失败：Code: ' + code + ' Message: ' + message;
+                }
 
                 handleNoGeolocation( browserSupportFlag, msg )
             }

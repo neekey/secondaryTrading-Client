@@ -4,7 +4,7 @@
 
     Ext.regController( 'sell', {
 
-        index: function (){
+        resume: function (){
 
             if( !this.VMain ){
 
@@ -21,44 +21,52 @@
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
 
-            this.CMain.index();
+            this.CMain.resume();
 
             this.VMain.setActiveItem( this.VSellMain );
         },
 
-        newItem: function (){
+        index: function (){
 
-            this.index();
-
-            this.VSellMain.setActiveItem( this.VSellNewItem );
+            this.menu();
         },
 
-        positionSearch: function ( targetHash ){
+        newItem: function ( address, latlng ){
 
-            targetHash = targetHash.split( ',').join( '/' );
+            this.resume();
 
-            this.index();
+            this.VSellMain.setActiveItem( this.VSellNewItem );
+
+            if( address && latlng ){
+                this.VSellNewItem.setLocationInfo( address, latlng );
+            }
+
+        },
+
+        positionSearch: function (){
+
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellPositionSearch );
-            this.VSellPositionSearch.setTargetHash( targetHash );
+            this.VSellPositionSearch.setTargetHash();
         },
 
         itemDetail: function (){
 
-            this.index();
+            this.resume();
 
             this.VSellMain.setActiveItem( this.VSellItemDetail );
         },
 
         menu: function (){
 
-            this.index();
+            this.resume();
             this.VSellMain.setActiveItem( this.VSellMenu );
         },
 
         sellList: function (){
 
-            this.index();
+            this.resume();
             this.VSellMain.setActiveItem( this.VSellList );
 
             this.VSellList.getSellingItem();
@@ -67,7 +75,7 @@
         edit: function ( itemId ){
 
             if( itemId ){
-                this.index();
+                this.resume();
                 this.VSellItemEdit.setItemId( itemId );
                 this.VSellMain.setActiveItem( this.VSellItemEdit );
             }

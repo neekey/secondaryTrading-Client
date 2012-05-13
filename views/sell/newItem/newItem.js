@@ -18,11 +18,7 @@
                         title: '新商品',
                         items: [
                             {
-                                text: '返回',
-                                ui: 'back',
-                                handler: function() {
-                                    Mods.route.redirect( 'main/sell' );
-                                }
+                                xtype: 'goBackButton'
                             },
                             { xtype: 'spacer' },
                             {
@@ -37,7 +33,7 @@
                                         'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
                                     ];
 
-                                    var location = that.newItemLocation.getLocation();
+                                    var location = that.newItemLocation.getLocationInfo();
                                     var formData = that.newItemForm.getValues();
 
                                     var data = that.itemDataHandle( formData, location, pics );
@@ -45,7 +41,6 @@
                                     var errors = model.validate();
                                     var message = "";
 
-//                                    console.log( data );
                                     if( errors.isValid() ){
 
                                         Mods.request.send({
@@ -61,10 +56,16 @@
 
                                                 if( result ){
                                                     itemId = resData.data.itemId;
-                                                    Ext.Msg.alert( '商品添加成功' );
+                                                    Ext.Msg.alert( '商品添加成功', '', function (){
+
+                                                        Mods.route.redirect( 'sell/sellList' );
+                                                    });
                                                 }
                                                 else {
-                                                    Ext.Msg.alert( '商品添加失败！', resData.error );
+                                                    Ext.Msg.alert( '商品添加失败！', resData.error, function (){
+
+                                                        Mods.route.redirect( 'sell' );
+                                                    } );
                                                 }
                                             }
                                         }, true );
@@ -95,24 +96,24 @@
         scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
-//            { xtype: 'newItemLocation' },
-            {
-                xtype: 'button',
-                handler: function (){
-
-                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
-                }
-            },
+            { xtype: 'myProfileLocation' },
             { xtype: 'newItemImg' }
-//            submitSellConfig
         ],
         listeners: {
             afterRender:function (){
 
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
                 this.newItemForm = this.query( 'newItemForm' )[ 0 ];
-                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
+                this.newItemLocation = this.query( 'myProfileLocation' )[ 0 ];
             }
+        },
+
+        setLocationInfo: function ( address, latlng ){
+
+            this.newItemLocation.setLocationInfo( {
+                address: address,
+                latlng: latlng
+            });
         },
 
         itemDataHandle: function ( formData, location, pics ){

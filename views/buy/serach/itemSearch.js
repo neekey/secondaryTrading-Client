@@ -155,7 +155,7 @@
             },
             itemTaped: function ( item ){
 
-                Mods.route.redirect( 'buy/detail/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'buy/detail', [ item.getAttribute( 'data-id' ) ] );
             },
             // 当窗口尺寸改变
             afterlayout: function (){

@@ -3,6 +3,8 @@
  */
 (function(){
 
+    var Mods = App.mods;
+
     var MainCls = App.views.main = Ext.extend( Ext.TabPanel, {
 
         tabBar: {
@@ -18,6 +20,29 @@
         },
         listeners: {
             afterrender: function(){
+            },
+            cardswitch: function ( main, newCard, oldCard, index ){
+
+                var newXtype = newCard.xtype;
+
+                switch( newXtype ){
+
+                    case 'sell': {
+
+                        Mods.route.redirect( 'sell' );
+                        break;
+                    }
+                    case 'buy': {
+
+                        Mods.route.redirect( 'buy' );
+                        break;
+                    }
+                    case 'profile': {
+
+                        Mods.route.redirect( 'profile' );
+                        break;
+                    }
+                }
             }
         },
         items: [
