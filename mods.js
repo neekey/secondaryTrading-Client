@@ -248,7 +248,9 @@
 
         var Camera = navigator.camera;
         var ifCamera = config.ifCamera || false;
-        var quality = config.quality || 50;
+        var quality = config.quality || 30;
+        var targetWidth = config.targetWidth || 500;
+        var targetHeight = config.targetHeight || 500;
         var ifData = config.ifData || false;
         var onSuccess = config.success || Ext.emptyFn;
         var onError = config.success || Ext.emptyFn;
@@ -256,7 +258,9 @@
         Camera.getPicture( onSuccess, onError, {
             quality: quality,
             destinationType: ifData ? Camera.DestinationType.DATA_URL : Camera.DestinationType.FILE_URI,
-            sourceType: ifCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY
+            sourceType: ifCamera ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY,
+            targetWidth: targetWidth,
+            targetHeight: targetHeight
         });
     };
 })();/**

@@ -301,16 +301,23 @@
 
             afterlayout: function (){
 
-                var currentLocationWrap = this.body.query( '.current-location-wrap' )[ 0 ];
-                var locationButton = this.query( 'button' )[ 0 ];
-                var currentHeight = Ext.get( currentLocationWrap).getHeight();
-                var buttonHeight = locationButton.getHeight();
-                var targetHeight = currentHeight > buttonHeight ? currentHeight : buttonHeight;
-
-                this.body.setHeight( targetHeight );
+                this.adjustSize();
             }
         },
 
+        /**
+         * 根据位置信息文字，来调整容器高度
+         */
+        adjustSize: function (){
+
+            var currentLocationWrap = this.body.query( '.current-location-wrap' )[ 0 ];
+            var locationButton = this.query( 'button' )[ 0 ];
+            var currentHeight = Ext.get( currentLocationWrap).getHeight();
+            var buttonHeight = locationButton.getHeight();
+            var targetHeight = currentHeight > buttonHeight ? currentHeight : buttonHeight;
+
+            this.body.setHeight( targetHeight );
+        },
 
         /**
          * 获取当前的location信息
@@ -340,6 +347,12 @@
             var address = infoObj.address ? infoObj.address : '点击“定位”设置您的当前位置!';
 
             this.currentLocationSpan.setHTML( address );
+
+            // 每次设置文字后重新设置高度
+            this.adjustSize();
+            Ext.get( this.el.dom ).setStyle( {
+                height: 'auto'
+            });
         }
     });
 

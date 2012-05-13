@@ -30,7 +30,7 @@
                     this.saveHashQueue( currentHash );
                 }
 
-                newHash = this.attachParam( newHash, params );
+                newHash = this.encodeHash ( this.attachParam( newHash, params ) );
 
                 if( ifSilent ){
 
@@ -50,9 +50,35 @@
 
                 previousHash = this.attachParam( previousHash, params );
 
-                window.location.hash = previousHash;
+                window.location.hash = this.encodeHash( previousHash );
             },
 
+            /**
+             * 对hash进行编码（在android中，hash中文会出现奇怪的编码! 缩影都编码掉)
+             * @param hash
+             * @return {String}
+             */
+            encodeHash: function ( hash ){
+
+                return encodeURIComponent( hash );
+            },
+
+            /**
+             * 对hash进行解码
+             * @param hash
+             * @return {String}
+             */
+            decodeHash: function ( hash ){
+
+                return decodeURIComponent( hash );
+            },
+
+            /**
+             * 想hash中添加参数
+             * @param hash
+             * @param params
+             * @return {*}
+             */
             attachParam: function ( hash, params ){
 
                 if( params && params.length > 0 && hash.indexOf( '?' ) < 0 ){
@@ -70,7 +96,7 @@
 
             saveHashQueue: function ( newHash ){
 
-                newHash = newHash || '';
+                newHash = this.decodeHash( newHash || '' );
 
                 this.hashQueue.push( newHash.split( '?' )[ 0 ] );
             },
@@ -81,7 +107,7 @@
              */
             getHash: function (){
 
-                return Ext.History.getToken();
+                return this.decodeHash( Ext.History.getToken() );
             },
 
             /**
@@ -118,6 +144,8 @@
 
                 if( hash == oldHash ){
 
+                    hash = this.encodeHash( hash );
+
                     this._onHashChange( hash );
                 }
                 else {
@@ -133,8 +161,8 @@
              */
             _onHashChange: function ( newHash ){
 
+                newHash = this.decodeHash( newHash );
                 var Auth = App.mods.auth;
-
                 var chunks = newHash.split( '?' );
                 var slugs = chunks[ 0 ].split( '/' );
                 var params = chunks[ 1 ] ? chunks[ 1 ].split( '/' ) : [];
@@ -181,7 +209,10 @@
             }
         };
 
-        Ext.History.addListener( 'change', Route._onHashChange );
+        Ext.History.addListener( 'change', function (){
+
+            Route._onHashChange.apply( Route, arguments );
+        });
 
         return Route;
     })();

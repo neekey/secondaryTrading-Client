@@ -146,6 +146,9 @@
 
             activate: function (){
 
+                // 解决偶尔地位位置有问题的情况
+//                this.doLayout();
+
                 var that = this;
                 var fakePostion = [30.23304355,120.03763513000001];
 
