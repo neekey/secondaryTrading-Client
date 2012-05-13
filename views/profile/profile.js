@@ -12,7 +12,12 @@
                 xtype: 'profileMenu'
             },
             {
-                xtype: 'myProfile'
+                xtype: 'myProfile',
+                locationSearchHash: 'profile/positionSearch'
+            },
+            {
+                xtype: 'positionSearch',
+                scroll: false
             }
         ]
     });

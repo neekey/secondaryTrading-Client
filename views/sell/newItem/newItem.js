@@ -96,7 +96,7 @@
 //
 //                handler: function (){
 //
-//                    Mods.route.redirect( 'sell/positionSearch/sell,newItem' );
+//                    Mods.route.redirect( 'sell/positionSearch', [ 'sell,newItem' ] );
 //                }
             },
             { xtype: 'newItemImg' }

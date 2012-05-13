@@ -106,6 +106,7 @@
                 this.VProfileMain = this.VMain.query( 'profile' )[ 0 ];
                 this.VProfileMenu = this.VProfileMain.query( 'profileMenu' )[ 0 ];
                 this.VProfileMyProfile = this.VProfileMain.query( 'myProfile' )[ 0 ];
+                this.VProfilPositionSearch = this.VProfileMain.query( 'positionSearch' )[ 0 ];
 
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
@@ -130,6 +131,12 @@
 
             this.resume();
             this.VProfileMain.setActiveItem( this.VProfileMyProfile );
+        },
+
+        positionSearch: function (){
+
+            this.resume();
+            this.VProfileMain.setActiveItem( this.VProfilPositionSearch );
         },
 
         preferences: function (){

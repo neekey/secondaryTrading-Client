@@ -9,19 +9,35 @@
         launch: function (){
 
             var that = this;
+            var timer;
+            var timeout = 10000;
+            var ifTimeout = false;
 
             // 作为google map脚本载入回调
             window.initialize = function (){
 
-                that.viewport = Ext.ComponentMgr.create({
-                    xtype: 'viewport'
-                });
+                if( ifTimeout === false ){
 
-                App.mods.route.applyHash();
+                    clearTimeout( timer );
+
+                    that.viewport = Ext.ComponentMgr.create({
+                        xtype: 'viewport'
+                    });
+
+                    App.mods.route.applyHash();
+                }
             };
 
             // 动态载入google map脚本
             loadScript();
+
+            timer = setTimeout(function (){
+
+                window.initialize();
+
+                ifTimeout = true;
+
+            }, timeout );
 
         }
     });

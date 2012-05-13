@@ -15,14 +15,22 @@
              * @param newHash 要设置的hash值
              * @param ifSilent 是否为安静地设置，而不出发route事件
              */
-            redirect: function ( newHash, ifSilent ){
+            redirect: function ( newHash, params, ifSilent ){
+
+                if( !Ext.isArray( params ) ){
+
+                    ifSilent = params;
+                    params = [];
+                }
 
                 var currentHash = this.getHash();
 
                 if( currentHash !== newHash ){
 
-                    this.hashQueue.push( currentHash );
+                    this.saveHashQueue( currentHash );
                 }
+
+                newHash = this.attachParam( newHash, params );
 
                 if( ifSilent ){
 
@@ -36,10 +44,35 @@
             /**
              * 返回到上一个hash
              */
-            goBack: function (){
+            goBack: function ( params ){
 
                 var previousHash = this.getPreviousHash( true );
+
+                previousHash = this.attachParam( previousHash, params );
+
                 window.location.hash = previousHash;
+            },
+
+            attachParam: function ( hash, params ){
+
+                if( params && params.length > 0 && hash.indexOf( '?' ) < 0 ){
+
+                    hash += '?';
+                }
+
+                Ext.each( params, function ( param ){
+
+                    hash += ( param  + '/' );
+                });
+
+                return hash;
+            },
+
+            saveHashQueue: function ( newHash ){
+
+                newHash = newHash || '';
+
+                this.hashQueue.push( newHash.split( '?' )[ 0 ] );
             },
 
             /**
@@ -102,20 +135,22 @@
 
                 var Auth = App.mods.auth;
 
-                var slugs = newHash.split( '/' );
+                var chunks = newHash.split( '?' );
+                var slugs = chunks[ 0 ].split( '/' );
+                var params = chunks[ 1 ] ? chunks[ 1 ].split( '/' ) : [];
                 // 第一个参数为控制器
                 var controllerSlug = Ext.ControllerManager.get( slugs[ 0 ] ) ? slugs[ 0 ] : 'welcome';
                 // 第二个参数为action
                 var actionSlug = slugs[ 1 ] || DefaultAction;
                 // 剩下的参数为传递给控制器的参数
-                var _arguments = slugs.slice( 2 );
+                var _arguments = params;
 
                 var controller = Ext.ControllerManager.get( controllerSlug );
                 var action;
 
                 if( controller ){
 
-                    action = controller[ actionSlug ];
+                    action = controller[ actionSlug ] || controller[ 'index' ];
 
                     if( action ){
 

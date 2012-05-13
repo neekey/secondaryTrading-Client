@@ -51,7 +51,7 @@
             },
             itemTaped: function ( item ){
 
-                Mods.route.redirect( 'sell/edit/' + item.getAttribute( 'data-id' ) );
+                Mods.route.redirect( 'sell/edit', [ item.getAttribute( 'data-id' ) ] );
             }
         },
 

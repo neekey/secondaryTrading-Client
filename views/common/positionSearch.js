@@ -31,7 +31,7 @@
                                 ui: 'back',
                                 handler: function() {
 
-                                    that.goBack();
+                                    Mods.route.goBack();
                                 }
                             }
                         ]
@@ -199,7 +199,7 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.redirect( Mods.route.getPreviousHash() || 'welcome/login' + '/' + address + '/' + latlngUrl );
+            Mods.route.goBack( [ address, latlngUrl ] );
         },
 
         /**

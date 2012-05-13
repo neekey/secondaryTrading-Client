@@ -87,7 +87,8 @@
                         xtype: 'myProfileForm'
                     },
                     {
-                        xtype: 'myProfileLocation'
+                        xtype: 'myProfileLocation',
+                        locationSearchHash: that.locationSearchHash
                     }
                 ]
             });
@@ -229,9 +230,47 @@
     var myProfileLocationCls = Ext.extend( Ext.Panel, {
         layout: 'hbox',
         cls: 'myprofile-location-container',
-
+        locationSearchHash: 'sell/positionSearch',
         address: undefined,
         location: undefined,
+
+        initComponent: function (){
+
+            var that = this;
+
+            Ext.apply( this, {
+                items: [
+                    {
+                        xtype: 'panel',
+                        width: '70%',
+                        layout: 'fit',
+                        cls: 'current-location-info',
+                        tplId: 'current-location-info-tpl',
+                        html: '',
+                        listeners: {
+
+                            afterrender: function (){
+
+                                this.tpl = new Ext.XTemplate( Ext.get( this.tplId ).getHTML() );
+                                this.tpl.overwrite( this.body, {} );
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'button',
+                        width: '25%',
+                        text: '定位',
+                        handler: function (){
+
+                            Mods.route.redirect( that.locationSearchHash );
+                        }
+                    }
+                ]
+            });
+
+            myProfileLocationCls.superclass.initComponent.call( this );
+        },
+
         listeners: {
 
             afterlayout: function (){
@@ -245,33 +284,7 @@
                 this.body.setHeight( targetHeight );
             }
         },
-        items: [
-            {
-                xtype: 'panel',
-                width: '70%',
-                layout: 'fit',
-                cls: 'current-location-info',
-                tplId: 'current-location-info-tpl',
-                html: '',
-                listeners: {
 
-                    afterrender: function (){
-
-                        this.tpl = new Ext.XTemplate( Ext.get( this.tplId ).getHTML() );
-                        this.tpl.overwrite( this.body, {} );
-                    }
-                }
-            },
-            {
-                xtype: 'button',
-                width: '25%',
-                text: '定位',
-                handler: function (){
-
-                    Mods.route.redirect( 'sell/positionSearch' );
-                }
-            }
-        ],
 
         /**
          * 获取当前的location信息
