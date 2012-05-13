@@ -1,23 +1,5 @@
 (function(){
 
-    var Mods = App.mods;
-
-    Mods.getScript = function ( src, delay ){
-
-        delay = delay || 1000;
-
-//        setTimeout(function (){
-
-            var newScript = document.createElement( 'script' );
-            newScript.src = src;
-
-            document.head.appendChild( newScript );
-//        },  );
-    };
-
-})();
-(function(){
-
     var Config = App.config;
     var Mods = App.mods;
     var Session = Config.SESSION;
