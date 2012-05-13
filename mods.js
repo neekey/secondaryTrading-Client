@@ -1,23 +1,5 @@
 (function(){
 
-    var Mods = App.mods;
-
-    Mods.getScript = function ( src, delay ){
-
-        delay = delay || 1000;
-
-//        setTimeout(function (){
-
-            var newScript = document.createElement( 'script' );
-            newScript.src = src;
-
-            document.head.appendChild( newScript );
-//        },  );
-    };
-
-})();
-(function(){
-
     var Config = App.config;
     var Mods = App.mods;
     var Session = Config.SESSION;
@@ -636,8 +618,16 @@
 
                 var code = err.code;
                 var message = err.message;
+                var msg;
 
-                var msg = '地理位置信息获取失败：Code: ' + code + ' Message: ' + message;
+
+                if( !code && !message ){
+
+                    msg = '地理位置信息获取失败：' + err ;
+                }else {
+
+                    msg = '地理位置信息获取失败：Code: ' + code + ' Message: ' + message;
+                }
 
                 handleNoGeolocation( browserSupportFlag, msg )
             }
