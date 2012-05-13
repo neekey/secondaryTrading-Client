@@ -91,10 +91,10 @@
 
     var BuyMainCls = App.views.buyMain = Ext.extend( Ext.Panel, {
         title: '我要买',
-        iconCls: 'organize',
+        iconCls: 'search',
         layout: 'card',
         cls: 'card2',
-        badgeText: '4',
+//        badgeText: '4',
         items: [
             {
                 // 商品搜索
@@ -1661,7 +1661,7 @@
 
     var ProfileMainCls = App.views.profileMain = Ext.extend( Ext.Panel, {
         title: '设置',
-        iconCls: 'organize',
+        iconCls: 'settings',
         badgeText: '',
         layout: 'card',
         items: [
@@ -1783,10 +1783,10 @@
 
     var SellMainCls = App.views.sellMain = Ext.extend( Ext.Panel, {
         title: '我要卖',
-        iconCls: 'organize',
+        iconCls: 'compose',
         layout: 'card',
         cls: 'card2',
-        badgeText: '4',
+//        badgeText: '4',
         items: [
             {
                 xtype: 'sellMenu'

@@ -2,10 +2,10 @@
 
     var SellMainCls = App.views.sellMain = Ext.extend( Ext.Panel, {
         title: '我要卖',
-        iconCls: 'organize',
+        iconCls: 'compose',
         layout: 'card',
         cls: 'card2',
-        badgeText: '4',
+//        badgeText: '4',
         items: [
             {
                 xtype: 'sellMenu'

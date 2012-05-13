@@ -4,7 +4,7 @@
 
     var ProfileMainCls = App.views.profileMain = Ext.extend( Ext.Panel, {
         title: '设置',
-        iconCls: 'organize',
+        iconCls: 'settings',
         badgeText: '',
         layout: 'card',
         items: [

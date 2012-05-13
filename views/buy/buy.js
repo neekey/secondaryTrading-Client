@@ -2,10 +2,10 @@
 
     var BuyMainCls = App.views.buyMain = Ext.extend( Ext.Panel, {
         title: '我要买',
-        iconCls: 'organize',
+        iconCls: 'search',
         layout: 'card',
         cls: 'card2',
-        badgeText: '4',
+//        badgeText: '4',
         items: [
             {
                 // 商品搜索
