@@ -967,6 +967,7 @@
     var Mods = App.mods;
     var Config = App.config;
 
+    // todo toolbar 无法自适应宽度
     var positionSearchCls = Ext.extend( Ext.Panel, {
 
         html: '<div class="location-map"></div>',
@@ -981,6 +982,8 @@
             this.markers = [];
             // 用于记录搜有的infoWindow
             this.infoWindows = [];
+            // 是否已经自动获取过当前位置
+            this.isAutoGetLocation = false;
 
             Ext.apply( this, {
 
@@ -1009,16 +1012,30 @@
                             {
                                 xtype: 'searchfield',
                                 placeHolder: '输入地点',
-                                width: '75%'
+                                width: '50%'
                             },
                             {
-                                xtype: 'spacer'
+                                xtype: 'button',
+//                                text: '定位',
+                                width: '20%',
+                                ui: 'action',
+                                iconAlign: 'top',
+                                iconCls: 'locate',
+                                iconMask: true,
+
+                                handler: function (){
+
+                                    that.searchCurrentPosition();
+                                }
                             },
                             {
-                                text: '搜索',
+//                                text: '搜索',
                                 ui: 'confirm',
                                 align: 'end',
                                 width: '20%',
+                                iconCls: 'search',
+                                iconAlign: 'top',
+                                iconMask: true,
                                 handler: function (){
 
                                     var address = that.searchField.getValue();
@@ -1043,8 +1060,6 @@
 
                                                     var latlngs = [];
                                                     var bound;
-
-                                                    console.log( results );
 
                                                     Ext.each( results, function ( result ){
 
@@ -1095,7 +1110,6 @@
 
             activate: function (){
 
-                console.log( 'active' );
                 var that = this;
                 var fakePostion = [30.23304355,120.03763513000001];
 
@@ -1107,12 +1121,16 @@
                     });
                 }
 
-//                this.map.setCenter( new google.maps.LatLng( fakePostion[ 0 ], fakePostion[ 1 ] ) );
+                if( !this.isAutoGetLocation ){
 
-                this.searchCurrentPosition();
+                    this.searchCurrentPosition();
+                }
             }
         },
 
+        /**
+         * 获取当前位置
+         */
         searchCurrentPosition: function (){
 
             this.setLoading( true );
@@ -1137,7 +1155,6 @@
 
                         if( err ){
 
-//                            Ext.Msg.alert( err );
                             alert( err );
                         }
                         else {
@@ -1192,6 +1209,9 @@
             this.infoWindows = [];
         },
 
+        /**
+         * 关闭所有的infoWindow
+         */
         closeAllInfoWindow: function (){
 
             Ext.each( this.infoWindows, function ( infoWindow ){
