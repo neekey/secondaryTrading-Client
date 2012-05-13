@@ -89,8 +89,7 @@
                         xtype: 'myProfileForm'
                     },
                     {
-                        xtype: 'myProfileLocation',
-                        locationSearchHash: that.locationSearchHash
+                        xtype: 'myProfileLocation'
                     }
                 ]
             });

@@ -12,13 +12,13 @@
                 xtype: 'profileMenu'
             },
             {
-                xtype: 'myProfile',
-                locationSearchHash: 'profile/positionSearch'
-            },
-            {
-                xtype: 'positionSearch',
-                scroll: false
+                xtype: 'myProfile'
+//                locationSearchHash: 'profile/positionSearch'
             }
+//            {
+//                xtype: 'positionSearch',
+//                scroll: false
+//            }
         ]
     });
 

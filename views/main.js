@@ -24,22 +24,29 @@
             cardswitch: function ( main, newCard, oldCard, index ){
 
                 var newXtype = newCard.xtype;
+                var currentHash = Mods.route.getHash();
 
                 switch( newXtype ){
 
                     case 'sell': {
 
-                        Mods.route.redirect( 'sell' );
+                        if( currentHash.split( '/' )[ 0 ] !== 'sell' ){
+                            Mods.route.redirect( 'sell' );
+                        }
                         break;
                     }
                     case 'buy': {
 
-                        Mods.route.redirect( 'buy' );
+                        if( currentHash.split( '/' )[ 0 ] !== 'buy' ){
+                            Mods.route.redirect( 'buy' );
+                        }
                         break;
                     }
                     case 'profile': {
 
-                        Mods.route.redirect( 'profile' );
+                        if( currentHash.split( '/' )[ 0 ] !== 'profile' ){
+                            Mods.route.redirect( 'profile' );
+                        }
                         break;
                     }
                 }

@@ -24,22 +24,29 @@
             cardswitch: function ( main, newCard, oldCard, index ){
 
                 var newXtype = newCard.xtype;
+                var currentHash = Mods.route.getHash();
 
                 switch( newXtype ){
 
                     case 'sell': {
 
-                        Mods.route.redirect( 'sell' );
+                        if( currentHash.split( '/' )[ 0 ] !== 'sell' ){
+                            Mods.route.redirect( 'sell' );
+                        }
                         break;
                     }
                     case 'buy': {
 
-                        Mods.route.redirect( 'buy' );
+                        if( currentHash.split( '/' )[ 0 ] !== 'buy' ){
+                            Mods.route.redirect( 'buy' );
+                        }
                         break;
                     }
                     case 'profile': {
 
-                        Mods.route.redirect( 'profile' );
+                        if( currentHash.split( '/' )[ 0 ] !== 'profile' ){
+                            Mods.route.redirect( 'profile' );
+                        }
                         break;
                     }
                 }
@@ -1045,12 +1052,17 @@
                                                         latlngs.push( result.location );
                                                     });
 
-                                                    alert( results.length );
                                                     // 获取包含所有结果的bound
                                                     bound = Mods.map.getBoundsByLocations( latlngs );
 
                                                     // 使地图自适应bound
                                                     that.map.fitBounds( bound );
+
+                                                    // todo 貌似在bound很小的情况下 地图会放的很大，目前先这样fix（但是无法fix多个结果，但是靠的很近的情况）
+                                                    if( results.length === 1 ){
+
+                                                        that.map.setZoom( 12 );
+                                                    }
                                                 }
                                                 else {
 
@@ -1083,6 +1095,7 @@
 
             activate: function (){
 
+                console.log( 'active' );
                 var that = this;
                 var fakePostion = [30.23304355,120.03763513000001];
 
@@ -1364,8 +1377,7 @@
                         xtype: 'myProfileForm'
                     },
                     {
-                        xtype: 'myProfileLocation',
-                        locationSearchHash: that.locationSearchHash
+                        xtype: 'myProfileLocation'
                     }
                 ]
             });
@@ -1637,13 +1649,13 @@
                 xtype: 'profileMenu'
             },
             {
-                xtype: 'myProfile',
-                locationSearchHash: 'profile/positionSearch'
-            },
-            {
-                xtype: 'positionSearch',
-                scroll: false
+                xtype: 'myProfile'
+//                locationSearchHash: 'profile/positionSearch'
             }
+//            {
+//                xtype: 'positionSearch',
+//                scroll: false
+//            }
         ]
     });
 
