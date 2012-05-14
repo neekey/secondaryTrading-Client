@@ -37,7 +37,7 @@
 }
 .result-item-text {
     width: 65%;
-    margin-left: 5%;
+    margin-left: 35%;
     padding-top: 0.5em;
     padding-bottom: 1em;
     overflow: hidden;
@@ -51,6 +51,52 @@
     font-weight: bold;
 }
 .result-item-text .title {
+    font-size: 150%;
+    font-weight: bold;
+}
+
+//地图类型的搜索结果
+.map-result-item {
+    height: @resultItemHeight;
+    margin: 1%;
+    width: 300px;
+}
+
+.map-result-item .item-pic {
+
+    vertical-align: middle;
+    overflow: hidden;
+    text-align: center;
+    height: @resultItemHeight;
+    line-height: @resultItemHeight;
+    background: white;
+    border-radius: 5px;
+    width: 30%;
+    float: left;
+}
+
+/*设置图片垂直居中*/
+.map-result-item .item-pic img {
+    vertical-align:middle;
+    max-width: 100%;
+    max-height: 100%;
+}
+.map-result-item .item-text {
+    width: 65%;
+    margin-left: 35%;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+    overflow: hidden;
+}
+.map-result-item .item-text .address {
+    color: #999;
+}
+.map-result-item .item-text .price {
+    color: #f60;
+    font-size: 130%;
+    font-weight: bold;
+}
+.map-result-item .item-text .title {
     font-size: 150%;
     font-weight: bold;
 }

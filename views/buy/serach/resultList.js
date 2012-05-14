@@ -40,7 +40,10 @@
                 _id: 'test'
             }
         ],
+        // 所有结果id
         resultIds: [],
+        // 需要被渲染到页面中的item
+        resultItemsToRender: [],
         initComponent: function (){
 
             var that = this;
@@ -50,8 +53,6 @@
 
             ResultListCls.superclass.initComponent.call( this );
         },
-//        layout: 'fit',
-//        scroll: 'vertical',
         listeners: {
             afterRender:function (){
 
@@ -60,25 +61,6 @@
                 this.tpl = new Ext.Template( Ext.get( 'result-item-tpl').getHTML() );
                 this.initRender();
 
-                // 添加item被tap委托事件
-                // 该方法会导致整个列表无法滚动...尼玛!!!!!!!
-//                this.body.addListener( 'tap', function ( e ){
-//
-//                    var target = Ext.get( e.target );
-//                    var item = target.findParent( '.result-item' );
-//
-//                    if( item ){
-//
-//                        that.fireEvent( 'itemClicked', item );
-//                    }
-//                });
-            },
-            resize: function (){
-            },
-            bodyresize: function (){
-            },
-            // 当窗口尺寸改变
-            afterlayout: function (){
             }
         },
 
@@ -92,7 +74,9 @@
             if( this.resultItems.length > 0 ){
 
                 this.resultItems = [];
-                this.insertItem( itemBak );
+
+                this.saveItems( itemBak );
+                this.renderItems();
             }
         },
 
@@ -102,6 +86,9 @@
         clearList: function (){
 
             this.body.setHTML( '' );
+            this.resultItems = [];
+            this.resultItemsToRender = [];
+            this.resultIds = [];
         },
 
         /**
@@ -112,9 +99,29 @@
 
             var newItems = Ext.isArray( itemInfo ) ? itemInfo : [ itemInfo ];
             var that = this;
-            this.resultItems.concat( newItems );
+            this.resultItems = this.resultItems.concat( newItems );
+        },
 
-            Ext.each( newItems, function ( item ){
+        /**
+         * 保存结果以便后期渲染
+         * @param itemInfo
+         */
+        saveItems: function( itemInfo ){
+
+            var newItems = Ext.isArray( itemInfo ) ? itemInfo : [ itemInfo ];
+            // 新的item都将放入 用来表明这些item尚未被渲染过
+            this.resultItemsToRender = this.resultItemsToRender.concat( newItems );
+            this.resultItems = this.resultItems.concat( newItems );
+        },
+
+        /**
+         * 渲染所有还未渲染的item
+         */
+        renderItems: function (){
+
+            var that = this;
+
+            Ext.each( this.resultItemsToRender, function ( item ){
 
                 that.tpl.append( that.body, that.itemInfoHandle( item ) );
 
@@ -132,6 +139,9 @@
             } );
 
             that.doLayout();
+
+            // 渲染完毕，清空
+            this.resultItemsToRender = [];
         },
 
         /**

@@ -42,6 +42,8 @@
 
                                     if( errors.isValid() ){
 
+                                        data.removeImgs = data.removeImgs.join( ',' );
+
                                         Mods.itemRequest.updateItem( that.itemId, data, function ( errObj ){
 
                                             if( !errObj ){

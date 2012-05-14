@@ -68,7 +68,8 @@
                 else {
 
                     that.resultList.clearList();
-                    that.resultList.insertItem( items );
+                    that.resultList.saveItems( items );
+                    that.resultList.renderItems();
                 }
 
                 that.setLoading( false );
