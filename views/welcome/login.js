@@ -54,13 +54,24 @@
 
                                     if( errors.isValid() ){
 
-                                        Auth.login( values.email, values.password, function( ifLogin ){
+                                        that.setLoading( true );
+
+                                        Auth.login( values.email, values.password, function( ifLogin, data ){
+
+                                            that.setLoading( false );
 
                                             if( ifLogin ){
 
-                                                Mods.route.redirect( 'main' );
-                                                // 重置表单
-                                                that.reset();
+                                                Ext.Msg.alert( '登陆成功!', '', function (){
+
+                                                    Mods.route.redirect( 'main' );
+                                                    // 重置表单
+                                                    that.reset();
+                                                });
+                                            }
+                                            else {
+
+                                                Ext.Msg.alert( "登陆失败！", ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
                                             }
                                         });
 

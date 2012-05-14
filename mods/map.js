@@ -10,60 +10,25 @@
     Mods.map = {
 
         /**
-         * 获取当前的地理位置信息
-         * @param next ( ifSuccess, resultData ) resultData = { addressConponent, formattedAddress, location}
-         */
-        getCurrentLocation: function ( next ){
-            var that = this;
-
-            this.getCurrentLatLng( function ( err, latlng ){
-
-//                alert( 'getCurrentLatLng callback' );
-
-                if( err ){
-
-                    Ext.Msg.alert( '获取当前GPS信息出错: ' + JSON.stringify( err ), function(){
-
-                        next( false );
-                    });
-                }
-                else {
-                    that.getRAR(latlng.lat, latlng.lng, function ( errData, result ){
-
-                        if( errData ){
-
-                            Ext.Msg.alert( '获取当前位置信息失败! ', '', function (){
-
-                                next( true, result );
-                            } );
-                        }
-                        else {
-                            next( true, result );
-                        }
-                    });
-                }
-
-            });
-        },
-
-        /**
          * 获取当前GPS信息
          * @param {Function} next( errMsg, { lat, lng }
          * @param {Number} timeout
          */
         getCurrentLatLng: function( next, timeout ){
 
-            // 默认超时1分钟
-            timeout = timeout || 60000;
+            var stTimeout = 2000;
+            timeout = timeout || 20000;
 
             var browserSupportFlag =  new Boolean();
+            var geolocationType = '';
 
-            // Try W3C Geolocation (Preferred)
+            // 设置2s超时，若超时，则再次请求GPS进行定位
             if( window.plugins.stGeolocation ){
 
                 browserSupportFlag = true;
+                geolocationType = 'stGeolocation';
 
-                window.plugins.stGeolocation.get( function ( err, location ){
+                Mods.util.timeoutWrap( window.plugins.stGeolocation.get, [], function ( err, location ){
 
                     if( err ){
 
@@ -78,18 +43,23 @@
 
                         onSuccess( location );
                     }
-                });
+                }, stTimeout, stTimeoutHandle, window.plugins.stGeolocation );
             }
+            // Try W3C Geolocation (Preferred)
             else if(navigator.geolocation) {
-                browserSupportFlag = true;
 
-                // 获取地理位置，并设置超时1分钟
+                browserSupportFlag = true;
+                geolocationType = 'geolocation';
+
+                // 获取地理位置，并设置超时
                 navigator.geolocation.getCurrentPosition( onSuccess, onError, { enableHighAccuracy: true, timeout: timeout });
 
                 // Try Google Gears Geolocation
             } else if (google.gears) {
 
                 browserSupportFlag = true;
+                geolocationType = 'gears';
+
                 var geo = google.gears.factory.create('beta.geolocation');
                 geo.getCurrentPosition( onSuccess, onError );
 
@@ -142,6 +112,18 @@
                 next( msg );
             }
 
+            function stTimeoutHandle(){
+
+                if( geolocationType === 'stGeolocation' ){
+
+                    browserSupportFlag = true;
+                    geolocationType = 'geolocation';
+
+                    // 获取地理位置，并设置超时1分钟
+                    navigator.geolocation.getCurrentPosition( onSuccess, onError, { enableHighAccuracy: true, timeout: timeout });
+                }
+            }
+
         },
 
         /**
@@ -156,7 +138,7 @@
                 this.geocoder = new google.maps.Geocoder();
             }
 
-            this.geocoder.geocode( obj, function ( results, status ){
+            Mods.util.timeoutWrap( this.geocoder.geocode, [ obj ], function ( results, status ){
 
                 if ( status == google.maps.GeocoderStatus.OK ) {
 
@@ -186,7 +168,12 @@
 
                     next( '地址查询失败! 错误代码：' + status );
                 }
-            });
+            }, 20000, onTimeout, this.geocoder );
+
+            function onTimeout(){
+
+                next( '地址解析超时，请重试!' );
+            }
 
         },
 
@@ -229,75 +216,6 @@
 
             return new google.maps.LatLngBounds( new google.maps.LatLng( maxLat, minLng ),
                 new google.maps.LatLng( minLat, maxLng ) );
-        },
-
-        /**
-         * 反向地址解析
-         * Reverse Address Resolution
-         * @param {String} lat
-         * @param {String} lng
-         * @param {Function} next( data, resultData ) --> data = { result, type, data }
-         */
-        getRAR:function( lat, lng, next ){
-
-//            alert( 'getRAR' );
-            var Request = Mods.request;
-            var that = this;
-            var url = APIS[ 'GEO' ];
-
-            Request.send({
-                url: url + '?latlng=' + lat + ',' + lng + '&sensor=true&t=' + Date.now(),
-                method: 'POST',
-                type: 'GEO',
-                callback: function( res ){
-
-                    var result = res.result;
-                    var data = res.data;
-
-                    if( result ){
-
-                        next( undefined, that.resultHandle( res.data ) );
-                    }
-                    else {
-
-                        next( data, that.resultHandle( res.data ) );
-                    }
-                }
-            });
-        },
-
-        /**
-         * 地址解析
-         * Address Resolution
-         * @param {String} address 地址
-         * @param {Function} next( data, addressData ) 若请求成功，data为undefined data = { result, type, data }
-         * //todo 比如"浙江工业大学“这样的地址无法得到搜索结果的问题
-         */
-        getAR: function ( address, next ){
-
-            var Request = Mods.request;
-            var that = this;
-            var url = APIS[ 'GEO' ];
-
-            alert( 'getAR' );
-            alert( 'url:' +url + '?address=' + encodeURIComponent( address ) + '&sensor=true&t=' + Date.now() );
-            Request.send({
-                url: url + '?address=' + address + '&sensor=true&t=' + Date.now(),
-                method: 'POST',
-                type: 'GEO',
-                callback: function( res ){
-
-                    var result = res.result;
-                    var data = res.data;
-
-                    if( result ){
-                        next( undefined, that.resultHandle( res.data ) );
-                    }
-                    else {
-                        next( res, that.resultHandle( res.data ) );
-                    }
-                }
-            });
         },
 
         /**

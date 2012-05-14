@@ -26,7 +26,7 @@
             var callback = obj.callback;
             var data = obj.data || {};
 
-            var timeout = obj.timeout || 30000;
+            var timeout = obj.timeout || 20000;
             var ifTimeout = false;
             var timer;
 
@@ -43,6 +43,7 @@
                 JSONP.request({
                     url: url,
                     callbackKey: JSONP_KEY,
+                    disableCaching: true,
                     params: data,
                     callback: function( data ){
 
@@ -64,7 +65,7 @@
                 timer = setTimeout(function (){
 
                     ifTimeout = true;
-                    callback( { error: '登陆超时', result: false } );
+                    callback( { error: '请求超时', result: false } );
                 }, timeout );
             }
         },
@@ -92,6 +93,10 @@
             var disableCaching = obj.disableCaching;
             var method = obj.method;
 
+            var timeout = obj.timeout || 20000;
+            var ifTimeout = false;
+            var timer;
+
             if( url ){
 
                 if( type !== 'GEO' ){
@@ -99,31 +104,46 @@
 
                 }
 
-                //todo 添加超时
                 Ext.Ajax.request({
                     url: url,
                     params: data,
                     method: method,
+                    disableCaching: true,
                     callback: function( options, success, response ){
 
-                        var resObj = {
-                            result: success,
-                            type: type,
-                            data: JSON.parse( response.responseText || '{}' )
-                        };
+                        if( !ifTimeout ){
 
-                        if( type !== 'GEO' ){
-                            ifAuthAttach && Auth.parse( resObj.data );
+                            clearTimeout( timer );
 
+                            if( success ){
+
+                                var data = JSON.parse( response.responseText || '{}' );
+
+                                if( type !== 'GEO' ){
+                                    ifAuthAttach && Auth.parse( data );
+
+                                }
+
+                                if( typeof callback === 'function' ){
+
+                                    callback( data );
+                                }
+                            }
+                            else {
+
+                                callback( { error: '请求出错', result: false } );
+                            }
                         }
-
-                        if( typeof callback === 'function' ){
-
-                            callback( resObj );
-                        }
-                    },
-                    disableCaching: disableCaching === undefined ? false : disableCaching
+                    }
+//                    disableCaching: disableCaching === undefined ? false : disableCaching
                 });
+
+                // 用于超时检测
+                timer = setTimeout(function (){
+
+                    ifTimeout = true;
+                    callback( { error: '请求超时', result: false } );
+                }, timeout );
             }
         }
     }

@@ -177,10 +177,10 @@
 
             Mods.map.getCurrentLatLng(function ( err, latlng ){
 
-                that.setLoading( false );
 
                 if( err ){
 
+                    that.setLoading( false );
                     alert( err + ' 您可以手动搜索位置!' );
                 }
                 else {
@@ -192,9 +192,11 @@
                     // 其中resultLatLng为 google Map的 LatLng对象
                     Mods.map.geocode( { latLng: position }, function ( err, address, resultLatLng ){
 
+                        that.setLoading( false );
+
                         if( err ){
 
-                            alert( err );
+                            alert( err + '您可以手动搜索位置!' );
                         }
                         else {
 

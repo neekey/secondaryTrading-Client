@@ -22,12 +22,13 @@
 
             if( !ifAuthCheck ){
 
-                Mods.request.jsonp({
-
+                Mods.request.send({
+                    method: 'get',
                     type: 'CHECKAUTH',
                     callback: function ( data ){
 
                         ifAuthCheck = true;
+
 
                         if( data.result && data.data ){
 
@@ -63,7 +64,8 @@
                 password: password
             };
 
-            Mods.request.jsonp({
+            Mods.request.send({
+                method: 'post',
                 type: 'LOGIN',
                 data: values,
                 callback: function( data ){
@@ -72,10 +74,7 @@
 
                         ifLogin = true;
 
-                        Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
-
-                            next( true, data );
-                        });
+                        next( true, data );
                     }
                     else {
 
@@ -91,10 +90,7 @@
 
                             ifLogin = false;
 
-                            Ext.Msg.alert( "登陆失败！", data.error + ': ' + JSON.stringify( data.data ), function (){
-
-                                next( false, data );
-                            });
+                            next( false, data );
                         }
                     }
                 }
@@ -107,22 +103,20 @@
          */
         logout: function ( next ){
 
-            Mods.request.jsonp({
+            Mods.request.send({
+                method: 'get',
                 type: 'LOGOUT',
                 callback: function( data ){
 
                     if( data.result ){
 
-                        Ext.Msg.alert( '注销成功', '成功注销!', function(){
+                        ifLogin = false;
 
-                            ifLogin = false;
-
-                            next( true, data );
-                        });
+                        next( true, data );
                     }
                     else {
 
-                        Ext.Msg.alert( '注销失败', data.error + ': ' + JSON.stringify( data.data ) );
+                        next( false, data );
                     }
                 }
             }, true );
@@ -151,13 +145,16 @@
 
             var resData = data[ RES_NAME ];
 
-            session.set( 'email', resData[ 'email'] );
-            session.set( 'serial', resData[ 'serial' ] );
-            session.set( 'token', resData[ 'token' ] );
+            if( resData ){
 
-            session.set( ID_NAME, data[ ID_NAME ] );
+                session.set( 'email', resData[ 'email'] );
+                session.set( 'serial', resData[ 'serial' ] );
+                session.set( 'token', resData[ 'token' ] );
 
-            this.save();
+                session.set( ID_NAME, data[ ID_NAME ] );
+
+                this.save();
+            }
         },
 
         /**

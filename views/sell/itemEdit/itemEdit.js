@@ -44,11 +44,19 @@
 
                                         data.removeImgs = data.removeImgs.join( ',' );
 
+                                        that.setLoading( true );
+
                                         Mods.itemRequest.updateItem( that.itemId, data, function ( errObj ){
+
+                                            that.setLoading( false );
 
                                             if( !errObj ){
 
                                                 Ext.Msg.alert( '修改商品成功!' );
+                                            }
+                                            else {
+
+                                                Ext.Msg.alert( '修改商品失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                             }
                                         });
                                     }
@@ -72,7 +80,12 @@
                                 handler: function (){
 
                                     var itemId = that.itemId;
+
+                                    that.setLoading( true );
+
                                     Mods.itemRequest.delItem( itemId, function ( err ){
+
+                                        that.setLoading( false );
 
                                         if( !err ){
 
@@ -80,6 +93,10 @@
                                                 // 若删除成功，返回列表
                                                 Mods.route.redirect( 'sell/sellList' );
                                             } );
+                                        }
+                                        else {
+
+                                            Ext.Msg.alert( '商品删除失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                         }
                                     });
                                 }
@@ -196,7 +213,7 @@
 
                 if( err ){
 
-                    Ext.Msg.alert( '获取商品信息失败! ' + err );
+                    Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                 }
                 else {
 

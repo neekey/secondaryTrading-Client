@@ -43,32 +43,27 @@
 
                                     if( errors.isValid() ){
 
-                                        Mods.request.send({
-                                            method: 'post',
-                                            data: data,
-                                            type: 'NEW_ITEM',
-                                            callback: function ( d ){
+                                        that.setLoading( true );
 
-                                                var resData = d.data;
-                                                var result = resData.result;
-                                                var itemId;
-                                                console.log( 'response',d );
+                                        Mods.itemRequest.addItem( data, function ( ifSuccess, d ){
 
-                                                if( result ){
-                                                    itemId = resData.data.itemId;
-                                                    Ext.Msg.alert( '商品添加成功', '', function (){
+                                            that.setLoading( false );
 
-                                                        Mods.route.redirect( 'sell/sellList' );
-                                                    });
-                                                }
-                                                else {
-                                                    Ext.Msg.alert( '商品添加失败！', resData.error, function (){
+                                            if( ifSuccess ){
 
-                                                        Mods.route.redirect( 'sell' );
-                                                    } );
-                                                }
+                                                Ext.Msg.alert( '商品添加成功', '', function (){
+
+                                                    Mods.route.redirect( 'sell/sellList' );
+                                                });
                                             }
-                                        }, true );
+                                            else {
+                                                Ext.Msg.alert( '商品添加失败！', ( d.error || '' ) + ( JSON.stringify(d.data) || ''), function (){
+
+                                                    Mods.route.redirect( 'sell' );
+                                                } );
+                                            }
+                                        });
+
                                     }
                                     else {
                                         Ext.each( errors.items, function( rec, i ){

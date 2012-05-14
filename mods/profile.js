@@ -26,8 +26,8 @@
                 data: {
                     email: userEmail
                 },
-                callback: function ( d ){
-                    var resData = d.data;
+                callback: function ( resData ){
+
                     var result = resData.result;
                     var data = resData.data;
 
@@ -37,7 +37,7 @@
                     }
                     else {
 
-                        next( d )
+                        next( resData )
                     }
                 }
             })
@@ -67,8 +67,8 @@
                 type: 'UPDATE_USER',
                 disableCaching: true,
                 data: updateObj,
-                callback: function ( d ){
-                    var resData = d.data;
+                callback: function ( resData ){
+
                     var result = resData.result;
                     var data = resData.data;
 
@@ -78,7 +78,7 @@
                     }
                     else {
 
-                        next( d )
+                        next( resData )
                     }
                 }
             })

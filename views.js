@@ -1141,10 +1141,10 @@
 
             Mods.map.getCurrentLatLng(function ( err, latlng ){
 
-                that.setLoading( false );
 
                 if( err ){
 
+                    that.setLoading( false );
                     alert( err + ' 您可以手动搜索位置!' );
                 }
                 else {
@@ -1156,9 +1156,11 @@
                     // 其中resultLatLng为 google Map的 LatLng对象
                     Mods.map.geocode( { latLng: position }, function ( err, address, resultLatLng ){
 
+                        that.setLoading( false );
+
                         if( err ){
 
-                            alert( err );
+                            alert( err + '您可以手动搜索位置!' );
                         }
                         else {
 
@@ -1369,12 +1371,20 @@
 
                                     if( errors.isValid() ){
 
+                                        that.setLoading( true );
+
                                         // 发送请求
                                         Mods.profile.updateUserInfo( undefined, data, function ( errObj ){
+
+                                            that.setLoading( false );
 
                                             if( !errObj ){
 
                                                 Ext.Msg.alert( '保存成功!' );
+                                            }
+                                            else {
+
+                                                Ext.Msg.alert( '保存出错', ( errObj.error || '' ) + ( JSON.stringify( errObj.data ) || '' ) );
                                             }
                                         });
                                     }
@@ -1450,7 +1460,7 @@
                 that.setLoading( false );
                 if( data ){
 
-                    Ext.Msg.alert( '获取用户信息失败: ' + data.error );
+                    Ext.Msg.alert( '获取商品信息失败! ', ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
                 }
                 else {
 
@@ -1715,40 +1725,64 @@
             height: 45
         },
         scroll: false,
-        dockedItems: [
-            {
-                xtype: 'toolbar',
-                dock: 'top',
-                title: '个人中心'
-            }
-        ],
-        items: [
-            {
-                text: '我的资料',
-                ui: 'confirm',
-                handler: function (){
 
-                    Mods.route.redirect( 'profile/myProfile' );
-                }
-            },
-            {
-                text: '偏好设置',
-                ui: 'confirm',
-                handler: function(){
+        initComponent: function (){
 
-                    Mods.route.redirect( 'profile/preferences' );
-                }
-            },
-            {
-                text: '注销',
-                handler: function(){
+            var that = this;
 
-                    Auth.logout(function (){
-                        Mods.route.redirect( 'welcome/login' );
-                    });
-                }
-            }
-        ]
+            Ext.apply( this, {
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '个人中心'
+                    }
+                ],
+                items: [
+                    {
+                        text: '我的资料',
+                        ui: 'confirm',
+                        handler: function (){
+
+                            Mods.route.redirect( 'profile/myProfile' );
+                        }
+                    },
+                    {
+                        text: '偏好设置',
+                        ui: 'confirm',
+                        handler: function(){
+
+                            Mods.route.redirect( 'profile/preferences' );
+                        }
+                    },
+                    {
+                        text: '注销',
+                        handler: function(){
+
+                            that.setLoading( true );
+                            Auth.logout(function ( ifSuccess, data ){
+
+                                that.setLoading( false );
+
+                                if( ifSuccess ){
+
+                                    Ext.Msg.alert( '注销成功!', '', function (){
+
+                                        Mods.route.redirect( 'welcome/login' );
+                                    });
+                                }
+                                else {
+
+                                    Ext.Msg.alert( "注销失败！", ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
+                                }
+                            });
+                        }
+                    }
+                ]
+            });
+
+            profileMenuCls.superclass.initComponent.call( this );
+        }
     });
 
     Ext.reg( 'profileMenu', profileMenuCls );
@@ -1891,6 +1925,7 @@
 
                 if( err ){
 
+                    Ext.Msg.alert( '获取商品列表失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                 }
                 else {
 
@@ -1962,13 +1997,24 @@
 
                                     if( errors.isValid() ){
 
-                                        Auth.login( values.email, values.password, function( ifLogin ){
+                                        that.setLoading( true );
+
+                                        Auth.login( values.email, values.password, function( ifLogin, data ){
+
+                                            that.setLoading( false );
 
                                             if( ifLogin ){
 
-                                                Mods.route.redirect( 'main' );
-                                                // 重置表单
-                                                that.reset();
+                                                Ext.Msg.alert( '登陆成功!', '', function (){
+
+                                                    Mods.route.redirect( 'main' );
+                                                    // 重置表单
+                                                    that.reset();
+                                                });
+                                            }
+                                            else {
+
+                                                Ext.Msg.alert( "登陆失败！", ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
                                             }
                                         });
 
@@ -2041,10 +2087,10 @@
 })();(function(){
 
     var Request = App.mods.request;
+    var Mods = App.mods;
 
     var RegisterCls =  App.views.login = Ext.extend( Ext.form.FormPanel, {
         title: '注册',
-        scroll: 'vertical',
         iconCls: 'search',
         id: 'welcome-register',
         apiType: 'REGISTER',
@@ -2084,14 +2130,22 @@
 
                                     if( errors.isValid() && values.password === values[ 'password-confirm' ] ){
 
-                                        Request.jsonp({
+                                        that.setLoading( true );
+
+                                        Request.send({
+                                            method: 'post',
                                             type: that.apiType,
                                             data: values,
                                             callback: function( data ){
 
+                                                that.setLoading( false );
+
                                                 if( data.result ){
 
-                                                    Ext.Msg.alert( "注册成功！", '注册成功，请登陆！' );
+                                                    Ext.Msg.alert( "注册成功！", '注册成功，请登陆！', function (){
+
+                                                        Mods.route.redirect( 'welcome/login' );
+                                                    });
 
                                                     that.reset();
                                                 }
@@ -2099,7 +2153,6 @@
 
                                                     Ext.Msg.alert( '注册失败！', data.error );
                                                 }
-
                                             }
                                         }, true );
 
@@ -2295,9 +2348,11 @@
 
                                         Mods.itemRequest.query( data, function ( err, data ){
 
+                                            that.setLoading( false );
+
                                             if( err ){
 
-                                                Ext.Msg.alert( '获取商品信息出错：' + JSON.stringify( err ) );
+                                                Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                             }
                                             else {
 
@@ -2334,7 +2389,6 @@
 
                                                 that.onResize();
                                                 that.doLayout();
-                                                that.setLoading( false );
                                             }
                                         });
                                     }
@@ -3102,28 +3156,6 @@
                 var that = this;
                 this.picSlide = this.query( 'picSlide' )[ 0 ];
                 this.itemTextInfo = this.query( 'itemTextInfo' )[ 0 ];
-
-                // 下面仅为测试
-                // 由于在此时 自组件的afterrender事件都还未被出发，因此直接设置会有问题
-                setTimeout( function (){
-//                    that.setItemTextInfo( {
-//                        title: '标题',
-//                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
-//                        price: '9999',
-//                        location: '浙江工业大学',
-//                        sellerName: 'Neekey',
-//                        date: '2011-01-02',
-//                        email: 'ni@gmail.com',
-//                        QQ: '1987987979',
-//                        wangwang: '9879790'
-//                    });
-//
-//                    that.setPics( [
-//                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
-////                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
-//                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
-//                    ]);
-                }, 1000 ) ;
             },
             resize: function (){
 
@@ -3189,7 +3221,7 @@
 
                 if( err ){
 
-                    Ext.Msg.alert( '获取商品信息失败! ' + err );
+                    Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                 }
                 else {
 
@@ -3735,11 +3767,19 @@
 
                                         data.removeImgs = data.removeImgs.join( ',' );
 
+                                        that.setLoading( true );
+
                                         Mods.itemRequest.updateItem( that.itemId, data, function ( errObj ){
+
+                                            that.setLoading( false );
 
                                             if( !errObj ){
 
                                                 Ext.Msg.alert( '修改商品成功!' );
+                                            }
+                                            else {
+
+                                                Ext.Msg.alert( '修改商品失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                             }
                                         });
                                     }
@@ -3763,7 +3803,12 @@
                                 handler: function (){
 
                                     var itemId = that.itemId;
+
+                                    that.setLoading( true );
+
                                     Mods.itemRequest.delItem( itemId, function ( err ){
+
+                                        that.setLoading( false );
 
                                         if( !err ){
 
@@ -3771,6 +3816,10 @@
                                                 // 若删除成功，返回列表
                                                 Mods.route.redirect( 'sell/sellList' );
                                             } );
+                                        }
+                                        else {
+
+                                            Ext.Msg.alert( '商品删除失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                         }
                                     });
                                 }
@@ -3887,7 +3936,7 @@
 
                 if( err ){
 
-                    Ext.Msg.alert( '获取商品信息失败! ' + err );
+                    Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                 }
                 else {
 
@@ -3960,32 +4009,27 @@
 
                                     if( errors.isValid() ){
 
-                                        Mods.request.send({
-                                            method: 'post',
-                                            data: data,
-                                            type: 'NEW_ITEM',
-                                            callback: function ( d ){
+                                        that.setLoading( true );
 
-                                                var resData = d.data;
-                                                var result = resData.result;
-                                                var itemId;
-                                                console.log( 'response',d );
+                                        Mods.itemRequest.addItem( data, function ( ifSuccess, d ){
 
-                                                if( result ){
-                                                    itemId = resData.data.itemId;
-                                                    Ext.Msg.alert( '商品添加成功', '', function (){
+                                            that.setLoading( false );
 
-                                                        Mods.route.redirect( 'sell/sellList' );
-                                                    });
-                                                }
-                                                else {
-                                                    Ext.Msg.alert( '商品添加失败！', resData.error, function (){
+                                            if( ifSuccess ){
 
-                                                        Mods.route.redirect( 'sell' );
-                                                    } );
-                                                }
+                                                Ext.Msg.alert( '商品添加成功', '', function (){
+
+                                                    Mods.route.redirect( 'sell/sellList' );
+                                                });
                                             }
-                                        }, true );
+                                            else {
+                                                Ext.Msg.alert( '商品添加失败！', ( d.error || '' ) + ( JSON.stringify(d.data) || ''), function (){
+
+                                                    Mods.route.redirect( 'sell' );
+                                                } );
+                                            }
+                                        });
+
                                     }
                                     else {
                                         Ext.each( errors.items, function( rec, i ){

@@ -76,9 +76,11 @@
 
                                         Mods.itemRequest.query( data, function ( err, data ){
 
+                                            that.setLoading( false );
+
                                             if( err ){
 
-                                                Ext.Msg.alert( '获取商品信息出错：' + JSON.stringify( err ) );
+                                                Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                             }
                                             else {
 
@@ -115,7 +117,6 @@
 
                                                 that.onResize();
                                                 that.doLayout();
-                                                that.setLoading( false );
                                             }
                                         });
                                     }

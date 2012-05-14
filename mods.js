@@ -22,12 +22,13 @@
 
             if( !ifAuthCheck ){
 
-                Mods.request.jsonp({
-
+                Mods.request.send({
+                    method: 'get',
                     type: 'CHECKAUTH',
                     callback: function ( data ){
 
                         ifAuthCheck = true;
+
 
                         if( data.result && data.data ){
 
@@ -63,7 +64,8 @@
                 password: password
             };
 
-            Mods.request.jsonp({
+            Mods.request.send({
+                method: 'post',
                 type: 'LOGIN',
                 data: values,
                 callback: function( data ){
@@ -72,10 +74,7 @@
 
                         ifLogin = true;
 
-                        Ext.Msg.alert( "登陆成功！", '登陆成功!', function(){
-
-                            next( true, data );
-                        });
+                        next( true, data );
                     }
                     else {
 
@@ -91,10 +90,7 @@
 
                             ifLogin = false;
 
-                            Ext.Msg.alert( "登陆失败！", data.error + ': ' + JSON.stringify( data.data ), function (){
-
-                                next( false, data );
-                            });
+                            next( false, data );
                         }
                     }
                 }
@@ -107,22 +103,20 @@
          */
         logout: function ( next ){
 
-            Mods.request.jsonp({
+            Mods.request.send({
+                method: 'get',
                 type: 'LOGOUT',
                 callback: function( data ){
 
                     if( data.result ){
 
-                        Ext.Msg.alert( '注销成功', '成功注销!', function(){
+                        ifLogin = false;
 
-                            ifLogin = false;
-
-                            next( true, data );
-                        });
+                        next( true, data );
                     }
                     else {
 
-                        Ext.Msg.alert( '注销失败', data.error + ': ' + JSON.stringify( data.data ) );
+                        next( false, data );
                     }
                 }
             }, true );
@@ -151,13 +145,16 @@
 
             var resData = data[ RES_NAME ];
 
-            session.set( 'email', resData[ 'email'] );
-            session.set( 'serial', resData[ 'serial' ] );
-            session.set( 'token', resData[ 'token' ] );
+            if( resData ){
 
-            session.set( ID_NAME, data[ ID_NAME ] );
+                session.set( 'email', resData[ 'email'] );
+                session.set( 'serial', resData[ 'serial' ] );
+                session.set( 'token', resData[ 'token' ] );
 
-            this.save();
+                session.set( ID_NAME, data[ ID_NAME ] );
+
+                this.save();
+            }
         },
 
         /**
@@ -276,6 +273,39 @@
 
     Mods.itemRequest = {
 
+        addItem: function ( item, next ){
+
+            Mods.request.send({
+                method: 'post',
+                data: item,
+                type: 'NEW_ITEM',
+                callback: function ( resData ){
+
+                    var result = resData.result;
+                    var itemId;
+
+                    if( result ){
+
+                        itemId = resData.data.itemId;
+                        Ext.Msg.alert( '商品添加成功', '', function (){
+
+                            Mods.route.redirect( 'sell/sellList' );
+                        });
+
+                        next( true, itemId );
+                    }
+                    else {
+                        Ext.Msg.alert( '商品添加失败！', resData.error, function (){
+
+                            Mods.route.redirect( 'sell' );
+                        } );
+
+                        next( false, resData );
+                    }
+                }
+            }, true );
+        },
+
         /**
          * 根据itemid获取商品信息
          * @param id
@@ -326,9 +356,8 @@
                     email: email
                 },
                 type: 'SELLING_LIST',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -339,7 +368,7 @@
                     else {
 
                         Ext.Msg.alert( resData.error + ': ' + JSON.stringify( resData.data ) );
-                        next( d )
+                        next( resData )
                     }
                 }
             }, true );
@@ -410,9 +439,8 @@
                 disableCaching: true,
                 data: data,
                 type: 'QUERY_ITEM',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -422,7 +450,7 @@
                     }
                     else {
 
-                        next( d )
+                        next( resData )
                     }
                 }
             }, true );
@@ -443,9 +471,8 @@
                 data: updateObj,
                 disableCaching: true,
                 type: 'UPDATE_ITEM',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -480,9 +507,8 @@
                 method: 'get',
                 data: data,
                 type: 'DEL_ITEM',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -515,60 +541,25 @@
     Mods.map = {
 
         /**
-         * 获取当前的地理位置信息
-         * @param next ( ifSuccess, resultData ) resultData = { addressConponent, formattedAddress, location}
-         */
-        getCurrentLocation: function ( next ){
-            var that = this;
-
-            this.getCurrentLatLng( function ( err, latlng ){
-
-//                alert( 'getCurrentLatLng callback' );
-
-                if( err ){
-
-                    Ext.Msg.alert( '获取当前GPS信息出错: ' + JSON.stringify( err ), function(){
-
-                        next( false );
-                    });
-                }
-                else {
-                    that.getRAR(latlng.lat, latlng.lng, function ( errData, result ){
-
-                        if( errData ){
-
-                            Ext.Msg.alert( '获取当前位置信息失败! ', '', function (){
-
-                                next( true, result );
-                            } );
-                        }
-                        else {
-                            next( true, result );
-                        }
-                    });
-                }
-
-            });
-        },
-
-        /**
          * 获取当前GPS信息
          * @param {Function} next( errMsg, { lat, lng }
          * @param {Number} timeout
          */
         getCurrentLatLng: function( next, timeout ){
 
-            // 默认超时1分钟
-            timeout = timeout || 60000;
+            var stTimeout = 2000;
+            timeout = timeout || 20000;
 
             var browserSupportFlag =  new Boolean();
+            var geolocationType = '';
 
-            // Try W3C Geolocation (Preferred)
+            // 设置2s超时，若超时，则再次请求GPS进行定位
             if( window.plugins.stGeolocation ){
 
                 browserSupportFlag = true;
+                geolocationType = 'stGeolocation';
 
-                window.plugins.stGeolocation.get( function ( err, location ){
+                Mods.util.timeoutWrap( window.plugins.stGeolocation.get, [], function ( err, location ){
 
                     if( err ){
 
@@ -583,18 +574,23 @@
 
                         onSuccess( location );
                     }
-                });
+                }, stTimeout, stTimeoutHandle, window.plugins.stGeolocation );
             }
+            // Try W3C Geolocation (Preferred)
             else if(navigator.geolocation) {
-                browserSupportFlag = true;
 
-                // 获取地理位置，并设置超时1分钟
+                browserSupportFlag = true;
+                geolocationType = 'geolocation';
+
+                // 获取地理位置，并设置超时
                 navigator.geolocation.getCurrentPosition( onSuccess, onError, { enableHighAccuracy: true, timeout: timeout });
 
                 // Try Google Gears Geolocation
             } else if (google.gears) {
 
                 browserSupportFlag = true;
+                geolocationType = 'gears';
+
                 var geo = google.gears.factory.create('beta.geolocation');
                 geo.getCurrentPosition( onSuccess, onError );
 
@@ -647,6 +643,18 @@
                 next( msg );
             }
 
+            function stTimeoutHandle(){
+
+                if( geolocationType === 'stGeolocation' ){
+
+                    browserSupportFlag = true;
+                    geolocationType = 'geolocation';
+
+                    // 获取地理位置，并设置超时1分钟
+                    navigator.geolocation.getCurrentPosition( onSuccess, onError, { enableHighAccuracy: true, timeout: timeout });
+                }
+            }
+
         },
 
         /**
@@ -661,7 +669,7 @@
                 this.geocoder = new google.maps.Geocoder();
             }
 
-            this.geocoder.geocode( obj, function ( results, status ){
+            Mods.util.timeoutWrap( this.geocoder.geocode, [ obj ], function ( results, status ){
 
                 if ( status == google.maps.GeocoderStatus.OK ) {
 
@@ -691,7 +699,12 @@
 
                     next( '地址查询失败! 错误代码：' + status );
                 }
-            });
+            }, 20000, onTimeout, this.geocoder );
+
+            function onTimeout(){
+
+                next( '地址解析超时，请重试!' );
+            }
 
         },
 
@@ -734,75 +747,6 @@
 
             return new google.maps.LatLngBounds( new google.maps.LatLng( maxLat, minLng ),
                 new google.maps.LatLng( minLat, maxLng ) );
-        },
-
-        /**
-         * 反向地址解析
-         * Reverse Address Resolution
-         * @param {String} lat
-         * @param {String} lng
-         * @param {Function} next( data, resultData ) --> data = { result, type, data }
-         */
-        getRAR:function( lat, lng, next ){
-
-//            alert( 'getRAR' );
-            var Request = Mods.request;
-            var that = this;
-            var url = APIS[ 'GEO' ];
-
-            Request.send({
-                url: url + '?latlng=' + lat + ',' + lng + '&sensor=true&t=' + Date.now(),
-                method: 'POST',
-                type: 'GEO',
-                callback: function( res ){
-
-                    var result = res.result;
-                    var data = res.data;
-
-                    if( result ){
-
-                        next( undefined, that.resultHandle( res.data ) );
-                    }
-                    else {
-
-                        next( data, that.resultHandle( res.data ) );
-                    }
-                }
-            });
-        },
-
-        /**
-         * 地址解析
-         * Address Resolution
-         * @param {String} address 地址
-         * @param {Function} next( data, addressData ) 若请求成功，data为undefined data = { result, type, data }
-         * //todo 比如"浙江工业大学“这样的地址无法得到搜索结果的问题
-         */
-        getAR: function ( address, next ){
-
-            var Request = Mods.request;
-            var that = this;
-            var url = APIS[ 'GEO' ];
-
-            alert( 'getAR' );
-            alert( 'url:' +url + '?address=' + encodeURIComponent( address ) + '&sensor=true&t=' + Date.now() );
-            Request.send({
-                url: url + '?address=' + address + '&sensor=true&t=' + Date.now(),
-                method: 'POST',
-                type: 'GEO',
-                callback: function( res ){
-
-                    var result = res.result;
-                    var data = res.data;
-
-                    if( result ){
-                        next( undefined, that.resultHandle( res.data ) );
-                    }
-                    else {
-                        next( res, that.resultHandle( res.data ) );
-                    }
-                }
-            });
         },
 
         /**
@@ -883,8 +827,8 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
                 data: {
                     email: userEmail
                 },
-                callback: function ( d ){
-                    var resData = d.data;
+                callback: function ( resData ){
+
                     var result = resData.result;
                     var data = resData.data;
 
@@ -894,7 +838,7 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
                     }
                     else {
 
-                        next( d )
+                        next( resData )
                     }
                 }
             })
@@ -924,8 +868,8 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
                 type: 'UPDATE_USER',
                 disableCaching: true,
                 data: updateObj,
-                callback: function ( d ){
-                    var resData = d.data;
+                callback: function ( resData ){
+
                     var result = resData.result;
                     var data = resData.data;
 
@@ -935,7 +879,7 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
                     }
                     else {
 
-                        next( d )
+                        next( resData )
                     }
                 }
             })
@@ -971,7 +915,7 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
             var callback = obj.callback;
             var data = obj.data || {};
 
-            var timeout = obj.timeout || 30000;
+            var timeout = obj.timeout || 20000;
             var ifTimeout = false;
             var timer;
 
@@ -988,6 +932,7 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
                 JSONP.request({
                     url: url,
                     callbackKey: JSONP_KEY,
+                    disableCaching: true,
                     params: data,
                     callback: function( data ){
 
@@ -1009,7 +954,7 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
                 timer = setTimeout(function (){
 
                     ifTimeout = true;
-                    callback( { error: '登陆超时', result: false } );
+                    callback( { error: '请求超时', result: false } );
                 }, timeout );
             }
         },
@@ -1037,6 +982,10 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
             var disableCaching = obj.disableCaching;
             var method = obj.method;
 
+            var timeout = obj.timeout || 20000;
+            var ifTimeout = false;
+            var timer;
+
             if( url ){
 
                 if( type !== 'GEO' ){
@@ -1044,31 +993,46 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
 
                 }
 
-                //todo 添加超时
                 Ext.Ajax.request({
                     url: url,
                     params: data,
                     method: method,
+                    disableCaching: true,
                     callback: function( options, success, response ){
 
-                        var resObj = {
-                            result: success,
-                            type: type,
-                            data: JSON.parse( response.responseText || '{}' )
-                        };
+                        if( !ifTimeout ){
 
-                        if( type !== 'GEO' ){
-                            ifAuthAttach && Auth.parse( resObj.data );
+                            clearTimeout( timer );
 
+                            if( success ){
+
+                                var data = JSON.parse( response.responseText || '{}' );
+
+                                if( type !== 'GEO' ){
+                                    ifAuthAttach && Auth.parse( data );
+
+                                }
+
+                                if( typeof callback === 'function' ){
+
+                                    callback( data );
+                                }
+                            }
+                            else {
+
+                                callback( { error: '请求出错', result: false } );
+                            }
                         }
-
-                        if( typeof callback === 'function' ){
-
-                            callback( resObj );
-                        }
-                    },
-                    disableCaching: disableCaching === undefined ? false : disableCaching
+                    }
+//                    disableCaching: disableCaching === undefined ? false : disableCaching
                 });
+
+                // 用于超时检测
+                timer = setTimeout(function (){
+
+                    ifTimeout = true;
+                    callback( { error: '请求超时', result: false } );
+                }, timeout );
             }
         }
     }
@@ -1109,4 +1073,50 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
             ft.upload( imageURI, url, op.success, op.error, options );
         }
     }
+})();(function(){
+
+    var Mods = App.mods;
+
+    Mods.util = {
+
+        /**
+         * 为一个异步方法设置超时
+         * @param {Function} action 异步方法
+         * @param {Array} args 异步方法执行需要的参数
+         * @param {Function} next 回调函数
+         * @param {Number} timeout 超时时间
+         * @param {Function} timeoutNext 如果超时执行的方法
+         * @param {Object} scope action 执行时的上下文
+         */
+        timeoutWrap: function ( action, args, next, timeout, timeoutNext, scope ){
+
+            timeout = timeout || 20000;
+            var timer;
+            var ifTimeout = false;
+
+            var _next = function (){
+
+                if( ifTimeout ){
+                    return;
+                }
+
+                clearTimeout( timer );
+
+                next.apply( window, arguments );
+            };
+
+            scope = scope || window;
+
+            timer = setTimeout(function (){
+
+                ifTimeout = true;
+                timeoutNext();
+
+            }, timeout );
+
+            action.apply( scope, Array.prototype.slice.call( args, 0 ).concat( [ _next ] ) );
+
+        }
+    };
+
 })();

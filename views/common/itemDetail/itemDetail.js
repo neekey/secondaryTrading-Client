@@ -54,28 +54,6 @@
                 var that = this;
                 this.picSlide = this.query( 'picSlide' )[ 0 ];
                 this.itemTextInfo = this.query( 'itemTextInfo' )[ 0 ];
-
-                // 下面仅为测试
-                // 由于在此时 自组件的afterrender事件都还未被出发，因此直接设置会有问题
-                setTimeout( function (){
-//                    that.setItemTextInfo( {
-//                        title: '标题',
-//                        desc: '这是商品描述。商品九成新！橙色非常不错，由于买了更好的，所以转让！',
-//                        price: '9999',
-//                        location: '浙江工业大学',
-//                        sellerName: 'Neekey',
-//                        date: '2011-01-02',
-//                        email: 'ni@gmail.com',
-//                        QQ: '1987987979',
-//                        wangwang: '9879790'
-//                    });
-//
-//                    that.setPics( [
-//                        'http://3.s3.envato.com/files/1124114/1item_preview.jpg',
-////                    'http://3.s3.envato.com/files/1209789/0_itempreview.jpg',
-//                        'http://0.s3.envato.com/files/1208187/pdfs_php.jpg'
-//                    ]);
-                }, 1000 ) ;
             },
             resize: function (){
 
@@ -141,7 +119,7 @@
 
                 if( err ){
 
-                    Ext.Msg.alert( '获取商品信息失败! ' + err );
+                    Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                 }
                 else {
 

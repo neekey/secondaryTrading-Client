@@ -1,10 +1,10 @@
 (function(){
 
     var Request = App.mods.request;
+    var Mods = App.mods;
 
     var RegisterCls =  App.views.login = Ext.extend( Ext.form.FormPanel, {
         title: '注册',
-        scroll: 'vertical',
         iconCls: 'search',
         id: 'welcome-register',
         apiType: 'REGISTER',
@@ -44,14 +44,22 @@
 
                                     if( errors.isValid() && values.password === values[ 'password-confirm' ] ){
 
-                                        Request.jsonp({
+                                        that.setLoading( true );
+
+                                        Request.send({
+                                            method: 'post',
                                             type: that.apiType,
                                             data: values,
                                             callback: function( data ){
 
+                                                that.setLoading( false );
+
                                                 if( data.result ){
 
-                                                    Ext.Msg.alert( "注册成功！", '注册成功，请登陆！' );
+                                                    Ext.Msg.alert( "注册成功！", '注册成功，请登陆！', function (){
+
+                                                        Mods.route.redirect( 'welcome/login' );
+                                                    });
 
                                                     that.reset();
                                                 }
@@ -59,7 +67,6 @@
 
                                                     Ext.Msg.alert( '注册失败！', data.error );
                                                 }
-
                                             }
                                         }, true );
 

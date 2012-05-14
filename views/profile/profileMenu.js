@@ -14,40 +14,64 @@
             height: 45
         },
         scroll: false,
-        dockedItems: [
-            {
-                xtype: 'toolbar',
-                dock: 'top',
-                title: '个人中心'
-            }
-        ],
-        items: [
-            {
-                text: '我的资料',
-                ui: 'confirm',
-                handler: function (){
 
-                    Mods.route.redirect( 'profile/myProfile' );
-                }
-            },
-            {
-                text: '偏好设置',
-                ui: 'confirm',
-                handler: function(){
+        initComponent: function (){
 
-                    Mods.route.redirect( 'profile/preferences' );
-                }
-            },
-            {
-                text: '注销',
-                handler: function(){
+            var that = this;
 
-                    Auth.logout(function (){
-                        Mods.route.redirect( 'welcome/login' );
-                    });
-                }
-            }
-        ]
+            Ext.apply( this, {
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '个人中心'
+                    }
+                ],
+                items: [
+                    {
+                        text: '我的资料',
+                        ui: 'confirm',
+                        handler: function (){
+
+                            Mods.route.redirect( 'profile/myProfile' );
+                        }
+                    },
+                    {
+                        text: '偏好设置',
+                        ui: 'confirm',
+                        handler: function(){
+
+                            Mods.route.redirect( 'profile/preferences' );
+                        }
+                    },
+                    {
+                        text: '注销',
+                        handler: function(){
+
+                            that.setLoading( true );
+                            Auth.logout(function ( ifSuccess, data ){
+
+                                that.setLoading( false );
+
+                                if( ifSuccess ){
+
+                                    Ext.Msg.alert( '注销成功!', '', function (){
+
+                                        Mods.route.redirect( 'welcome/login' );
+                                    });
+                                }
+                                else {
+
+                                    Ext.Msg.alert( "注销失败！", ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
+                                }
+                            });
+                        }
+                    }
+                ]
+            });
+
+            profileMenuCls.superclass.initComponent.call( this );
+        }
     });
 
     Ext.reg( 'profileMenu', profileMenuCls );

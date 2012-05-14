@@ -58,12 +58,20 @@
 
                                     if( errors.isValid() ){
 
+                                        that.setLoading( true );
+
                                         // 发送请求
                                         Mods.profile.updateUserInfo( undefined, data, function ( errObj ){
+
+                                            that.setLoading( false );
 
                                             if( !errObj ){
 
                                                 Ext.Msg.alert( '保存成功!' );
+                                            }
+                                            else {
+
+                                                Ext.Msg.alert( '保存出错', ( errObj.error || '' ) + ( JSON.stringify( errObj.data ) || '' ) );
                                             }
                                         });
                                     }
@@ -139,7 +147,7 @@
                 that.setLoading( false );
                 if( data ){
 
-                    Ext.Msg.alert( '获取用户信息失败: ' + data.error );
+                    Ext.Msg.alert( '获取商品信息失败! ', ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
                 }
                 else {
 

@@ -11,6 +11,39 @@
 
     Mods.itemRequest = {
 
+        addItem: function ( item, next ){
+
+            Mods.request.send({
+                method: 'post',
+                data: item,
+                type: 'NEW_ITEM',
+                callback: function ( resData ){
+
+                    var result = resData.result;
+                    var itemId;
+
+                    if( result ){
+
+                        itemId = resData.data.itemId;
+                        Ext.Msg.alert( '商品添加成功', '', function (){
+
+                            Mods.route.redirect( 'sell/sellList' );
+                        });
+
+                        next( true, itemId );
+                    }
+                    else {
+                        Ext.Msg.alert( '商品添加失败！', resData.error, function (){
+
+                            Mods.route.redirect( 'sell' );
+                        } );
+
+                        next( false, resData );
+                    }
+                }
+            }, true );
+        },
+
         /**
          * 根据itemid获取商品信息
          * @param id
@@ -61,9 +94,8 @@
                     email: email
                 },
                 type: 'SELLING_LIST',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -74,7 +106,7 @@
                     else {
 
                         Ext.Msg.alert( resData.error + ': ' + JSON.stringify( resData.data ) );
-                        next( d )
+                        next( resData )
                     }
                 }
             }, true );
@@ -145,9 +177,8 @@
                 disableCaching: true,
                 data: data,
                 type: 'QUERY_ITEM',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -157,7 +188,7 @@
                     }
                     else {
 
-                        next( d )
+                        next( resData )
                     }
                 }
             }, true );
@@ -178,9 +209,8 @@
                 data: updateObj,
                 disableCaching: true,
                 type: 'UPDATE_ITEM',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 
@@ -215,9 +245,8 @@
                 method: 'get',
                 data: data,
                 type: 'DEL_ITEM',
-                callback: function ( d ){
+                callback: function ( resData ){
 
-                    var resData = d.data;
                     var result = resData.result;
                     var data = resData.data;
 

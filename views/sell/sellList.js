@@ -64,6 +64,7 @@
 
                 if( err ){
 
+                    Ext.Msg.alert( '获取商品列表失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                 }
                 else {
 
