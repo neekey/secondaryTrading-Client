@@ -3046,8 +3046,7 @@
     });
 
     Ext.reg( 'resultList', ResultListCls );
-})();
-(function(){
+})();(function(){
 
     var Mods = App.mods;
     var Config = App.config;
