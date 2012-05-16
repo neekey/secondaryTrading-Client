@@ -56,7 +56,7 @@
                                             }
                                             else {
 
-                                                Ext.Msg.alert( '修改商品失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
+                                                Ext.Msg.alert( '修改商品失败! ', ( errObj.error || '' ) + ( JSON.stringify( errObj.data ) || '' ) );
                                             }
                                         });
                                     }

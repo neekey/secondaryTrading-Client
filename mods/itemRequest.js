@@ -220,7 +220,6 @@
                     }
                     else {
 
-                        Ext.Msg.alert( '修改商品失败:' + resData.error + ' ' + JSON.stringify( resData.data ) );
                         next( resData )
                     }
                 }
@@ -256,7 +255,6 @@
                     }
                     else {
 
-                        Ext.Msg.alert( '删除商品失败:' + resData.error + ' ' + JSON.stringify( resData.data ) );
                         next( resData )
                     }
                 }
