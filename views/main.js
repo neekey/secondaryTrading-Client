@@ -53,6 +53,7 @@
             }
         },
         items: [
+            { xtype: 'guessYouLike' },
             { xtype: 'sell' },
             { xtype: 'buy' },
             { xtype: 'profile' }
