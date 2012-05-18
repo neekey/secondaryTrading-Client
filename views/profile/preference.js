@@ -8,6 +8,7 @@
         defaults: {
             margin: '30% 10%'
         },
+        scroll: 'vertical',
         // 用户的偏好列表 [ 'cat1', 'cat2',...]
         userFavorList: [],
 
@@ -152,10 +153,15 @@
          */
         insertFavor: function ( catName ){
 
+            alert( typeof this.favorUl );
+
             if( !this.favorUl ){
 
+                alert( 'in!');
                 this.favorUl = this.userFavorPanel.body.child( '.user-favor-list ul' );
             }
+
+            alert( 'out!' );
 
             this.favorItemTpl.append( this.favorUl, { name: catName } );
         },
@@ -175,6 +181,7 @@
             // 添加对于删除分类事件的监听
             Ext.EventManager.addListener( this.favorUl.dom, 'tap', function ( favorUl, delSpan ){
 
+                alert( 'hello!' );
                 var catName = delSpan.getAttribute( 'data-name' );
                 // 删除该节点
                 Ext.get( delSpan.parentNode).remove();

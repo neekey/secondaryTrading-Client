@@ -114,7 +114,7 @@
         getNewItemInfo: function (){
 
             // 若为在浏览器中调试，则使用测试数据
-            var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+            var pics = Config.IF_DEVICE ? this.newItemImg.getImageUrl() : [
                 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
                 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
             ];

@@ -576,6 +576,17 @@
                         useClearIcon: true,
                         autoCapitalize : false,
                         listeners: {
+
+                            // keyup在android上貌似无效
+                            keyup: function (){
+
+                                if( that.ifUseCustomCat === true ){
+
+                                    that.hiddenCat.setValue( this.getValue() );
+                                }
+                            },
+
+                            // 只有在blur的时候才会触发，在android上点击添加按钮也不会blur...
                             change: function (){
 
                                 if( that.ifUseCustomCat === true ){
@@ -595,11 +606,17 @@
                         xtype: 'button',
                         text: that.saveBtnText,
                         ui: 'action',
-                        width: '20%',
+                        width: '30%',
                         style: {
-                            margin: '5px 0 5px 79%'
+                            margin: '5px 0 5px 69%'
                         },
                         handler: function (){
+
+                            // 在android上，监听keyup无效，而change事件只有在blur时才会触发，因此只能在此做这样的处理
+                            if( that.ifUseCustomCat ){
+
+                                that.hiddenCat.setValue( that.customField.getValue() );
+                            }
 
                             var newCatName = that.hiddenCat.getValue();
 
@@ -1263,7 +1280,7 @@
                                             that.setLoading( false );
                                             if( err ){
 
-                                                Ext.Msg.alert( '搜索位置信息出错：' + JSON.stringify( err ) );
+                                                Ext.Msg.alert( '搜索位置信息出错：', err );
                                             }
                                             else {
 
@@ -2128,6 +2145,7 @@
         defaults: {
             margin: '30% 10%'
         },
+        scroll: 'vertical',
         // 用户的偏好列表 [ 'cat1', 'cat2',...]
         userFavorList: [],
 
@@ -2272,10 +2290,15 @@
          */
         insertFavor: function ( catName ){
 
+            alert( typeof this.favorUl );
+
             if( !this.favorUl ){
 
+                alert( 'in!');
                 this.favorUl = this.userFavorPanel.body.child( '.user-favor-list ul' );
             }
+
+            alert( 'out!' );
 
             this.favorItemTpl.append( this.favorUl, { name: catName } );
         },
@@ -2295,6 +2318,7 @@
             // 添加对于删除分类事件的监听
             Ext.EventManager.addListener( this.favorUl.dom, 'tap', function ( favorUl, delSpan ){
 
+                alert( 'hello!' );
                 var catName = delSpan.getAttribute( 'data-name' );
                 // 删除该节点
                 Ext.get( delSpan.parentNode).remove();
@@ -4119,6 +4143,10 @@
         renderImg: function (){
 
             this.tpl.overwrite( this.body, this.imgs );
+            // 每次重新渲染之后都清空
+            this.addImgs = [];
+            this.removeImgs = [];
+
             this.doLayout();
             this.attachImgs();
         },
@@ -4742,7 +4770,7 @@
         getNewItemInfo: function (){
 
             // 若为在浏览器中调试，则使用测试数据
-            var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+            var pics = Config.IF_DEVICE ? this.newItemImg.getImageUrl() : [
                 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
                 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
             ];

@@ -74,6 +74,10 @@
         renderImg: function (){
 
             this.tpl.overwrite( this.body, this.imgs );
+            // 每次重新渲染之后都清空
+            this.addImgs = [];
+            this.removeImgs = [];
+
             this.doLayout();
             this.attachImgs();
         },

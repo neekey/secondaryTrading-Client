@@ -1,9 +1,5 @@
 (function(){
 
-    //todo 设置一个全局变量用于表明当前用户是否处于登陆状态
-    //todo 若注销则该变量将被重置
-    //todo 脚本定期发送请求检查是否登陆
-
     var LOCAL_HOST = 'http://' + document.location.host + '/'; //'http://localhost:3000/';
 //    var REMOTE_HOST = 'http://192.168.137.66:3000/';
 //    var REMOTE_HOST = 'http://secondary_trading.cnodejs.net/';

@@ -90,6 +90,17 @@
                         useClearIcon: true,
                         autoCapitalize : false,
                         listeners: {
+
+                            // keyup在android上貌似无效
+                            keyup: function (){
+
+                                if( that.ifUseCustomCat === true ){
+
+                                    that.hiddenCat.setValue( this.getValue() );
+                                }
+                            },
+
+                            // 只有在blur的时候才会触发，在android上点击添加按钮也不会blur...
                             change: function (){
 
                                 if( that.ifUseCustomCat === true ){
@@ -109,11 +120,17 @@
                         xtype: 'button',
                         text: that.saveBtnText,
                         ui: 'action',
-                        width: '20%',
+                        width: '30%',
                         style: {
-                            margin: '5px 0 5px 79%'
+                            margin: '5px 0 5px 69%'
                         },
                         handler: function (){
+
+                            // 在android上，监听keyup无效，而change事件只有在blur时才会触发，因此只能在此做这样的处理
+                            if( that.ifUseCustomCat ){
+
+                                that.hiddenCat.setValue( that.customField.getValue() );
+                            }
 
                             var newCatName = that.hiddenCat.getValue();
 

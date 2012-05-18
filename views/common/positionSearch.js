@@ -88,7 +88,7 @@
                                             that.setLoading( false );
                                             if( err ){
 
-                                                Ext.Msg.alert( '搜索位置信息出错：' + JSON.stringify( err ) );
+                                                Ext.Msg.alert( '搜索位置信息出错：', err );
                                             }
                                             else {
 
