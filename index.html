@@ -122,5 +122,26 @@
     </div>
 </script>
 
+<!--[ 'cat1', 'cat2', ..., 'catN' ]-->
+<script type="text/template" id="user-favor-list-tpl">
+
+    <div class="user-favor-list">
+        <ul class="">
+            <tpl for=".">
+            <li>
+                <span class="category-name">{.}</span><span data-name="{.}" class="delete-cat">╳</span>
+            </li>
+            </tpl>
+        </ul>
+    </div>
+</script>
+
+<!--{ nane: 'catName' }-->
+<script type="text/template" id="user-favor-item-tpl">
+    <li>
+        <span class="category-name">{name}</span><span data-name="{name}" class="delete-cat">╳</span>
+    </li>
+</script>
+
 </body>
 </html>

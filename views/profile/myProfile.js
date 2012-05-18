@@ -147,7 +147,7 @@
                 that.setLoading( false );
                 if( data ){
 
-                    Ext.Msg.alert( '获取商品信息失败! ', ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
+                    Ext.Msg.alert( '获取用户信息失败! ', ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
                 }
                 else {
 

@@ -115,7 +115,18 @@
                         },
                         handler: function (){
 
-                            that.fireEvent( 'saveCat', that.hiddenCat.getValue() );
+                            var newCatName = that.hiddenCat.getValue();
+
+                            // todo 此处还可以再对分类的名字做验证,限定格式什么的
+                            if( newCatName ){
+
+                                that.fireEvent( 'saveCat', newCatName );
+                            }
+                            else {
+
+                                Ext.Msg.alert( '请选择/输入要添加的类别' );
+                            }
+
                         }
                     }
                 );
@@ -143,11 +154,16 @@
             }
         },
 
+        // 获取当前用户选择的分类
         getCategory: function (){
 
             return this.hiddenCat.getValue();
         },
 
+        /**
+         * 设置表单中的分类
+         * @param catName 分类名称，会自动识别是否为默认分类
+         */
         setCategory: function ( catName ){
 
             // 检查是否为默认分类
@@ -173,12 +189,14 @@
 
             if( catType === 'preset' ){
 
+                this.ifUseCustom.uncheck();
                 this.customField.hide();
                 this.catSelect.show();
                 this.catSelect.setValue( catName );
             }
             else {
 
+                this.ifUseCustom.check();
                 this.customField.show();
                 this.catSelect.hide();
                 this.customField.setValue( catName );

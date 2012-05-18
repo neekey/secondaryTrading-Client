@@ -851,7 +851,8 @@ Ext.gesture.Manager.onMouseEvent = function(e) {
          *      address: 'address',
          *      cellphone: 132255,
          *      qq: 23151,
-         *      wangwang: 234151
+         *      wangwang: 234151,
+         *      favorite: [ 1,3,4,4]
          * }
          * @param next ( err, userData )
          */
