@@ -486,6 +486,198 @@
 })();
 (function(){
 
+
+    var CategorySelectCls = Ext.extend( Ext.form.FieldSet, {
+
+        cls: 'cat-select-fieldset',
+        // 显示说明
+        title: '我感兴趣的<span class="title-desc">（根据你设定的关键词向你推荐商品）</span>',
+        // 是否需要添加按钮
+        ifUseSaveBtn: false,
+        saveBtnText: '添加',
+        initComponent: function (){
+
+            var that = this;
+
+            this.ifUseCustomCat = false;
+
+            // 构造默认分类
+            var defaultCats = App.models.categories;
+            var options = [{ text: '请选择', value: '' }];
+
+            Ext.each( defaultCats, function ( cat ){
+
+                options.push( { text: cat, value: cat } );
+            });
+
+            this.defaultCatOptions = options;
+
+            var comConfig = {
+                defaults: {
+                    labelAlign: 'left',
+                    labelWidth: '40%'
+                },
+                items: [
+                    {
+                        xtype: 'checkboxfield',
+                        name : 'custom-cat',
+                        label: '使用自定义分类',
+                        useClearIcon: true,
+                        autoCapitalize : false,
+                        listeners: {
+                            check: function (){
+
+                                that.ifUseCustomCat = true;
+
+                                that.hiddenCat.setValue( that.customField.getValue() );
+                                that.catSelect.hide();
+                                that.customField.show();
+                            },
+                            uncheck: function (){
+
+                                that.ifUseCustomCat = false;
+
+                                that.hiddenCat.setValue( that.catSelect.getValue() );
+                                that.catSelect.show();
+                                that.customField.hide();
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'hiddenfield',
+                        name: 'category',
+                        id: 'hidden-cat'
+                    },
+                    {
+                        xtype: 'selectfield',
+                        name : 'preset-cat',
+                        id: 'preset-cat',
+                        label: '默认分类',
+                        useClearIcon: true,
+                        autoCapitalize : false,
+                        required: true,
+                        options: options,
+                        listeners: {
+                            change: function (){
+
+                                if( that.ifUseCustomCat === false ){
+
+                                    that.hiddenCat.setValue( this.getValue() );
+                                }
+                            }
+                        }
+                    },
+
+                    {
+                        xtype: 'textfield',
+                        name : 'custom-cat',
+                        id: 'custom-cat',
+                        label: '自定义分类',
+                        useClearIcon: true,
+                        autoCapitalize : false,
+                        listeners: {
+                            change: function (){
+
+                                if( that.ifUseCustomCat === true ){
+
+                                    that.hiddenCat.setValue( this.getValue() );
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+
+            if( this.ifUseSaveBtn ){
+
+                comConfig.items.push(
+                    {
+                        xtype: 'button',
+                        text: that.saveBtnText,
+                        ui: 'action',
+                        width: '20%',
+                        style: {
+                            margin: '5px 0 5px 79%'
+                        },
+                        handler: function (){
+
+                            that.fireEvent( 'saveCat', that.hiddenCat.getValue() );
+                        }
+                    }
+                );
+            }
+
+            Ext.apply( this, comConfig );
+
+            CategorySelectCls.superclass.initComponent.call( this );
+        },
+
+        listeners: {
+            afterrender: function (){
+
+                this.catSelect = this.query( '#preset-cat' )[ 0 ];
+                this.ifUseCustom = this.query( 'checkboxfield' )[ 0 ];
+                this.customField = this.query( '#custom-cat' )[ 0 ];
+                this.hiddenCat = this.query( '#hidden-cat' )[ 0 ];
+
+                // 默认隐藏自定义
+                this.customField.hide();
+
+                // 设置默认值 默认会显示第一项，但是实际getValue()出来为''
+//                this.catSelect.setValue( '' );
+                this.hiddenCat.setValue( this.catSelect.getValue() );
+            }
+        },
+
+        getCategory: function (){
+
+            return this.hiddenCat.getValue();
+        },
+
+        setCategory: function ( catName ){
+
+            // 检查是否为默认分类
+            var cats = App.models.categories;
+            var catType = 'custom';
+
+            if( catName ){
+
+                Ext.each( cats, function ( cat ){
+
+                    if( cat === catName ){
+
+                        catType = 'preset';
+                    }
+                });
+            }
+            // 若catName为空，则设置为默认设置类型
+            // 由于值为空，因此会默认显示“请选择'
+            else {
+
+                catType = 'preset';
+            }
+
+            if( catType === 'preset' ){
+
+                this.customField.hide();
+                this.catSelect.show();
+                this.catSelect.setValue( catName );
+            }
+            else {
+
+                this.customField.show();
+                this.catSelect.hide();
+                this.customField.setValue( catName );
+            }
+
+            this.hiddenCat.setValue( catName );
+        }
+    });
+
+    Ext.reg( 'categorySelect', CategorySelectCls );
+})();
+(function(){
+
     var Mods = App.mods;
 
     var GoBackButtonCls = Ext.extend( Ext.Button, {
@@ -999,7 +1191,7 @@
                                 ui: 'back',
                                 handler: function() {
 
-                                    Mods.route.goBack();
+                                    Mods.route.goBack( Mods.route.getPreviousParam() );
                                 }
                             }
                         ]
@@ -1192,7 +1384,15 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.goBack( [ address, latlngUrl ] );
+            var originParam = Mods.route.getPreviousParam();
+
+            // 对于itemEdit来说只去第一个参数
+            // todo 这个有问题, 就是地图数据返回后，变成 itenid/address/latlng --> 第一次没问题，后续会约加越多
+            originParam = originParam.splice( 0, 1 );
+
+            var returnParam = originParam.concat( [ address, latlngUrl ] );
+
+            Mods.route.goBack( returnParam );
         },
 
         /**
@@ -1878,6 +2078,7 @@
 
             if( !this.currentLocationSpan ){
 
+                // todo 会出现这样的错误： Cannot call method 'query' of undefined
                 this.currentLocationSpan = Ext.get( this.body.query( '.current-location' )[ 0 ] );
             }
 
@@ -1902,6 +2103,77 @@
 (function(){
 
     var Auth = App.mods.auth;
+    var Mods = App.mods;
+
+    var PreferenceCls = Ext.extend( Ext.Panel, {
+
+        defaults: {
+//            xtype: 'button',
+            margin: '30% 10%'
+//            height: 45
+        },
+//        scroll: false,
+
+        initComponent: function (){
+
+            var that = this;
+            var defaultCats = App.models.categories;
+            var options = [];
+
+            Ext.each( defaultCats, function ( cat ){
+
+                options.push( { text: cat, value: cat } );
+            });
+
+            Ext.apply( this, {
+                dockedItems: [
+                    {
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        title: '偏好设置',
+                        items: [
+                            {
+                                xtype: 'goBackButton'
+                            },
+                            {   xtype: 'spacer' },
+                            {
+                                text: '保存',
+                                ui: 'confirm',
+                                handler: function(){
+
+//                            Mods.route.redirect( 'profile/preferences' );
+                                }
+                            }
+                        ]
+                    }
+                ],
+                items: [
+                    {
+                        xtype: 'categorySelect',
+                        ifUseSaveBtn: true
+                    }
+                ]
+            });
+
+            PreferenceCls.superclass.initComponent.call( this );
+        },
+        listeners: {
+            afterrender: function (){
+
+//                this.catSelect = this.query( '#preset-cat' )[ 0 ];
+//                this.ifUseCustom = this.query( 'checkboxfield' )[ 0 ];
+//                this.customField = this.query( '#custom-cat' )[ 0 ];
+//
+//                this.customField.hide();
+            }
+        }
+    });
+
+    Ext.reg( 'preference', PreferenceCls );
+})();
+(function(){
+
+    var Auth = App.mods.auth;
 
     var ProfileMainCls = App.views.profileMain = Ext.extend( Ext.Panel, {
         title: '设置',
@@ -1915,11 +2187,11 @@
             {
                 xtype: 'myProfile'
 //                locationSearchHash: 'profile/positionSearch'
-            }
-//            {
-//                xtype: 'positionSearch',
+            },
+            {
+                xtype: 'preference'
 //                scroll: false
-//            }
+            }
         ]
     });
 
@@ -3953,6 +4225,8 @@
         itemId: '',
         // 当前的商品信息
         itemInfo: {},
+        // 当前是否处于获取位置的状态
+        isSearchLocation: false,
 
         initComponent: function (){
 
@@ -4052,20 +4326,42 @@
 
         items: [
             { xtype: 'newItemForm' },
-            { xtype: 'locationButton' },
+            {
+                xtype: 'categorySelect',
+                ifUseSaveBtn: false,
+                title: '设置商品类别<span class="title-desc">（买家能通过类别更好地定位到你的商品）</span>',
+                margin: '30% 10%'
+            },
+            { xtype: 'myProfileLocation' },
             { xtype: 'imgEdit' }
         ],
 
         listeners: {
             afterRender:function (){
 
+                var that = this;
+
                 this.imgEdit = this.query( 'imgEdit' )[ 0 ];
                 this.newItemForm = this.query( 'newItemForm' )[ 0 ];
-                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
+                this.newItemLocation = this.query( 'myProfileLocation' )[ 0 ];
+                this.categorySelect = this.query( 'categorySelect' )[ 0 ];
+
+                // 若定位按钮被点击，就会触发该事件
+                this.newItemLocation.addListener( 'searchLocation', function (){
+
+                    that.isSearchLocation = true;
+                });
             },
             activate: function (){
 
-                this.fetch();
+                if( this.isSearchLocation === false ){
+
+                    this.fetch();
+                }
+                else {
+
+                    this.isSearchLocation = false;
+                }
             }
         },
 
@@ -4076,9 +4372,7 @@
         getUpdateInfo: function (){
 
             // 若为在浏览器中调试，则使用测试数据
-
-
-            var location = this.newItemLocation.getLocation();
+            var location = this.newItemLocation.getLocationInfo();
             var formData = this.newItemForm.getValues();
             var imgUpdate = this.imgEdit.getUpdateInfo();
 
@@ -4092,7 +4386,8 @@
                 pic2: imgUpdate.addImgs[ 1 ],
                 pic3: imgUpdate.addImgs[ 2 ],
                 latlng: location.latlng,
-                address: location.address
+                address: location.address,
+                category: this.categorySelect.getCategory()
             };
         },
 
@@ -4127,6 +4422,16 @@
         },
 
         /**
+         * 设置位置部分的内容
+         * @param address
+         * @param latlng
+         */
+        setLocationInfo: function ( address, latlng ){
+
+            this.newItemLocation.setLocationInfo( { address: address, latlng: latlng } );
+        },
+
+        /**
          * 根据itemInfo对视图进行更新
          */
         renderItem: function (){
@@ -4139,6 +4444,8 @@
             this.imgEdit.setImages( itemInfo.imgs );
             // 设置location信息
             this.newItemLocation.setLocationInfo( itemInfo );
+            // 设置分类信息
+            this.categorySelect.setCategory( itemInfo.category || '' );
         },
 
         /**
@@ -4189,6 +4496,9 @@
 
     var NewItemCls = Ext.extend( Ext.Panel, {
 
+        defaults: {
+            margin: '30% 10%'
+        },
         initComponent: function (){
 
             var that = this;
@@ -4211,16 +4521,7 @@
                                 align: 'end',
                                 handler: function (){
 
-                                    // 若为在浏览器中调试，则使用测试数据
-                                    var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
-                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
-                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
-                                    ];
-
-                                    var location = that.newItemLocation.getLocationInfo();
-                                    var formData = that.newItemForm.getValues();
-
-                                    var data = that.itemDataHandle( formData, location, pics );
+                                    var data = that.getNewItemInfo();
                                     var model = Ext.ModelMgr.create( data, 'Item' );
                                     var errors = model.validate();
                                     var message = "";
@@ -4275,6 +4576,11 @@
         scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
+            {
+                xtype: 'categorySelect',
+                ifUseSaveBtn: false,
+                title: '设置商品类别<span class="title-desc">（买家能通过类别更好地定位到你的商品）</span>'
+            },
             { xtype: 'myProfileLocation' },
             { xtype: 'newItemImg' }
         ],
@@ -4284,6 +4590,7 @@
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
                 this.newItemForm = this.query( 'newItemForm' )[ 0 ];
                 this.newItemLocation = this.query( 'myProfileLocation' )[ 0 ];
+                this.categorySelect = this.query( 'categorySelect' )[ 0 ];
             }
         },
 
@@ -4295,8 +4602,17 @@
             });
         },
 
-        itemDataHandle: function ( formData, location, pics ){
+        getNewItemInfo: function (){
 
+            // 若为在浏览器中调试，则使用测试数据
+            var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
+            ];
+
+            var location = this.newItemLocation.getLocationInfo();
+            var formData = this.newItemForm.getValues();
+            var category = this.categorySelect.getCategory();
             var data = {
                 title: formData.title,
                 desc: formData.desc,
@@ -4305,7 +4621,8 @@
                 address: location.address,
                 pic1: pics[ 0 ],
                 pic2: pics[ 1 ],
-                pic3: pics[ 2 ]
+                pic3: pics[ 2 ],
+                category: category
             };
 
             return data;
@@ -4317,7 +4634,6 @@
 (function(){
 
     var NewItemFormCls = Ext.extend( Ext.form.FormPanel, {
-//        scroll: 'vertical',
         title: '商品简介',
         id: 'new-item',
         defaults: {

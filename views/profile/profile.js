@@ -14,11 +14,11 @@
             {
                 xtype: 'myProfile'
 //                locationSearchHash: 'profile/positionSearch'
-            }
-//            {
-//                xtype: 'positionSearch',
+            },
+            {
+                xtype: 'preference'
 //                scroll: false
-//            }
+            }
         ]
     });
 

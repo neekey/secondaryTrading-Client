@@ -34,7 +34,7 @@
                                 ui: 'back',
                                 handler: function() {
 
-                                    Mods.route.goBack();
+                                    Mods.route.goBack( Mods.route.getPreviousParam() );
                                 }
                             }
                         ]
@@ -227,7 +227,15 @@
          */
         sendPositionBack: function ( address, latlngUrl ){
 
-            Mods.route.goBack( [ address, latlngUrl ] );
+            var originParam = Mods.route.getPreviousParam();
+
+            // 对于itemEdit来说只去第一个参数
+            // todo 这个有问题, 就是地图数据返回后，变成 itenid/address/latlng --> 第一次没问题，后续会约加越多
+            originParam = originParam.splice( 0, 1 );
+
+            var returnParam = originParam.concat( [ address, latlngUrl ] );
+
+            Mods.route.goBack( returnParam );
         },
 
         /**

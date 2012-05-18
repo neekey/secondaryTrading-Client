@@ -5,6 +5,9 @@
 
     var NewItemCls = Ext.extend( Ext.Panel, {
 
+        defaults: {
+            margin: '30% 10%'
+        },
         initComponent: function (){
 
             var that = this;
@@ -27,16 +30,7 @@
                                 align: 'end',
                                 handler: function (){
 
-                                    // 若为在浏览器中调试，则使用测试数据
-                                    var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
-                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
-                                        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
-                                    ];
-
-                                    var location = that.newItemLocation.getLocationInfo();
-                                    var formData = that.newItemForm.getValues();
-
-                                    var data = that.itemDataHandle( formData, location, pics );
+                                    var data = that.getNewItemInfo();
                                     var model = Ext.ModelMgr.create( data, 'Item' );
                                     var errors = model.validate();
                                     var message = "";
@@ -91,6 +85,11 @@
         scroll: 'vertical',
         items: [
             { xtype: 'newItemForm' },
+            {
+                xtype: 'categorySelect',
+                ifUseSaveBtn: false,
+                title: '设置商品类别<span class="title-desc">（买家能通过类别更好地定位到你的商品）</span>'
+            },
             { xtype: 'myProfileLocation' },
             { xtype: 'newItemImg' }
         ],
@@ -100,6 +99,7 @@
                 this.newItemImg = this.query( 'newItemImg' )[ 0 ];
                 this.newItemForm = this.query( 'newItemForm' )[ 0 ];
                 this.newItemLocation = this.query( 'myProfileLocation' )[ 0 ];
+                this.categorySelect = this.query( 'categorySelect' )[ 0 ];
             }
         },
 
@@ -111,8 +111,17 @@
             });
         },
 
-        itemDataHandle: function ( formData, location, pics ){
+        getNewItemInfo: function (){
 
+            // 若为在浏览器中调试，则使用测试数据
+            var pics = Config.IF_DEVICE ? that.newItemImg.getImageUrl() : [
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi4Kz/ARBgAAIVAYFMFtU7AAAAAElFTkSuQmCC',
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpi6OXhAQgwAAHPAKaGfcCLAAAAAElFTkSuQmCC'
+            ];
+
+            var location = this.newItemLocation.getLocationInfo();
+            var formData = this.newItemForm.getValues();
+            var category = this.categorySelect.getCategory();
             var data = {
                 title: formData.title,
                 desc: formData.desc,
@@ -121,7 +130,8 @@
                 address: location.address,
                 pic1: pics[ 0 ],
                 pic2: pics[ 1 ],
-                pic3: pics[ 2 ]
+                pic3: pics[ 2 ],
+                category: category
             };
 
             return data;

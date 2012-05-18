@@ -72,11 +72,17 @@
             this.VSellList.getSellingItem();
         },
 
-        edit: function ( itemId ){
+        edit: function ( itemId, address, latlng ){
 
             if( itemId ){
                 this.resume();
                 this.VSellItemEdit.setItemId( itemId );
+
+                if( address && latlng ){
+
+                    this.VSellItemEdit.setLocationInfo( address, latlng );
+                }
+
                 this.VSellMain.setActiveItem( this.VSellItemEdit );
             }
         }

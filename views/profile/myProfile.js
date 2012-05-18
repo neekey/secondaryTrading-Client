@@ -347,6 +347,7 @@
 
             if( !this.currentLocationSpan ){
 
+                // todo 会出现这样的错误： Cannot call method 'query' of undefined
                 this.currentLocationSpan = Ext.get( this.body.query( '.current-location' )[ 0 ] );
             }
 

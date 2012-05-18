@@ -267,3 +267,7 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.cat-select-fieldset .title-desc {
+  font-size: 80%;
+  color: #999;
+}

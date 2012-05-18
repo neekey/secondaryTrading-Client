@@ -12,6 +12,8 @@
         itemId: '',
         // 当前的商品信息
         itemInfo: {},
+        // 当前是否处于获取位置的状态
+        isSearchLocation: false,
 
         initComponent: function (){
 
@@ -111,20 +113,42 @@
 
         items: [
             { xtype: 'newItemForm' },
-            { xtype: 'locationButton' },
+            {
+                xtype: 'categorySelect',
+                ifUseSaveBtn: false,
+                title: '设置商品类别<span class="title-desc">（买家能通过类别更好地定位到你的商品）</span>',
+                margin: '30% 10%'
+            },
+            { xtype: 'myProfileLocation' },
             { xtype: 'imgEdit' }
         ],
 
         listeners: {
             afterRender:function (){
 
+                var that = this;
+
                 this.imgEdit = this.query( 'imgEdit' )[ 0 ];
                 this.newItemForm = this.query( 'newItemForm' )[ 0 ];
-                this.newItemLocation = this.query( 'locationButton' )[ 0 ];
+                this.newItemLocation = this.query( 'myProfileLocation' )[ 0 ];
+                this.categorySelect = this.query( 'categorySelect' )[ 0 ];
+
+                // 若定位按钮被点击，就会触发该事件
+                this.newItemLocation.addListener( 'searchLocation', function (){
+
+                    that.isSearchLocation = true;
+                });
             },
             activate: function (){
 
-                this.fetch();
+                if( this.isSearchLocation === false ){
+
+                    this.fetch();
+                }
+                else {
+
+                    this.isSearchLocation = false;
+                }
             }
         },
 
@@ -135,9 +159,7 @@
         getUpdateInfo: function (){
 
             // 若为在浏览器中调试，则使用测试数据
-
-
-            var location = this.newItemLocation.getLocation();
+            var location = this.newItemLocation.getLocationInfo();
             var formData = this.newItemForm.getValues();
             var imgUpdate = this.imgEdit.getUpdateInfo();
 
@@ -151,7 +173,8 @@
                 pic2: imgUpdate.addImgs[ 1 ],
                 pic3: imgUpdate.addImgs[ 2 ],
                 latlng: location.latlng,
-                address: location.address
+                address: location.address,
+                category: this.categorySelect.getCategory()
             };
         },
 
@@ -186,6 +209,16 @@
         },
 
         /**
+         * 设置位置部分的内容
+         * @param address
+         * @param latlng
+         */
+        setLocationInfo: function ( address, latlng ){
+
+            this.newItemLocation.setLocationInfo( { address: address, latlng: latlng } );
+        },
+
+        /**
          * 根据itemInfo对视图进行更新
          */
         renderItem: function (){
@@ -198,6 +231,8 @@
             this.imgEdit.setImages( itemInfo.imgs );
             // 设置location信息
             this.newItemLocation.setLocationInfo( itemInfo );
+            // 设置分类信息
+            this.categorySelect.setCategory( itemInfo.category || '' );
         },
 
         /**

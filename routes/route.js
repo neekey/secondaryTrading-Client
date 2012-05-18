@@ -7,8 +7,10 @@
 
         var Route = {
 
-            // 用来保存路由的变化的过程队列
+            // 用来保存路由的变化的过程队列, 不包含param
             hashQueue: [],
+            // 用来保存路由的变化的过程队列, 包含param
+            hashParamQueue: [],
 
             /**
              * 设置hash
@@ -98,7 +100,23 @@
 
                 newHash = this.decodeHash( newHash || '' );
 
-                this.hashQueue.push( newHash.split( '?' )[ 0 ] );
+                var hashChunks = newHash.split( '?' );
+                var hash = hashChunks [ 0 ];
+                var params = hashChunks[ 1 ];
+
+                // 保存不戴param的hash
+                this.hashQueue.push( hash );
+
+                if( params ){
+
+                    params = params.replace( /^\/|\/$/g, '' ).split( '/' );
+                }
+                else {
+                    params = [];
+                }
+
+                // 保存param
+                this.hashParamQueue.push( params );
             },
 
             /**
@@ -122,6 +140,7 @@
                 if( ifDel ){
 
                     previousHash = this.hashQueue.pop();
+                    this.hashParamQueue.pop();
                 }
                 else {
 
@@ -129,6 +148,23 @@
                 }
 
                 return previousHash || '';
+            },
+
+            getPreviousParam: function ( ifDel ){
+
+                var previousParam;
+
+                if( ifDel ){
+
+                    previousParam = this.hashParamQueue.pop();
+                    this.hashQueue.pop();
+                }
+                else {
+
+                    previousParam = this.hashParamQueue[ this.hashParamQueue.length - 1 ];
+                }
+
+                return previousParam || '';
             },
 
             /**

@@ -1,7 +1,6 @@
 (function(){
 
     var NewItemFormCls = Ext.extend( Ext.form.FormPanel, {
-//        scroll: 'vertical',
         title: '商品简介',
         id: 'new-item',
         defaults: {
