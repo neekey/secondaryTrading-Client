@@ -254,9 +254,6 @@
         switchToMapStyle: function (){
 
             this.currentResultType = 'map';
-            // 设置不可滚动
-//            this.setScrollable( false );
-//            this.doLayout();
 
             this.resultList.hide();
             this.getMoreResultBtn.hide();
@@ -269,9 +266,17 @@
                 });
             }
 
+
+
             // 动态调整mapDiv的高度
             Ext.get( this.mapDiv ).setHeight( this.body.getHeight() );
             Ext.get( this.mapDiv ).show();
+
+            // 设置不可滚动
+            this.setScrollable( false );
+            // 由于mapDiv被hidden过，因此google map在其show之后需要重新计算地图的显示尺寸
+            // 因此需要出发google提供的事件接口
+            google.maps.event.trigger(this.mapResult.map, 'resize');
 
             // 将结果显示在map中
             this.renderMapResults();
@@ -296,13 +301,18 @@
         renderMapResults: function (){
 
             var that = this;
-            Ext.each( this.mapResult.results, function ( item ){
 
-                that.addPosition( item );
-            });
+            // 若没有结果，则什么也不做
+            if( this.mapResult.results && this.mapResult.results.length > 0 ){
 
-            var bound = Mods.map.getBoundsByLocations( this.mapResult.resultLatLngs );
-            this.mapResult.map.fitBounds( bound );
+                Ext.each( this.mapResult.results, function ( item ){
+
+                    that.addPosition( item );
+                });
+
+                var bound = Mods.map.getBoundsByLocations( this.mapResult.resultLatLngs );
+                this.mapResult.map.fitBounds( bound );
+            }
         },
 
         // 保存结果，以便后期渲染
@@ -396,7 +406,8 @@
                 });
             }
 
-            var itemLatlng = new google.maps.LatLng( item.location[ 0 ], item.location[ 1 ] );
+            // location 从服务器中获取到的是 [ longitude, latitude ] 但是google的顺序是 ( latitude, longitude )
+            var itemLatlng = new google.maps.LatLng( item.location[ 1 ], item.location[ 0 ] );
 
             this.mapResult.resultLatLngs.push( itemLatlng );
 
