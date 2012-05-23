@@ -60,10 +60,10 @@
             }
         },
         items: [
-            { xtype: 'guessYouLike' },
             { xtype: 'sell' },
             { xtype: 'buy' },
-            { xtype: 'profile' }
+            { xtype: 'profile' },
+            { xtype: 'guessYouLike' }
         ]
     });
 
@@ -1559,9 +1559,6 @@
 
             activate: function (){
 
-                // 解决偶尔地位位置有问题的情况
-//                this.doLayout();
-
                 var that = this;
                 var fakePostion = [30.23304355,120.03763513000001];
 
@@ -1572,6 +1569,10 @@
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     });
                 }
+
+                // 由于mapDiv被hidden过，因此google map在其show之后需要重新计算地图的显示尺寸
+                // 因此需要出发google提供的事件接口
+                google.maps.event.trigger(this.map, 'resize');
 
                 if( !this.isAutoGetLocation ){
 
@@ -1845,6 +1846,10 @@
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     });
                 }
+
+                // 由于mapDiv被hidden过，因此google map在其show之后需要重新计算地图的显示尺寸
+                // 因此需要出发google提供的事件接口
+                google.maps.event.trigger(this.map, 'resize');
 
                 // 判断是否自动获取过地理位置
                 if( !this.isAutoGetLocation ){
@@ -2763,6 +2768,22 @@
                                     Ext.Msg.alert( "注销失败！", ( data.error || '' ) + ( JSON.stringify( data.data ) || '' ) );
                                 }
                             });
+                        }
+                    },
+                    {
+                        xtype: 'button',
+                        text: '退出',
+                        handler: function (){
+
+                            if( navigator && navigator.app && navigator.app.exitApp ){
+
+                                Ext.Msg.confirm( '你确定要退出么？','', function ( result ){
+
+                                    if( result === 'yes' ){
+                                        navigator.app.exitApp();
+                                    }
+                                } );
+                            }
                         }
                     }
                 ]

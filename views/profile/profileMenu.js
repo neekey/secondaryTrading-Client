@@ -66,6 +66,22 @@
                                 }
                             });
                         }
+                    },
+                    {
+                        xtype: 'button',
+                        text: '退出',
+                        handler: function (){
+
+                            if( navigator && navigator.app && navigator.app.exitApp ){
+
+                                Ext.Msg.confirm( '你确定要退出么？','', function ( result ){
+
+                                    if( result === 'yes' ){
+                                        navigator.app.exitApp();
+                                    }
+                                } );
+                            }
+                        }
                     }
                 ]
             });

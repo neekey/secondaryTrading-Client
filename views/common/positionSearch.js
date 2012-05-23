@@ -146,9 +146,6 @@
 
             activate: function (){
 
-                // 解决偶尔地位位置有问题的情况
-//                this.doLayout();
-
                 var that = this;
                 var fakePostion = [30.23304355,120.03763513000001];
 
@@ -159,6 +156,10 @@
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     });
                 }
+
+                // 由于mapDiv被hidden过，因此google map在其show之后需要重新计算地图的显示尺寸
+                // 因此需要出发google提供的事件接口
+                google.maps.event.trigger(this.map, 'resize');
 
                 if( !this.isAutoGetLocation ){
 

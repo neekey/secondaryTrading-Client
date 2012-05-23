@@ -60,10 +60,10 @@
             }
         },
         items: [
-            { xtype: 'guessYouLike' },
             { xtype: 'sell' },
             { xtype: 'buy' },
-            { xtype: 'profile' }
+            { xtype: 'profile' },
+            { xtype: 'guessYouLike' }
         ]
     });
 
