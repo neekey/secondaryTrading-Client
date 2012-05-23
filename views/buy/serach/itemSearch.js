@@ -266,8 +266,6 @@
                 });
             }
 
-
-
             // 动态调整mapDiv的高度
             Ext.get( this.mapDiv ).setHeight( this.body.getHeight() );
             Ext.get( this.mapDiv ).show();
