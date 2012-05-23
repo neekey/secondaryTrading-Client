@@ -255,8 +255,8 @@
 
             this.currentResultType = 'map';
             // 设置不可滚动
-            this.setScrollable( false );
-            this.doLayout();
+//            this.setScrollable( false );
+//            this.doLayout();
 
             this.resultList.hide();
             this.getMoreResultBtn.hide();
@@ -268,8 +268,6 @@
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
             }
-
-
 
             // 动态调整mapDiv的高度
             Ext.get( this.mapDiv ).setHeight( this.body.getHeight() );

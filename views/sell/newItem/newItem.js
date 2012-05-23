@@ -103,6 +103,11 @@
             }
         },
 
+        /**
+         * 设置位置信息
+         * @param address 地址
+         * @param latlng google的latlng对象
+         */
         setLocationInfo: function ( address, latlng ){
 
             this.newItemLocation.setLocationInfo( {

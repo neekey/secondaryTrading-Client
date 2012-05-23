@@ -223,7 +223,7 @@
         /**
          * 将选定的位置信息送回到上一个视图（调用它的视图）
          * @param address
-         * @param latlng { latitude: 111, longitude: 2341 }
+         * @param latlngUrl {String} longitude,latitude
          */
         sendPositionBack: function ( address, latlngUrl ){
 
@@ -347,7 +347,7 @@
          */
         goBack: function (){
 
-            var latlngUrlValue = this.latlng.toUrlValue ? this.latlng.toUrlValue() : '';
+            var latlngUrlValue = this.latlng.toUrlValue ? ( this.latlng.lng() + ',' +this.latlng.lat() ) : '';
             this.sendPositionBack( this.address, latlngUrlValue );
             this.clearMap();
         }

@@ -1629,7 +1629,7 @@
         /**
          * 将选定的位置信息送回到上一个视图（调用它的视图）
          * @param address
-         * @param latlng { latitude: 111, longitude: 2341 }
+         * @param latlngUrl {String} longitude,latitude
          */
         sendPositionBack: function ( address, latlngUrl ){
 
@@ -1753,7 +1753,7 @@
          */
         goBack: function (){
 
-            var latlngUrlValue = this.latlng.toUrlValue ? this.latlng.toUrlValue() : '';
+            var latlngUrlValue = this.latlng.toUrlValue ? ( this.latlng.lng() + ',' +this.latlng.lat() ) : '';
             this.sendPositionBack( this.address, latlngUrlValue );
             this.clearMap();
         }
@@ -3392,8 +3392,8 @@
 
             this.currentResultType = 'map';
             // 设置不可滚动
-            this.setScrollable( false );
-            this.doLayout();
+//            this.setScrollable( false );
+//            this.doLayout();
 
             this.resultList.hide();
             this.getMoreResultBtn.hide();
@@ -3405,8 +3405,6 @@
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
             }
-
-
 
             // 动态调整mapDiv的高度
             Ext.get( this.mapDiv ).setHeight( this.body.getHeight() );
@@ -4973,6 +4971,11 @@
             }
         },
 
+        /**
+         * 设置位置信息
+         * @param address 地址
+         * @param latlng google的latlng对象
+         */
         setLocationInfo: function ( address, latlng ){
 
             this.newItemLocation.setLocationInfo( {
