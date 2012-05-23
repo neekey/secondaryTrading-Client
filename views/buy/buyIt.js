@@ -1,15 +1,12 @@
 (function(){
 
-    var GuessYouLikeMainCls = App.views.GuessYouLikeMainCls = Ext.extend( Ext.Panel, {
-        title: '猜你喜欢',
-        iconCls: 'favorites',
-        html: '<div class="location-map"></div>',
+    var BuyIt = App.views.buyIt = Ext.extend( Ext.Panel, {
+
+        scroll: 'vertical',
+        html: '',
         initComponent: function (){
 
             var that = this;
-
-            that.address = '';
-            that.latlng = {};
 
             // 用于记录所有的marker
             this.markers = [];
@@ -213,5 +210,5 @@
         }
     });
 
-    Ext.reg( 'guessYouLike', GuessYouLikeMainCls );
+    Ext.reg( 'buyIt', BuyIt );
 })();
