@@ -49,6 +49,13 @@
                         }
                         break;
                     }
+                    case 'guessYouLike': {
+
+                        if( currentHash.split( '/' )[ 0 ] !== 'guessYouLike' ){
+                            Mods.route.redirect( 'guessYouLike' );
+                        }
+                        break;
+                    }
                 }
             }
         },
