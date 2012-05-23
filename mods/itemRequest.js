@@ -194,6 +194,30 @@
             }, true );
         },
 
+        guessYouLike: function ( next ){
+
+            Mods.request.send({
+                method: 'get',
+                disableCaching: true,
+                data: {},
+                type: 'GUESS_YOU_LIKE',
+                callback: function ( resData ){
+
+                    var result = resData.result;
+                    var data = resData.data;
+
+                    if( result ){
+
+                        next( undefined, data );
+                    }
+                    else {
+
+                        next( resData )
+                    }
+                }
+            }, true );
+        },
+
         /**
          * 更新item
          * @param itemId

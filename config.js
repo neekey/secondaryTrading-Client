@@ -22,7 +22,8 @@
             UPDATE_ITEM: API_HOST + 'updateitem',
             GEO: 'http://maps.google.com/maps/api/geocode/json',
             QUERY_ITEM: API_HOST + 'searchitem',
-            SELLING_LIST: API_HOST + 'sellinglist'
+            SELLING_LIST: API_HOST + 'sellinglist',
+            GUESS_YOU_LIKE: API_HOST + 'guessyoulike'
         },
         // 用于JSONP请求的KEY
         API_JSONP_KEY: 'callback',

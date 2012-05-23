@@ -1,5 +1,7 @@
 (function(){
 
+    var Mods = App.mods;
+
     var GuessYouLikeMainCls = App.views.GuessYouLikeMainCls = Ext.extend( Ext.Panel, {
         title: '猜你喜欢',
         iconCls: 'favorites',
@@ -75,6 +77,28 @@
                 }
             }
         },
+
+        items: [
+            {
+                xtype: 'button',
+                text: '获取推荐数据',
+                handler: function (){
+
+                    Mods.itemRequest.guessYouLike(function ( err, items ){
+
+                        if( err ){
+
+                            alert( '出错啦!' + JSON.stringify( err ) );
+                        }
+                        else {
+
+                            console.log( items );
+                            alert( JSON.stringify( items ) );
+                        }
+                    });
+                }
+            }
+        ],
 
         /**
          * 获取用户的推荐数据
