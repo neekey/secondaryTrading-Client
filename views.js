@@ -1764,6 +1764,7 @@
 (function(){
 
     var Mods = App.mods;
+    var Config = App.config;
 
     var GuessYouLikeMainCls = App.views.GuessYouLikeMainCls = Ext.extend( Ext.Panel, {
         title: '猜你喜欢',
@@ -1782,6 +1783,13 @@
             this.infoWindows = [];
             // 是否已经自动获取过当前位置
             this.isAutoGetLocation = false;
+            this.isAutoFetchItems = false;
+            // 当前位置信息
+            this.currentLocation = undefined;
+            this.map = undefined;
+            this.resutls = undefined;
+            this.resultLatLngs = [];
+            this.resultItemTpl = undefined;
 
             Ext.apply( this, {
                 dockedItems: [
@@ -1800,7 +1808,7 @@
                                 iconMask: true,
                                 handler: function (){
 
-
+                                    that.fetchYouLike();
                                 }
                             }
                         ]
@@ -1820,79 +1828,114 @@
 
             activate: function (){
 
-                // 解决偶尔地位位置有问题的情况
-//                this.doLayout();
-
                 var that = this;
                 var fakePostion = [30.23304355,120.03763513000001];
 
                 if( !that.map ){
 
                     that.map = new google.maps.Map( that.mapDiv, {
-                        zoom: 16,
+                        zoom: 8,
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     });
                 }
 
+                // 判断是否自动获取过地理位置
                 if( !this.isAutoGetLocation ){
 
-//                    this.searchCurrentPosition();
+                    this.searchCurrentPosition(function (){
+
+                        that.fetchYouLike();
+                    });
+                }
+                else {
+
+                    // 判断是否已经自动请求过 推荐 数据
+                    if( !this.isAutoFetchItems ){
+
+                        this.fetchYouLike();
+
+                        this.isAutoFetchItems = true;
+                    }
                 }
             }
         },
-
-        items: [
-            {
-                xtype: 'button',
-                text: '获取推荐数据',
-                handler: function (){
-
-                    Mods.itemRequest.guessYouLike(function ( err, items ){
-
-                        if( err ){
-
-                            alert( '出错啦!' + JSON.stringify( err ) );
-                        }
-                        else {
-
-                            console.log( items );
-                            alert( JSON.stringify( items ) );
-                        }
-                    });
-                }
-            }
-        ],
 
         /**
          * 获取用户的推荐数据
          */
         fetchYouLike: function (){
 
+            var location = this.currentLocation;
+            var that = this;
 
+            if( location ){
+
+                location = [ location.longitude, location.latitude ].join( ',' );
+            }
+
+            this.setLoading( true );
+            Mods.itemRequest.guessYouLike({ location: location }, function ( err, items ){
+
+                that.setLoading( false );
+                if( err ){
+
+                    Ext.Msg.alert( '错误', err.error + JSON.stringify( err.data ) );
+                }
+                else {
+
+                    that.results = items;
+                    that.updateMap();
+                }
+            });
         },
 
         /**
          * 获取当前位置
          */
-        searchCurrentPosition: function (){
+        searchCurrentPosition: function ( next ){
 
             this.setLoading( true );
             var that = this;
 
-            Mods.map.getCurrentLatLng(function ( err, latlng ){
+            // 先直接使用缓存
+            var location = Mods.map.getCachedCurrentLocation();
 
+            if( location ){
 
-                if( err ){
+                that.setLoading( false );
+
+                that.isAutoGetLocation = true;
+                this.currentLocation = location;
+
+                if( next ){
+
+                    next();
+                }
+            }
+            else {
+                // 若缓存中不存在，则重新查询
+                Mods.map.getCurrentLatLng(function ( err, latlng ){
 
                     that.setLoading( false );
-                    alert( err + ' 您可以手动搜索位置!' );
-                }
-                else {
 
-                    var position = new google.maps.LatLng( latlng.lat, latlng.lng );
-//                    获取当前位置，用于和推荐的搜有结果做bounds
-                }
-            });
+                    that.isAutoGetLocation = true;
+
+                    if( err ){
+
+                        // 若失败，什么也不做，直接使用用户已经设置过的地理位置
+                    }
+                    else {
+
+                        that.currentLocation = { latitude: latlng.lat, longitude: latlng.lng };
+                    }
+
+                    if( next ){
+
+                        next();
+                    }
+                });
+            }
+
         },
 
         /**
@@ -1913,6 +1956,33 @@
 
             this.markers = [];
             this.infoWindows = [];
+            this.resutls = undefined;
+            this.resultLatLngs = [];
+        },
+
+        /**
+         * 更新地图中的结果
+         */
+        updateMap: function (){
+
+            this.clearMap();
+            var that = this;
+
+            if( this.results && this.results.length > 0 ){
+
+                Ext.each( this.results, function ( item ){
+
+                    that.addPosition( item );
+                });
+
+                var currentLocationLatlng = new google.maps.LatLng( that.currentLocation.latitude, that.currentLocation.longitude );
+                var bound = Mods.map.getBoundsByLocations( this.resultLatLngs.concat( [currentLocationLatlng]) );
+                this.map.fitBounds( bound );
+            }
+            else {
+
+                Ext.Msg( '抱歉!', '暂时木有可以推荐的商品~' );
+            }
         },
 
         /**
@@ -1957,35 +2027,45 @@
          * @param {String} address
          * @param {LatLng} google map 的 LatLng对象
          */
-        addPosition: function ( address, resultLatLng ){
+        addPosition: function ( item ){
+
+            if( !this.resultItemTpl ){
+
+                this.resultItemTpl = new Ext.Template( Ext.get( 'map-result-item-tpl').getHTML() );
+            }
+
+            if( !this.map ){
+
+                this.map = new google.maps.Map( this.mapDiv, {
+                    zoom: 8,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+            }
+
+            // location 从服务器中获取到的是 [ longitude, latitude ] 但是google的顺序是 ( latitude, longitude )
+            var itemLatlng = new google.maps.LatLng( item.location[ 1 ], item.location[ 0 ] );
+
+            // 保存 latlng 对象
+            this.resultLatLngs.push( itemLatlng );
 
             var newMarker = this.addMarker({
-                position: resultLatLng,
+                position: itemLatlng,
                 title:"您所在的位置"
             });
 
-            var infoNode = Mods.dom.create( '<div class="position-info-win"><p>' + address + '</p><p class="set-my-pos">设为我的位置!</p></div>' );
+            var infoNode = Mods.dom.create( '<div class="result-info-win"></div>' );
+            this.resultItemTpl.append( infoNode, this.itemInfoHandle( item ) );
             var newInfoWin = this.addInfoWindow({
                 content: infoNode,
-                position: resultLatLng
+                position: itemLatlng
             });
 
             var that = this;
 
             // 为消息窗口添加点击事件
-            Ext.EventManager.addListener( Ext.get( infoNode ).query( '.set-my-pos')[ 0 ], 'click', function (){
+            Ext.EventManager.addListener( Ext.get( infoNode ).query( '.map-result-item')[ 0 ], 'click', function (){
 
-                Ext.Msg.confirm( '', '设置: ' + address + ' 为我的当前位置?', function ( result ){
-
-                    // 若选择是，则设置当前地址，并返回到上一个页面
-                    if( result === 'yes' ){
-
-                        that.address = address;
-                        that.latlng = resultLatLng;
-
-                        that.goBack();
-                    }
-                });
+                Mods.route.redirect( 'buy/detail', [ item._id ] );
             } );
 
             // sencha touch 1.1 在 google maps api >= 3.4 的bug（click无效），配合map.marker.click.fix.js 并改为mouseup
@@ -1997,6 +2077,24 @@
             });
 
             newMarker.setMap( this.map );
+        },
+
+        itemInfoHandle: function ( item ){
+
+            var imgs = item.imgs;
+            var pic;
+
+            if( imgs && imgs.length > 0 ){
+
+                pic = Config.APIHOST + 'img?id=' + imgs[ 0 ][ '_id' ];
+            }
+            else {
+                pic = undefined;
+            }
+
+            item.pic = pic;
+
+            return item;
         }
     });
 
@@ -2469,7 +2567,6 @@
                         that.insertFavor( catName );
                         that.userFavorList.push( catName );
                     }
-
                 });
             },
 
@@ -2528,15 +2625,10 @@
          */
         insertFavor: function ( catName ){
 
-            alert( typeof this.favorUl );
-
             if( !this.favorUl ){
 
-                alert( 'in!');
                 this.favorUl = this.userFavorPanel.body.child( '.user-favor-list ul' );
             }
-
-            alert( 'out!' );
 
             this.favorItemTpl.append( this.favorUl, { name: catName } );
         },
@@ -2556,7 +2648,6 @@
             // 添加对于删除分类事件的监听
             Ext.EventManager.addListener( this.favorUl.dom, 'tap', function ( favorUl, delSpan ){
 
-                alert( 'hello!' );
                 var catName = delSpan.getAttribute( 'data-name' );
                 // 删除该节点
                 Ext.get( delSpan.parentNode).remove();
@@ -3618,7 +3709,7 @@
             item.pic = pic;
 
             return item;
-        },
+        }
     });
 
     Ext.reg( 'itemSearch', SearchCls );

@@ -5,7 +5,8 @@
 
     var Config = App.config;
     var Mods = App.mods;
-    var APIS = Config.APIS;
+
+    var CachedCurrentLocation;
 
     Mods.map = {
 
@@ -76,6 +77,12 @@
             function onSuccess( position ){
 
                 var coords = position.coords;
+
+                // 缓存结果
+                CachedCurrentLocation = {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude
+                };
 
                 next( undefined, {
                     lat: coords.latitude,
@@ -216,6 +223,15 @@
 
             return new google.maps.LatLngBounds( new google.maps.LatLng( maxLat, minLng ),
                 new google.maps.LatLng( minLat, maxLng ) );
+        },
+
+        /**
+         * 获取已经缓存过的位置信息
+         * @return {Object} { latitude: , longitude }
+         */
+        getCachedCurrentLocation: function (){
+
+            return CachedCurrentLocation;
         },
 
         /**

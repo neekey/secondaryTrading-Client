@@ -456,12 +456,18 @@
             }, true );
         },
 
-        guessYouLike: function ( next ){
+        guessYouLike: function ( obj, next ){
+
+            if( Ext.isFunction( obj ) ){
+
+                next = obj;
+                obj = {};
+            }
 
             Mods.request.send({
                 method: 'get',
                 disableCaching: true,
-                data: {},
+                data: obj,
                 type: 'GUESS_YOU_LIKE',
                 callback: function ( resData ){
 
@@ -558,7 +564,8 @@
 
     var Config = App.config;
     var Mods = App.mods;
-    var APIS = Config.APIS;
+
+    var CachedCurrentLocation;
 
     Mods.map = {
 
@@ -629,6 +636,12 @@
             function onSuccess( position ){
 
                 var coords = position.coords;
+
+                // 缓存结果
+                CachedCurrentLocation = {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude
+                };
 
                 next( undefined, {
                     lat: coords.latitude,
@@ -769,6 +782,15 @@
 
             return new google.maps.LatLngBounds( new google.maps.LatLng( maxLat, minLng ),
                 new google.maps.LatLng( minLat, maxLng ) );
+        },
+
+        /**
+         * 获取已经缓存过的位置信息
+         * @return {Object} { latitude: , longitude }
+         */
+        getCachedCurrentLocation: function (){
+
+            return CachedCurrentLocation;
         },
 
         /**

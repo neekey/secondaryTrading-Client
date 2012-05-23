@@ -194,12 +194,18 @@
             }, true );
         },
 
-        guessYouLike: function ( next ){
+        guessYouLike: function ( obj, next ){
+
+            if( Ext.isFunction( obj ) ){
+
+                next = obj;
+                obj = {};
+            }
 
             Mods.request.send({
                 method: 'get',
                 disableCaching: true,
-                data: {},
+                data: obj,
                 type: 'GUESS_YOU_LIKE',
                 callback: function ( resData ){
 

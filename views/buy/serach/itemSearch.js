@@ -457,7 +457,7 @@
             item.pic = pic;
 
             return item;
-        },
+        }
     });
 
     Ext.reg( 'itemSearch', SearchCls );
