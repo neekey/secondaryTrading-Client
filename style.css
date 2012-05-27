@@ -298,3 +298,18 @@
   color: white;
   font-weight: bold;
 }
+#st-loading-mask {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 1em;
+  vertical-align: middle;
+}
+#st-loading-mask .logo {
+  max-width: 60%;
+  max-height: 50%;
+  margin-top: 10%;
+}
+#st-loading-mask .loading-tip {
+  color: black;
+}

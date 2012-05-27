@@ -2,8 +2,8 @@
 
     var LOCAL_HOST = 'http://' + document.location.host + '/'; //'http://localhost:3000/';
 //    var REMOTE_HOST = 'http://192.168.137.66:3000/';
-//    var REMOTE_HOST = 'http://secondary_trading.cnodejs.net/';
-    var REMOTE_HOST = 'http://secondary_trading.dev.cnodejs.net/';
+    var REMOTE_HOST = 'http://secondary_trading.cnodejs.net/';
+//    var REMOTE_HOST = 'http://secondary_trading.dev.cnodejs.net/';
     var IF_DEVICE = !!( location.href.indexOf( 'file:///') >= 0 );
     var API_HOST = IF_DEVICE ? REMOTE_HOST : LOCAL_HOST;
 

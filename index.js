@@ -4,6 +4,7 @@
 
         name: 'App',
         defaultUrl: 'welcome',
+//        useLoadMask: true,
         mods: {},
         config: {},
         launch: function (){
@@ -18,6 +19,7 @@
 
                 if( ifTimeout === false ){
 
+                    setLoadingMask( false );
                     clearTimeout( timer );
 
                     that.viewport = Ext.ComponentMgr.create({
@@ -33,9 +35,16 @@
 
             timer = setTimeout(function (){
 
-                window.initialize();
+                setLoadingMask( true, '地图模块加载失败!与地图相关的功能将不可用- -#');
 
-                ifTimeout = true;
+                // 个两秒后初始化界面，让用户看清楚提示
+                setTimeout(function (){
+
+                    setLoadingMask( false );
+                    window.initialize();
+                    ifTimeout = true;
+
+                }, 2000 );
 
             }, timeout );
 
@@ -47,6 +56,24 @@
         script.type = "text/javascript";
         script.src = "http://maps.google.com/maps/api/js?sensor=false&callback=initialize";
         document.body.appendChild(script);
+    }
+
+    function setLoadingMask( ifShow, text ){
+
+        var mask = Ext.get( 'st-loading-mask' );
+        var loadingTip = mask.child( '.loading-tip' );
+
+        if( text ){
+
+            loadingTip.setHTML( text );
+        }
+        if( ifShow ){
+
+            mask.show();
+        }
+        else {
+            mask.hide();
+        }
     }
 
 })();

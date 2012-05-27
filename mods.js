@@ -260,7 +260,9 @@
             targetHeight: targetHeight
         });
     };
-})();/**
+})();
+
+/**
  * 商品数据请求相关的方法
  */
 (function(){
