@@ -27,6 +27,7 @@
                                 align: 'end',
                                 handler: function (){
 
+                                    Mods.route.redirect( 'buy/buyIt' );
                                 }
                             }
                         ]

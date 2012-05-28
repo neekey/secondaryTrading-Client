@@ -14,6 +14,10 @@
             {
                 // 商品详情
                 xtype: 'itemDetail'
+            },
+            {
+                // 购买页面
+                xtype: 'buyIt'
             }
         ]
     });

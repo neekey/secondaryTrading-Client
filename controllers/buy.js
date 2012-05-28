@@ -14,6 +14,7 @@
                 this.VBuyMain = this.VMain.query( 'buy' )[ 0 ];
                 this.VBuySearch = this.VBuyMain.query( 'itemSearch' )[ 0 ];
                 this.VBuyItemDetail = this.VBuyMain.query( 'itemDetail' )[ 0 ];
+                this.VBuyIt = this.VBuyMain.query( 'buyIt' )[ 0 ];
 
                 this.CMain = Ext.ControllerManager.get( 'main' );
             }
@@ -48,6 +49,12 @@
 
             // 根据商品id请求数据
             this.VBuyItemDetail.fetch( itemId );
+        },
+
+        buyIt: function(){
+
+            this.resume();
+            this.VBuyMain.setActiveItem( this.VBuyIt );
         }
     });
 })();
