@@ -123,6 +123,8 @@
 })();
 (function(){
 
+    var Mods = App.mods;
+
     var BuyIt = App.views.buyIt = Ext.extend( Ext.Panel, {
 
         scroll: 'vertical',
@@ -138,7 +140,16 @@
                         title: '购买',
                         items: [
                             {
-                                xtype: 'goBackButton'
+                                xtype: 'button',
+                                text: '返回',
+                                ui: 'back',
+                                handler: function(){
+
+                                    // 返回宝贝详情，并附加上原有的参数
+                                    var originParam = Mods.route.getPreviousParam();
+
+                                    Mods.route.goBack( originParam );
+                                }
                             }
                         ]
                     }
