@@ -216,6 +216,9 @@
                     that.addPosition( item );
                 });
 
+                // 将自己的位置添加到当前位置
+                that.addMyPosition( that.currentLocation.latitude, that.currentLocation.longitude );
+
                 var currentLocationLatlng = new google.maps.LatLng( that.currentLocation.latitude, that.currentLocation.longitude );
                 var bound = Mods.map.getBoundsByLocations( this.resultLatLngs.concat( [currentLocationLatlng]) );
                 this.map.fitBounds( bound );
@@ -317,6 +320,37 @@
                 newInfoWin.open( that.map, newMarker );
             });
 
+            newMarker.setMap( this.map );
+        },
+
+        /**
+         * 将自己的位置添加到地图，使用蓝色小球作为图标
+         * @param latitude
+         * @param longitude
+         */
+        addMyPosition: function( latitude, longitude ){
+
+            if( !this.map ){
+
+                this.map = new google.maps.Map( this.mapDiv, {
+                    zoom: 8,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+            }
+
+            // location 从服务器中获取到的是 [ longitude, latitude ] 但是google的顺序是 ( latitude, longitude )
+            var itemLatlng = new google.maps.LatLng( latitude, longitude );
+
+            // 保存 latlng 对象
+            this.resultLatLngs.push( itemLatlng );
+
+            //
+            var newMarker = this.addMarker({
+                position: itemLatlng,
+                title:"您所在的位置",
+                icon: 'images/myLocation.png'
+            });
+            
             newMarker.setMap( this.map );
         },
 

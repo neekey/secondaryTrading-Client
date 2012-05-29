@@ -7,38 +7,6 @@
 
         // 清欠结果的所有id
         resultItems: [
-            {
-                address: 'nihaoaijoa',
-                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                title: 'dafadfa',
-                desc: 'daffddaffda',
-                price: '1243414',
-                _id: 'test'
-            },
-            {
-                address: 'nihaoaijoa',
-                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                title: 'dafadfa',
-                desc: 'daffddaffda',
-                price: '1243414',
-                _id: 'test'
-            },
-            {
-                address: 'nihaoaijoa',
-                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                title: 'dafadfa',
-                desc: 'daffddaffda',
-                price: '1243414',
-                _id: 'test'
-            },
-            {
-                address: 'nihaoaijoa',
-                pic: 'http://wenwen.soso.com/p/20110816/20110816162728-1441696951.jpg',
-                title: 'dafadfa',
-                desc: 'daffddaffda',
-                price: '1243414',
-                _id: 'test'
-            }
         ],
         // 所有结果id
         resultIds: [],

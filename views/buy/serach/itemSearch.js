@@ -197,6 +197,9 @@
                 this.searchField = this.query( 'searchfield' )[ 0 ];
                 this.getMoreResultBtn = this.query( 'button' )[ 0 ];
 
+                // 默认隐藏
+                this.getMoreResultBtn.hide();
+
                 this.resultList.addListener( 'itemTaped', function ( item ){
                     that.fireEvent( 'itemTaped', item );
                 });
