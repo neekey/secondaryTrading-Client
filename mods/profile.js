@@ -82,7 +82,24 @@
                         next( resData )
                     }
                 }
-            })
+            });
+        },
+
+        /**
+         * 记录用户的购买行为
+         */
+        addBuyRecord: function( itemId ){
+
+            Mods.request.send({
+                method: 'get',
+                type: 'USER_BUY_RECORD',
+                disableCaching: true,
+                data: {
+                    id: itemId
+                },
+                callback: function ( resData ){
+                }
+            });
         }
     };
 

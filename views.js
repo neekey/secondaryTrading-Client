@@ -3987,6 +3987,7 @@
                                 align: 'end',
                                 handler: function (){
 
+                                    Mods.profile.addBuyRecord( that.itemId );
                                     Mods.route.redirect( 'buy/buyIt' );
                                 }
                             }
@@ -4042,12 +4043,12 @@
                 title: item.title,
                 desc: item.desc,
                 price: item.price,
-                location: item.location,
-                sellerName: 'neekey',
-                date: 'hello~',
-                email: 'ni184775761@gmail.com',
-                QQ: '184775761',
-                wangwang: 'hello~'
+                address: item.address,
+//                sellerName: item.user.email,
+//                date: 'hello~',
+                email: item.user.email,
+                QQ: item.user.qq,
+                wangwang: item.user.wangwang
             };
 
             this.setItemTextInfo( textInfo );
@@ -4074,6 +4075,7 @@
          */
         fetch: function ( itemId ){
 
+            this.itemId = itemId;
             var that = this;
             this.setLoading( true );
             Mods.itemRequest.getItemById( itemId, function ( err, item ){
