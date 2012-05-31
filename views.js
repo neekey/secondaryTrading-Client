@@ -3931,6 +3931,13 @@
 
             item.pic = pic;
 
+            // 对文字内容描述做裁剪
+            item.title = item.title.length > 6 ? item.title.substring( 0, 6 ) : item.title;
+            item.desc = item.desc.length > 18 ? item.desc.substring( 0, 18 ) : item.desc;
+            item.address = item.address.length > 9 ? item.address.substring( 0, 9 ) : item.address;
+
+            // 对标题进行裁剪
+
             return item;
         },
 
