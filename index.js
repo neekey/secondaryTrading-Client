@@ -11,7 +11,7 @@
 
             var that = this;
             var timer;
-            var timeout = 10000;
+            var timeout = 30000;
             var ifTimeout = false;
 
             // 作为google map脚本载入回调

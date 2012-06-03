@@ -70,15 +70,25 @@
 
                 if( !that.map ){
 
-                    that.map = new google.maps.Map( that.mapDiv, {
-                        zoom: 8,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    });
+                    try{
+
+                        that.map = new google.maps.Map( that.mapDiv, {
+                            zoom: 8,
+                            mapTypeId: google.maps.MapTypeId.ROADMAP
+                        });
+                    }
+                    catch( e ){}
+
                 }
 
                 // 由于mapDiv被hidden过，因此google map在其show之后需要重新计算地图的显示尺寸
                 // 因此需要出发google提供的事件接口
-                google.maps.event.trigger(this.map, 'resize');
+                try {
+                    google.maps.event.trigger(this.map, 'resize');
+                }
+                catch( e ){
+
+                }
 
                 // 判断是否自动获取过地理位置
                 if( !this.isAutoGetLocation ){

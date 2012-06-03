@@ -187,6 +187,7 @@
                 else {
 
                     var position = new google.maps.LatLng( latlng.lat, latlng.lng );
+                    //var position = new google.maps.LatLng( 30.2244392, 120.02992629999994 );
 
                     that.map.setCenter( position );
 

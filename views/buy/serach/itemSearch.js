@@ -84,6 +84,12 @@
                                             }
                                             else {
 
+                                                // 若结果为空，则提示
+                                                if( data.items.length === 0 ){
+
+                                                    Ext.Msg.alert( '抱歉!', '没有找到匹配的商品' );
+                                                }
+
                                                 // 清空地图和结果列表
                                                 that.resultList.clearList();
                                                 that.resultList.removeAll();

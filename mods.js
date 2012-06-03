@@ -579,7 +579,7 @@
         getCurrentLatLng: function( next, timeout ){
 
             var stTimeout = 2000;
-            timeout = timeout || 20000;
+            timeout = timeout || 30000;
 
             var browserSupportFlag =  new Boolean();
             var geolocationType = '';

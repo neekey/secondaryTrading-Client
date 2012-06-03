@@ -1336,6 +1336,8 @@
                                             // 先清楚所有的点
                                             that.clearMap();
 
+                                            console.log( results );
+
                                             that.setLoading( false );
                                             if( err ){
 
@@ -1437,7 +1439,8 @@
                 }
                 else {
 
-                    var position = new google.maps.LatLng( latlng.lat, latlng.lng );
+//                    var position = new google.maps.LatLng( latlng.lat, latlng.lng );
+                    var position = new google.maps.LatLng( 30.2244392, 120.02992629999994 );
 
                     that.map.setCenter( position );
 
@@ -1679,15 +1682,25 @@
 
                 if( !that.map ){
 
-                    that.map = new google.maps.Map( that.mapDiv, {
-                        zoom: 8,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    });
+                    try{
+
+                        that.map = new google.maps.Map( that.mapDiv, {
+                            zoom: 8,
+                            mapTypeId: google.maps.MapTypeId.ROADMAP
+                        });
+                    }
+                    catch( e ){}
+
                 }
 
                 // 由于mapDiv被hidden过，因此google map在其show之后需要重新计算地图的显示尺寸
                 // 因此需要出发google提供的事件接口
-                google.maps.event.trigger(this.map, 'resize');
+                try {
+                    google.maps.event.trigger(this.map, 'resize');
+                }
+                catch( e ){
+
+                }
 
                 // 判断是否自动获取过地理位置
                 if( !this.isAutoGetLocation ){
@@ -3235,6 +3248,12 @@
                                                 Ext.Msg.alert( '获取商品信息失败! ', ( err.error || '' ) + ( JSON.stringify( err.data ) || '' ) );
                                             }
                                             else {
+
+                                                // 若结果为空，则提示
+                                                if( data.items.length === 0 ){
+
+                                                    Ext.Msg.alert( '抱歉!', '没有找到匹配的商品' );
+                                                }
 
                                                 // 清空地图和结果列表
                                                 that.resultList.clearList();
